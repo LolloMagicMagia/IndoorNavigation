@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent">
+
+    <!-- Mapnik è una fonte di tessere predefinita disponibile in OsmDroid che utilizza dati
+         di OpenStreetMap. Questa fonte di tessere offre una visualizzazione dettagliata della mappa
+         in stile standard di OpenStreetMap. -->
+
+
+
+
+    <!--<FrameLayout
+        android:id="@+id/map_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />-->
+
+    <org.osmdroid.views.MapView
+        android:id="@+id/map"
+        android:layout_width="match_parent"
+        android:layout_height="500dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleziona partenza:" />
+
+    <Spinner
+        android:id="@+id/spinner_partenza"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleziona destinazione:" />
+
+    <Spinner
+        android:id="@+id/spinner_destinazione"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/buttonZoom"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="zoom" />
+
+        <Button
+            android:id="@+id/buttonZoom2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="DeZoom" />
+
+        <Button
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="layer0"></Button>
+
+        <Button
+            android:id="@+id/image1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="layer1"></Button>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/appGhero"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="appGhero" />
+
+
+</LinearLayout>
