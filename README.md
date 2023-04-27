@@ -10,7 +10,7 @@ Ho aggiunto molte funzionalità simili a google maps per quanto riguarda il rout
 
 ### Indoor navigation
 
-La soluzione adottata non presenta l'utilizzo di tool di terze parti per la navigazione e il tracciamento del percorso.
+La soluzione adottata (lato indoor) non presenta l'utilizzo di tool di terze parti per la navigazione e il tracciamento del percorso.
 L'ambiente di sviluppo è Android Studio.
 
 La mappa dell'edificio è stata importata come un png, successivamente sono stati selezionati i punti di interesse sulla mappa, come stanze e corridoi, rappresentandoli inizialmente sotto forma di coordinate.
