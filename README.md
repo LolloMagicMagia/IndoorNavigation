@@ -1,8 +1,24 @@
 ﻿# IndoorNavigation
 
+## Struttura della soluzione adottata
+
+### Outdoor navigation
+
 In questa applicazione abbiamo usato OpenStreetMap con l'aiuto di Josm per andare ad aggiungere le varie strade che google maps non andava a rappresentare.
 Abbiamo creato una nuova activity per poter creare la navigazione interna non essendo direttamente implementato in OpenStreetMap.
 Ho aggiunto molte funzionalità simili a google maps per quanto riguarda il routing esterno che avviene in automatico.
+
+### Indoor navigation
+
+La soluzione adottata non presenta l'utilizzo di tool di terze parti per la navigazione e il tracciamento del percorso.
+L'ambiente di sviluppo è Android Studio.
+
+La mappa dell'edificio è stata importata come un png, successivamente sono stati selezionati i punti di interesse sulla mappa, come stanze e corridoi, rappresentandoli inizialmente sotto forma di coordinate.
+
+Questi punti saranno poi i nodi che, assieme alle relazioni tra questi (gli archi), andranno a comporre il grafo che sarà utile alla navigazione.
+
+Ora sono dunque presenti: la mappa, i punti di interesse e un grafo che consente di organizzare questi punti in una struttura che siamo in grado di manipolare. L'ultima cosa essenziale che rimane è il sistema di tracciamento effettivo delle linee sulla mappa che andranno a comporre il percorso vero e proprio.
+Queste linee, che in realtà saranno poi rappresentate come un'unica polilinea, sono state tracciate principalmente tramite l'ausilio di Bitmap, Canvas e Paint. Sarà successivamente spiegato come tracciamo le linee evitando gli ostacoli.
 
 ## Da risolvere
 
