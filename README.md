@@ -5,6 +5,7 @@ Abbiamo creato una nuova activity per poter creare la navigazione interna non es
 Ho aggiunto molte funzionalità simili a google maps per quanto riguarda il routing esterno che avviene in automatico.
 
 ##da risolvere
+
 vedere se il routing automatico riesce a selezionare i path in base alla condizione dell'utente.
 
 ## Idee e implementazioni future e in corso
