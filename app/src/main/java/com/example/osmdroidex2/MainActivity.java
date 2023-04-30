@@ -100,23 +100,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         deZoomButton = (Button) findViewById(R.id.buttonZoom2);
         List<String> opzioniPartenza = Arrays.asList("U14");
         List<String> opzioniDestinazione = Arrays.asList("U6", "U7");
-        Context ctx = getApplicationContext();
-        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
-
-        roadManager = new OSRMRoadManager(this, "Prova indoor");
-
-        //capire se il gps è attivo
-        /*LocationManager locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        boolean isGpsEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);*/
-
-        //per capire se esiste il gps attivo se no da in errore e si impalla
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            return;
-        }
-        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, this);
-        //
-
         // Crea un adapter per le opzioni di selezione della partenza
         ArrayAdapter<String> adapterPartenza = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, opzioniPartenza);
         adapterPartenza.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -127,93 +110,17 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         adapterDestinazione.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDestinazione.setAdapter(adapterDestinazione);
 
-        // Imposta il listener sul menu a tendina della partenza
-        spinnerPartenza.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
-                // Quando viene selezionata un'opzione dalla lista della partenza, si salva il valore in una variabile
-                partenzaSelezionata = (String) adapterView.getItemAtPosition(posizione);
-                // Eseguire l'operazione desiderata con il valore selezionato
-                if (partenzaSelezionata != null && destinazioneSelezionata != null&&map!=null) {
-                    // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
-                    Log.d("routing", partenzaSelezionata);
-                    waypoints2 = new ArrayList<GeoPoint>();
-                    waypoints2.add(u14);
-                    ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
-                    ex.execute();
-                }
-            }
+        Context ctx = getApplicationContext();
+        Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // Non viene selezionata alcuna opzione
-            }
-        });
+        roadManager = new OSRMRoadManager(this, "Prova indoor");
 
-    // Imposta il listener sul menu a tendina della destinazione
-        spinnerDestinazione.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
-                // Quando viene selezionata un'opzione dalla lista della destinazione, si salva il valore in una variabile
-                destinazioneSelezionata = (String) adapterView.getItemAtPosition(posizione);
-                // Eseguire l'operazione desiderata con il valore selezionato
-                if (partenzaSelezionata != null && destinazioneSelezionata != null &&map!=null) {
-                    // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
-                    waypoints2 = new ArrayList<GeoPoint>();
-                    waypoints2.add(u14);
-                    ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
-                    ex.execute();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // Non viene selezionata alcuna opzione
-            }
-        });
-
-
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                /*usato per cercare i valori sul dispositivo
-
-                Log.d("Immagine", "entra nell'onclick");
-                Intent intent= new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent,"pickAnImage"),1);
-                */
-
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina1);
-                GroundOverlay overlay = new GroundOverlay();
-                overlay.setTransparency(0.0f);
-                overlay.setImage(bitmap);
-                if (map.getOverlays().get(1) != null) {
-                    map.getOverlays().remove(1);
-                }
-                overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
-                map.getOverlayManager().add(1, overlay);
-                map.invalidate();
-                Log.d("layer", "0");
-            }
-        });
-
-        button1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina2);
-                GroundOverlay overlay = new GroundOverlay();
-                overlay.setTransparency(0.0f);
-                overlay.setImage(bitmap);
-                if (map.getOverlays().get(1) != null) {
-                    map.getOverlays().remove(1);
-                }
-                overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
-                map.getOverlayManager().add(1, overlay);
-                map.invalidate();
-                Log.d("layer", "1");
-            }
-        });
+        //per capire se esiste il gps è attivo
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            return;
+        }
+        locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
+        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 100, 10, this);
 
         //setting this before the layout is inflated is a good idea
         //it 'should' ensure that the map has a writable location for the map cache, even without permissions
@@ -299,8 +206,140 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         /*serve per rimuovere lo zoom automatico
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);*/
 
-
         ArrayList<GeoPoint>pointsU14 = addU14Layer();
+        /**
+         * Aggiungere l'animazione grazie alla classe Animation al path creato dai diversi geopoint
+         * dentro a waypoints
+         */
+        Animation animation=new Animation(map, waypoints,ctx);
+        animation.addOverlays();
+
+        boxUni= map.getBoundingBox();
+
+        //Mostra la bussola
+        CompassOverlay compassOverlay = new CompassOverlay(this, map);
+        compassOverlay.enableCompass();
+        map.getOverlays().add(compassOverlay);
+
+        //invalidare la mappa per aggiornarla
+        map.invalidate();
+
+
+        // Imposta il listener sul menu a tendina della partenza
+        spinnerPartenza.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
+                // Quando viene selezionata un'opzione dalla lista della partenza, si salva il valore in una variabile
+                partenzaSelezionata = (String) adapterView.getItemAtPosition(posizione);
+                // Eseguire l'operazione desiderata con il valore selezionato
+                if (partenzaSelezionata != null && destinazioneSelezionata != null&&map!=null) {
+                    // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
+                    Log.d("routing", partenzaSelezionata);
+                    waypoints2 = new ArrayList<GeoPoint>();
+                    waypoints2.add(u14);
+                    ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
+                    ex.execute();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Non viene selezionata alcuna opzione
+            }
+        });
+
+        // Imposta il listener sul menu a tendina della destinazione
+        spinnerDestinazione.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
+                // Quando viene selezionata un'opzione dalla lista della destinazione, si salva il valore in una variabile
+                destinazioneSelezionata = (String) adapterView.getItemAtPosition(posizione);
+                // Eseguire l'operazione desiderata con il valore selezionato
+                if (partenzaSelezionata != null && destinazioneSelezionata != null &&map!=null) {
+                    // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
+                    waypoints2 = new ArrayList<GeoPoint>();
+                    waypoints2.add(u14);
+                    ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
+                    ex.execute();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                // Non viene selezionata alcuna opzione
+            }
+        });
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                /*usato per cercare i valori sul dispositivo
+
+                Log.d("Immagine", "entra nell'onclick");
+                Intent intent= new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                startActivityForResult(Intent.createChooser(intent,"pickAnImage"),1);
+                */
+
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina1);
+                GroundOverlay overlay = new GroundOverlay();
+                overlay.setTransparency(0.0f);
+                overlay.setImage(bitmap);
+                if (map.getOverlays().get(1) != null) {
+                    map.getOverlays().remove(1);
+                }
+                overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
+                map.getOverlayManager().add(1, overlay);
+                map.invalidate();
+                Log.d("layer", "0");
+            }
+        });
+
+        button1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina2);
+                GroundOverlay overlay = new GroundOverlay();
+                overlay.setTransparency(0.0f);
+                overlay.setImage(bitmap);
+                if (map.getOverlays().get(1) != null) {
+                    map.getOverlays().remove(1);
+                }
+                overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
+                map.getOverlayManager().add(1, overlay);
+                map.invalidate();
+                Log.d("layer", "1");
+            }
+        });
+
+        //serve per capire quando si zoomma dall'evento dell'ingrandimento con le due dita
+        map.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                box =map.getBoundingBox();
+                boolean ciao=false;
+                if (map.getZoomLevelDouble() >= 20) {
+                    for(int i=0; i<4;i++){
+                        if(box.contains(pointsU14.get(i))){
+                            ciao=true;
+                        }
+                    }
+                    if (ciao == true) {
+                        button.setVisibility(View.VISIBLE);
+                        button1.setVisibility(View.VISIBLE);
+                    }else{
+                        button.setVisibility(View.GONE);
+                        button1.setVisibility(View.GONE);
+                    }
+                }else {
+                    button.setVisibility(View.GONE);
+                    button1.setVisibility(View.GONE);
+                }
+                return false;
+            }
+        });
+
         //Serve per capire quando lo zoom della mappa arriva a un max e quindi bloccarlo
         zoomButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -356,46 +395,6 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-        //serve per capire quando si zoomma dall'evento dell'ingrandimento con le due dita
-        map.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                box =map.getBoundingBox();
-                boolean ciao=false;
-                if (map.getZoomLevelDouble() >= 20) {
-                    for(int i=0; i<4;i++){
-                        if(box.contains(pointsU14.get(i))){
-                            ciao=true;
-                        }
-                    }
-                    if (ciao == true) {
-                        button.setVisibility(View.VISIBLE);
-                        button1.setVisibility(View.VISIBLE);
-                    }else{
-                        button.setVisibility(View.GONE);
-                        button1.setVisibility(View.GONE);
-                    }
-                }else {
-                    button.setVisibility(View.GONE);
-                    button1.setVisibility(View.GONE);
-                }
-                return false;
-            }
-        });
-
-        //Aggiungere l'animazione grazie alla classe Animation al path creato dai diversi geopoint
-        //dentro a waypoints
-        Animation animation=new Animation(map, waypoints,ctx);
-        animation.addOverlays();
-
-        boxUni= map.getBoundingBox();
-
-        //Mostra la bussola
-        CompassOverlay compassOverlay = new CompassOverlay(this, map);
-        compassOverlay.enableCompass();
-        map.getOverlays().add(compassOverlay);
-
-
         visitaGuidata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -404,8 +403,7 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
             }
         });
 
-        //invalidare la mappa per aggiornarla
-        map.invalidate();
+
     }
 
     private void addRemoveMarker(boolean add, Marker marker) {
@@ -458,6 +456,10 @@ public class MainActivity extends AppCompatActivity implements LocationListener 
         }
     }
 
+    /**
+     * Il metodo andrà a fare le sue operazioni quando il gps
+     * è attivo, se spento non lo andrà ad eseguire in automatico.
+     */
     @Override
     public void onLocationChanged(Location location) {
         Log.d("ChangeLocation","entrato");
