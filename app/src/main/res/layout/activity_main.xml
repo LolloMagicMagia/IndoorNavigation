@@ -74,11 +74,31 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/appGhero"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="appGhero" />
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/appGhero"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="appGhero" />
+
+        <Button
+            android:id="@+id/location"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Posizione" />
+
+        <Button
+            android:id="@+id/focus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="focus" />
+
+    </LinearLayout>
 
 
 </LinearLayout>
