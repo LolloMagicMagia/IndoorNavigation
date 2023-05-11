@@ -284,6 +284,7 @@ public class MainActivity extends AppCompatActivity {
                     // scelta tramite il marker
                     if(listOfGeoPoint.getFloor(destinazioneSelezionata) != null){
                         //prendo il punto dove devo mettere il marker
+                        addRemoveMarker(false,aulaSelezionata);
                         aulaSelezionata=null;
                         GeoPoint point=listOfGeoPoint.getGeoPoint(destinazioneSelezionata);
                         //creo il marker per poter segnalare il posto
@@ -298,7 +299,6 @@ public class MainActivity extends AppCompatActivity {
                             map.getOverlayManager().remove(overlay);
                         }
                         if(aulaSelezionata != null){
-                            Log.d("funziona","porco dio");
                             map.getOverlays().remove(aulaSelezionata);
                         }
                         map.invalidate();
@@ -338,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if(listOfGeoPoint.getFloor(destinazioneSelezionata)!=null){
+                        addRemoveMarker(false,aulaSelezionata);
                         aulaSelezionata=null;
                         //prendo il punto dove devo metterlo
                         GeoPoint point=listOfGeoPoint.getGeoPoint(destinazioneSelezionata);
@@ -381,6 +382,7 @@ public class MainActivity extends AppCompatActivity {
                 intent.setType("image/*");
                 startActivityForResult(Intent.createChooser(intent,"pickAnImage"),1);
                 */
+                addRemoveMarker(false,aulaSelezionata);
                 getFloorDestinazione(1);
             }
         });
@@ -389,6 +391,7 @@ public class MainActivity extends AppCompatActivity {
         button1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                addRemoveMarker(false,aulaSelezionata);
                 getFloorDestinazione(2);
             }
         });
@@ -652,9 +655,9 @@ public class MainActivity extends AppCompatActivity {
     /////////////////////////////////////////////////
     private void addRemoveMarker(boolean add, Marker marker) {
         if(add == true) {
-            map.getOverlayManager().add(0, marker);
+            map.getOverlayManager().add(marker);
         }else{
-            map.getOverlays().remove(0);
+            map.getOverlays().remove(marker);
         }
     }
 
@@ -690,9 +693,10 @@ public class MainActivity extends AppCompatActivity {
             overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
             //scelgo l'overlay su dove metterla
             map.getOverlayManager().add(1, overlay);
-            if(aulaSelezionata != null){
+            if(aulaSelezionata != null && listOfGeoPoint.getFloor(destinazioneSelezionata)==1){
                 // Aggiunta del marker alla mappa
-                addRemoveMarker(false,null);
+                Log.d("marker", "floor1: "+listOfGeoPoint.getFloor(destinazioneSelezionata));
+                addRemoveMarker(false,aulaSelezionata);
                 addRemoveMarker(true, aulaSelezionata);
             }
             map.invalidate();
@@ -707,9 +711,10 @@ public class MainActivity extends AppCompatActivity {
             }
             overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
             map.getOverlayManager().add(1, overlay);
-            if(aulaSelezionata!=null){
+            if(aulaSelezionata!=null && listOfGeoPoint.getFloor(destinazioneSelezionata)==2){
                 // Aggiunta del marker alla mappa
-                addRemoveMarker(false,null);
+                Log.d("marker", "floor2: "+listOfGeoPoint.getFloor(destinazioneSelezionata));
+                addRemoveMarker(false,aulaSelezionata);
                 addRemoveMarker(true, aulaSelezionata);
             }
             map.invalidate();
