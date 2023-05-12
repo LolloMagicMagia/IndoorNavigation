@@ -66,6 +66,7 @@ import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 public class MainActivity extends AppCompatActivity {
 
     MapView map;
+    GroundOverlay overlay;
     ArrayList<GeoPoint> waypoints;
     ArrayList<GeoPoint> waypoints2;
     Polyline roadOverlay;
@@ -76,30 +77,32 @@ public class MainActivity extends AppCompatActivity {
     Button zoomButton;
     Button deZoomButton;
     Button focusPoint;
-    GroundOverlay overlay;
-    Road road1;
-    private static final int REQUEST_CODE_LOCATION_PERMISSION = 1;
+    Button location;
 
-    // Dichiarazione delle variabili per la partenza e la destinazione selezionate
+    // Dichiarazione delle variabili per la partenza e la destinazione selezionate dallo spinner
     String partenzaSelezionata = null;
     String destinazioneSelezionata = null;
 
+    //GeoPoint riguardante i punti degli edifici e delle aule. Successivamente saranno in un database
     GeoPoint u7 = new GeoPoint(45.51731, 9.21291);
     GeoPoint u6 = new GeoPoint(45.51847, 9.21297);
     GeoPoint u14 = new GeoPoint(45.52374,9.21971);
-    GeoPoint u14FirstFloor= new GeoPoint(45.52361, 9.21971);
-    GeoPoint u14SecondFloor= new GeoPoint(45.52352, 9.21994);
+    GeoPoint u14FirstFloor = new GeoPoint(45.52361, 9.21971);
+    GeoPoint u14SecondFloor = new GeoPoint(45.52352, 9.21994);
 
+    //Controller e manager per poter lavorare con i punti geospaziali.
     private IMapController mapController;
     private LocationManager locationManager;
     private MyLocationNewOverlay myLocationNewOverlay;
-    FusedLocationProviderClient fusedLocationClient;
 
-    //viene usato per capire dove l'utente stia zommando e quindi capire se mostrare i bottoni dei layer
+    //Viene usato per capire dove l'utente stia zommando e quindi capire se mostrare i bottoni dei layer
     BoundingBox box;
     BoundingBox boxUni;
-    Button location;
-    ListOfGeoPoint listOfGeoPoint=new ListOfGeoPoint();
+
+    //Utilizzo un altra classe per cercare i piani e i punti tramite due hashmap
+    ListOfGeoPoint listOfGeoPoint = new ListOfGeoPoint();
+
+    //Tiene conto della destinazione selezionata, se è un aula prende quel valore se no ritorna null
     Marker aulaSelezionata;
     boolean posizioneAttuale = false;
 
@@ -208,11 +211,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }*/
 
-        waypoints = new ArrayList<GeoPoint>();
-        waypoints.add(startPoint);
-        waypoints.add(middlePoint);
-        waypoints.add(endPoint);
-
         List<GeoPoint> points = new ArrayList<>();
         points.add(startPoint);
         points.add(middlePoint);
@@ -228,22 +226,30 @@ public class MainActivity extends AppCompatActivity {
         /*serve per rimuovere lo zoom automatico
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);*/
 
+        //Serve per capire quali punti rappresentano u14, così se lo schermo li contiene allora può
+        //mostrare il piano.
         ArrayList<GeoPoint> pointsU14 = addU14Layer();
+        boxUni = map.getBoundingBox();
+
+        //serve per fare una polilinea animata
+        waypoints = new ArrayList<GeoPoint>();
+        waypoints.add(startPoint);
+        waypoints.add(middlePoint);
+        waypoints.add(endPoint);
         Animation animation = new Animation(map, waypoints, ctx);
         animation.addOverlays();
-        boxUni = map.getBoundingBox();
 
         //Mostra la bussola
         CompassOverlay compassOverlay = new CompassOverlay(this, map);
         compassOverlay.enableCompass();
         map.getOverlays().add(compassOverlay);
 
-        //invalidare la mappa per aggiornarla
+        //invalidare la mappa per aggiornarla, al cambio di qualcosa della mappa è consigliato
+        //aggiornarla.
         map.invalidate();
 
-        //GPS
+        //GPS//
         locationManager = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         // Se il GPS è attivo, aggiungi l'icona sulla mappa, poichè il listener del gps non funziona
@@ -361,8 +367,10 @@ public class MainActivity extends AppCompatActivity {
                         }
                         map.invalidate();
                     }
+
                     ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
                     ex.execute();
+
                 }
             }
 
@@ -376,12 +384,6 @@ public class MainActivity extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                /*usato per cercare i valori sul dispositivo
-                Log.d("Immagine", "entra nell'onclick");
-                Intent intent= new Intent(Intent.ACTION_GET_CONTENT);
-                intent.setType("image/*");
-                startActivityForResult(Intent.createChooser(intent,"pickAnImage"),1);
-                */
                 addRemoveMarker(false,aulaSelezionata);
                 getFloorDestinazione(1);
             }
@@ -443,14 +445,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 map.getController().zoomIn();
                 box = map.getBoundingBox();
-                boolean ciao = false;
+                boolean contenente = false;
+                //Voglio far comparire i bottoni dei layer solo se si ha un certo livello di zoom
+                //potevo usare direttamente un for each.
                 if (map.getZoomLevelDouble() >= 20) {
                     for (int i = 0; i < 4; i++) {
                         if (box.contains(pointsU14.get(i))) {
-                            ciao = true;
+                            contenente = true;
                         }
                     }
-                    if (ciao == true) {
+                    if (contenente == true) {
                         button.setVisibility(View.VISIBLE);
                         button1.setVisibility(View.VISIBLE);
                     } else {
@@ -469,14 +473,16 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View view) {
                 map.getController().zoomOut();
                 box = map.getBoundingBox();
-                boolean ciao = false;
+                boolean contenente = false;
+                //Voglio far comparire i bottoni dei layer solo se si ha un certo livello di zoom
+                //potevo usare direttamente un for each.
                 if (map.getZoomLevelDouble() >= 20) {
                     for (int i = 0; i < 4; i++) {
                         if (box.contains(pointsU14.get(i))) {
-                            ciao = true;
+                            contenente = true;
                         }
                     }
-                    if (ciao == true) {
+                    if (contenente == true) {
                         button.setVisibility(View.VISIBLE);
                         button1.setVisibility(View.VISIBLE);
                     } else {
@@ -490,7 +496,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        //Andare direttamente alla parte della Navigazione Indoor
+        //Andare nella parte della Navigazione Indoor
         visitaGuidata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -525,7 +531,8 @@ public class MainActivity extends AppCompatActivity {
             public void onLocationChanged(Location location) {
                 //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
                 Log.d("ChangeLocation", "entrato");
-                if(posizioneAttuale==true) {
+                if(posizioneAttuale == true) {
+
                     //serve per capire se sono fuori dall'uni
                     GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
                     BoundingBox boxUni2 = map.getBoundingBox();
@@ -536,8 +543,10 @@ public class MainActivity extends AppCompatActivity {
                     //da avere solo un pezzo di mappa
 
                     if (boxUni2.contains(currentLocation)) {
+
                         //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
                         if (waypoints2 != null && roadOverlay != null) {
+
                             Log.d("ChangeLocation", "dove " + location.getLatitude() + " " + location.getLongitude());
                             // Verifica se la distanza supera la soglia massima
                             ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
@@ -551,6 +560,7 @@ public class MainActivity extends AppCompatActivity {
                                     minDistance = distance;
                                 }
                             }
+
                             if (minDistance >= 50000000) {
                                 Log.d("cambioPercorso", "effettuato");
                                 waypoints2 = new ArrayList<GeoPoint>();
@@ -558,29 +568,37 @@ public class MainActivity extends AppCompatActivity {
                                 ExecuteTaskInBackGround ex = new ExecuteTaskInBackGround();
                                 ex.execute();
                             }
+
                         }
+
                     } else {
                         if (myLocationNewOverlay != null) {
+
                             Log.d("CONTIENE", "dentro? " + "cancellare");
                             map.getOverlays().remove(myLocationNewOverlay);
+
                             if (roadOverlay != null) {
                                 addRemoveLayerLine(false, roadOverlay);
                             }
+
                             map.invalidate();
                         }
+
                     }
                 }
             }
 
+            //Cosa fare se tolgo il gps
             @Override
             public void onProviderDisabled(String provider) {
-                Log.d("getLocation", "? " + "cancellare");
                 map.getOverlays().remove(myLocationNewOverlay);
             }
 
+            //Cosa fare se abilito il gps
             @Override
             public void onProviderEnabled(String provider) {
-                Log.d("getLocation", "? " + "ci siamo");
+                //In questo caso aggiorno la posizione
+
                 map.getOverlayManager().remove(myLocationNewOverlay);
                 myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
                 Log.d("getLocation","val1"+myLocationNewOverlay);
@@ -592,28 +610,29 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onStatusChanged(String provider, int status,
                                         Bundle extras) {
-                // TODO Auto-generated method stub
             }
         });
 
 
     }
 
-    //per il gps//////////////////
+    //per il gps//
+    //In dal getLocation in poi il quale viene attivato col bottone "posizione" serve per guardare
+    //se l'utente ha abilitato tutti i permessi e se non l'ha fatto di richiederli.
     private void getLocation(){
         if(ActivityCompat.checkSelfPermission(this,Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-            Log.d("getLocation","permessi cisono");
+
                 map.getOverlayManager().remove(myLocationNewOverlay);
                 myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getApplicationContext()), map);
-                Log.d("getLocation", "val1" + myLocationNewOverlay);
                 map.getOverlayManager().add(myLocationNewOverlay);
                 myLocationNewOverlay.enableMyLocation();
                 myLocationNewOverlay.enableFollowLocation();
-        }
-        else{
+
+        } else {
             Log.d("getLocation","permessi mancanti");
             requestPermission();
         }
+
     }
 
     private void showAlertMessageLocationDisabled(){
@@ -653,10 +672,11 @@ public class MainActivity extends AppCompatActivity {
         }
     }
     /////////////////////////////////////////////////
+
     private void addRemoveMarker(boolean add, Marker marker) {
         if(add == true) {
             map.getOverlayManager().add(marker);
-        }else{
+        } else {
             map.getOverlays().remove(marker);
         }
     }
@@ -678,48 +698,60 @@ public class MainActivity extends AppCompatActivity {
         return layerU14;
     }
 
+    //Con questo metodo vado a mostrare la bitMap relative al piano indicato
     public void getFloorDestinazione(int i){
         if(i==1){
-            //vado a prendere la mappa salvata come bitmap
+
+            //Vado a prendere la mappa salvata come bitmap
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina1);
             overlay = new GroundOverlay();
             overlay.setTransparency(0.0f);
             overlay.setImage(bitmap);
-            //guardo se era già presente e se lo era la tolgo per rimetterla
+
+            //Guardo se era già presente e se lo era la tolgo per rimetterla
             if (map.getOverlays().get(1) != null) {
                 map.getOverlays().remove(1);
             }
-            //vado a scegliere i punti dove andare a mettere la mappa
+
+            //Vado a scegliere i punti dove andare a mettere la mappa
             overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
-            //scelgo l'overlay su dove metterla
+            //Scelgo l'overlay su dove metterla
             map.getOverlayManager().add(1, overlay);
+
             if(aulaSelezionata != null && listOfGeoPoint.getFloor(destinazioneSelezionata)==1){
                 // Aggiunta del marker alla mappa
                 Log.d("marker", "floor1: "+listOfGeoPoint.getFloor(destinazioneSelezionata));
                 addRemoveMarker(false,aulaSelezionata);
                 addRemoveMarker(true, aulaSelezionata);
             }
+
             map.invalidate();
             Log.d("layer", "0");
-        }else if(i==2){
+
+        } else if(i==2) {
+
             Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina2);
             overlay = new GroundOverlay();
             overlay.setTransparency(0.0f);
             overlay.setImage(bitmap);
+
             if (map.getOverlays().get(1) != null) {
                 map.getOverlays().remove(1);
             }
+
             overlay.setPosition(new GeoPoint(45.52391, 9.21894), new GeoPoint(45.52345, 9.22015), new GeoPoint(45.52335, 9.22009), new GeoPoint(45.52381, 9.21886));
             map.getOverlayManager().add(1, overlay);
+
             if(aulaSelezionata!=null && listOfGeoPoint.getFloor(destinazioneSelezionata)==2){
                 // Aggiunta del marker alla mappa
                 Log.d("marker", "floor2: "+listOfGeoPoint.getFloor(destinazioneSelezionata));
                 addRemoveMarker(false,aulaSelezionata);
                 addRemoveMarker(true, aulaSelezionata);
             }
+
             map.invalidate();
             Log.d("layer", "1");
-        }else{
+        } else {
 
         }
     }
@@ -729,6 +761,7 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+
             GeoPoint destinazione=listOfGeoPoint.getGeoPoint(destinazioneSelezionata);
             addRemoveLayerLine(false,roadOverlay);
             waypoints2.add(destinazione);
@@ -744,19 +777,23 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableMyLocation();
             myLocationNewOverlay.enableFollowLocation();
         }
+
         map.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
+
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
         }
+
         myLocationNewOverlay.disableFollowLocation();
         map.onPause();
     }
@@ -764,18 +801,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
         }
+
         map.onDetach();
     }
 
     @Override
     protected void onStop() {
         super.onStop();
+
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
         }
+
     }
 
 
