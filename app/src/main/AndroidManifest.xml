@@ -22,8 +22,10 @@
         android:theme="@style/Theme.OsmDroidEX2"
         tools:targetApi="31">
         <activity
-            android:name=".MainActivity"
-            android:exported="true">
+            android:name="BottomNavFragment.MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.Design.Light.NoActionBar"
+            android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:id="@+id/fragmentOSM"
+        android:enabled="true"
+        android:title="Map"
+        android:icon="@drawable/map"/>
+
+    <item android:id="@+id/fragmentNovita"
+        android:enabled="true"
+        android:title="Notification"
+        android:icon="@drawable/notification"/>
+
+    <item android:id="@+id/fragmentIndoor"
+        android:enabled="true"
+        android:title="Indoor"
+        android:icon="@drawable/indoor_app_blue"/>
+</menu>

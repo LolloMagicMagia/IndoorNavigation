@@ -49,7 +49,7 @@ public class Animation {
         this.ctx=ctx;
     }
 
-    protected void addOverlays() {
+    public void addOverlays() {
         final Polyline line = new Polyline(map);
         line.getOutlinePaint().setColor(COLOR_POLYLINE_STATIC);
         line.getOutlinePaint().setStrokeWidth(LINE_WIDTH_BIG);

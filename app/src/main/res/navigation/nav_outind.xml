@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_outind"
+    app:startDestination="@id/fragmentOSM">
+
+    <fragment
+        android:id="@+id/fragmentOSM"
+        android:name="BottomNavFragment.FragmentOSM"
+        android:label="FragmentOSM"
+        tools:layout="@layout/fragment_osm"/>
+    <fragment
+        android:id="@+id/fragmentNovita"
+        android:name="BottomNavFragment.FragmentNovità"
+        android:label="FragmentNovità"
+        tools:layout="@layout/fragment_novita"/>
+    <fragment
+        android:id="@+id/fragmentIndoor"
+        android:name="BottomNavFragment.FragmentIndoor"
+        android:label="FragmentIndoor"
+        tools:layout="@layout/fragment_indoor"/>
+</navigation>
