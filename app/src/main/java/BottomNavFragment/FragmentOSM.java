@@ -72,7 +72,10 @@ public class FragmentOSM extends Fragment {
     private GridView gridView;
     private CustomAdapter adapter;
     private List<String> items;
-    //
+
+    // Dichiarazione del timer
+    CountDownTimer timer;
+
 
     ArrayList<GeoPoint> posizioneEdificio;
     MapView map;
@@ -231,9 +234,7 @@ public class FragmentOSM extends Fragment {
         //serve per rimuovere lo zoom automatico
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
 
-        //Serve per capire quali punti rappresentano u14, così se lo schermo li contiene allora può
-        //mostrare il piano.
-        ArrayList<GeoPoint> pointsU14 = addU14Layer();
+
         boxUni = map.getBoundingBox();
 
         //serve per fare una polilinea animata
@@ -404,12 +405,7 @@ public class FragmentOSM extends Fragment {
             }
         });
 
-        // Ho messo sia il listener sul touch che sul bottone poichè in questo modo si possono fare
-        // entrambe le azioni, poichè 1 non comprende l'altro
-
-        // Dichiarazione del timer
-        CountDownTimer timer;
-
+        //serve per capire quando si zoomma dall'evento dell'ingrandimento con le due dita
         // Imposta il timer con una durata di 1 secondo (1000 millisecondi)
         timer = new CountDownTimer(150, 250) {
             @Override
@@ -449,7 +445,6 @@ public class FragmentOSM extends Fragment {
             }
         };
 
-        //serve per capire quando si zoomma dall'evento dell'ingrandimento con le due dita
         map.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View view, MotionEvent motionEvent) {
@@ -458,6 +453,7 @@ public class FragmentOSM extends Fragment {
                 return false;
             }
         });
+
 
         //Serve per capire quando lo zoom della mappa arriva a un max e quindi bloccarlo
         /*zoomButton.setOnClickListener(new View.OnClickListener() {
@@ -582,7 +578,7 @@ public class FragmentOSM extends Fragment {
                                 }
                             }
 
-                            if (minDistance >= 50000000) {
+                            if (minDistance >= 50) {
                                 Log.d("cambioPercorso", "effettuato");
                                 waypoints2 = new ArrayList<GeoPoint>();
                                 waypoints2.add(currentLocation);
@@ -712,15 +708,6 @@ public class FragmentOSM extends Fragment {
         }
     }
 
-    public ArrayList<GeoPoint> addU14Layer(){
-        ArrayList<GeoPoint> layerU14=new ArrayList<GeoPoint>();
-        layerU14.add(new GeoPoint(45.52391, 9.21894));
-        layerU14.add(new GeoPoint(45.52345, 9.22015));
-        layerU14.add(new GeoPoint(45.52335, 9.22009));
-        layerU14.add(new GeoPoint(45.52381, 9.21886));
-        return layerU14;
-    }
-
     //Con questo metodo vado a mostrare la bitMap relative al piano indicato
     public void getFloorDestinazione(int i){
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificioScoperto);
@@ -732,6 +719,7 @@ public class FragmentOSM extends Fragment {
                 }
 
                 //Vado a prendere la mappa salvata come bitmap
+                //DEVO METTERLO NEL DATABASE DI PROVA E PASSARLA COSì NON DEVO ESEGUIRE STA OPERAZIONE QUA
                 Bitmap bitmap = BitmapFactory.decodeResource(getResources(), R.drawable.piantina1);
                 overlay = new GroundOverlay();
                 overlay.setTransparency(0.0f);
