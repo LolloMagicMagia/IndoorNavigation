@@ -1,5 +1,8 @@
 package Database;
 
+import android.content.Context;
+import android.graphics.Bitmap;
+
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
@@ -7,9 +10,9 @@ import java.util.ArrayList;
 public class PreDatabase {
     ListOfGeoPoint listOfGeoPoint;
 
-    public PreDatabase(){
+    public PreDatabase(Context context){
         super();
-        listOfGeoPoint= new ListOfGeoPoint();
+        listOfGeoPoint= new ListOfGeoPoint(context);
     }
 
     public GeoPoint getGeoPoint(String posizione){
@@ -30,6 +33,10 @@ public class PreDatabase {
 
     public int getNumberOfFloor(String edificio){
         return listOfGeoPoint.getNumberOfFloor(edificio);
+    }
+
+    public Bitmap getMap(String edificio, int piano){
+        return listOfGeoPoint.getMap(edificio,piano);
     }
 
     public ArrayList<GeoPoint> getPlanimetria(String edificio){
