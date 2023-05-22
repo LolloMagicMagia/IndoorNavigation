@@ -25,7 +25,6 @@ import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.osmdroid.views.overlay.compass.CompassOverlay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -33,7 +32,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
@@ -45,10 +43,9 @@ import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
-import android.widget.Button;
+import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.Spinner;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -79,7 +76,7 @@ public class FragmentOSM extends Fragment {
     CountDownTimer timer;
 
 
-    ArrayList<GeoPoint> posizioneEdificio;
+    ArrayList<GeoPoint> posizioneEdifici;
     MapView map;
     String edificioScoperto=null;
     GroundOverlay overlay;
@@ -87,11 +84,7 @@ public class FragmentOSM extends Fragment {
     ArrayList<GeoPoint> waypoints2;
     Polyline roadOverlay;
     RoadManager roadManager;
-    Button button;
-    Button button1;
     ImageButton visitaGuidata;
-    Button zoomButton;
-    Button deZoomButton;
     ImageButton focusPoint;
     ImageButton location;
 
@@ -117,6 +110,8 @@ public class FragmentOSM extends Fragment {
     Marker aulaSelezionata;
     boolean posizioneAttuale = false;
 
+    ImageButton logoReset;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,11 +122,14 @@ public class FragmentOSM extends Fragment {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_osm,container,false);
 
-        Spinner spinnerPartenza = view.findViewById(R.id.spinner_partenza);
-        Spinner spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
+        AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
+        AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
 
         controller = new PreDatabase(getContext());
-        posizioneEdificio=controller.getEdificio();
+        posizioneEdifici =controller.getEdificio();
+
+        //per resettare le scelte
+        logoReset=view.findViewById(R.id.imageView);
 
         //i button chiamati in questo modo orribile sono per i 2 layer aggiunti
         focusPoint=(ImageButton) view.findViewById(R.id.focus);
@@ -154,12 +152,12 @@ public class FragmentOSM extends Fragment {
         List<String> opzioniPartenza = Arrays.asList("","u14","u6","Posizione Attuale","u7", "u14AulaFirstFloor","u14AulaSecondFloor");
         List<String> opzioniDestinazione = Arrays.asList("u6","u14", "u7", "u14AulaFirstFloor","u14AulaSecondFloor");
         // Crea un adapter per le opzioni di selezione della partenza
-        ArrayAdapter<String> adapterPartenza = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, opzioniPartenza);
+        ArrayAdapter<String> adapterPartenza = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, opzioniPartenza);
         adapterPartenza.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerPartenza.setAdapter(adapterPartenza);
 
         // Crea un adapter per le opzioni di selezione della destinazione
-        ArrayAdapter<String> adapterDestinazione = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, opzioniDestinazione);
+        ArrayAdapter<String> adapterDestinazione = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, opzioniDestinazione);
         adapterDestinazione.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDestinazione.setAdapter(adapterDestinazione);
 
@@ -220,14 +218,6 @@ public class FragmentOSM extends Fragment {
         endMarker.setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM);
         addRemoveMarker(true, endMarker);
 
-        //per cancellare gli overlay con quell'id
-                /* for(int i=0;i<map.getOverlays().size();i++){
-                Overlay overlay2=map.getOverlays().get(i);
-                if(overlay2 instanceof Marker&&((Marker) overlay2).getId().equals("start")){
-                map.getOverlays().remove(overlay);
-                }
-            }*/
-
         List<GeoPoint> points = new ArrayList<>();
         points.add(startPoint);
         points.add(middlePoint);
@@ -274,19 +264,31 @@ public class FragmentOSM extends Fragment {
             myLocationNewOverlay.enableFollowLocation();
         }
 
-        // Imposta il listener sul menu a tendina della partenza
-        spinnerPartenza.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        logoReset.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
+            public void onClick(View view) {
+                spinnerPartenza.setText("");
+                spinnerDestinazione.setText("");
+                partenzaSelezionata=null;
+                destinazioneSelezionata=null;
+                addRemoveMarker(false,aulaSelezionata);
+                map.getOverlayManager().remove(overlay);
+
+            }
+        });
+
+        // Imposta il listener sul menu a tendina della partenza
+        spinnerPartenza.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 // Quando viene selezionata un'opzione dalla lista della partenza, si salva il valore in una variabile
-                partenzaSelezionata = (String) adapterView.getItemAtPosition(posizione);
+                partenzaSelezionata = (String) parent.getItemAtPosition(position);
+                addRemoveMarker(false, aulaSelezionata);
                 // Se entrambe le scelte sono state selezionate allora vado ad eseguire il codice
-                if (partenzaSelezionata != null && partenzaSelezionata!="" && destinazioneSelezionata != null && map != null) {
+                if (partenzaSelezionata != null && destinazioneSelezionata != null && map != null) {
                     // Visto che sono state selezionate vado a creare una lista di punti che poi verrà trasformata
                     // in una strada da dare in pasto al RoadManager
                     Log.d("routing", partenzaSelezionata);
-
-                    if(partenzaSelezionata!=""){
 
                         waypoints2 = new ArrayList<GeoPoint>();
 
@@ -306,69 +308,55 @@ public class FragmentOSM extends Fragment {
                             waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
                         }
 
-                        addRemoveMarker(false,aulaSelezionata);
-                        aulaSelezionata=null;
-
                         // In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
                         //quale destinazioni sono delle aule, e quindi se lo sono mi va a mostrare l'aula
                         // scelta tramite il marker
                         if(controller.getFloor(destinazioneSelezionata) != null){
-                        //prendo il punto dove devo mettere il marker
-                        addRemoveMarker(false,aulaSelezionata);
-                        GeoPoint point = controller.getGeoPoint(destinazioneSelezionata);
-                        //creo il marker per poter segnalare il posto
-                        aulaSelezionata=new Marker(map);
-                        aulaSelezionata.setPosition(point);
-                        aulaSelezionata.setTitle("Nome del luogo");
-                        aulaSelezionata.setSubDescription("Piano 1");
-                        aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
-                        addRemoveMarker(true,aulaSelezionata);
-                        getFloorDestinazione(controller.getFloor(destinazioneSelezionata));
-                    }else{
-                        if (overlay != null) {
-                            map.getOverlayManager().remove(overlay);
+                            //prendo il punto dove devo mettere il marker
+                            getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+
+                        }else{
+                            addRemoveMarker(true, aulaSelezionata);
+                            if (overlay != null) {
+                                map.getOverlayManager().remove(overlay);
+                            }
+                            map.invalidate();
                         }
-                        map.invalidate();
-                    }
-                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                    ex.execute();
-                    }
-                    //Se l'utente non ha scelto una partenza allora mostro solo la destinazione
-                    else{
-                        scelta = new Marker(map);
-                        mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
-                        mapController.setZoom(18);
-                        addRemoveMarker(false,scelta);
-                        //prendo il punto dove devo metterlo
-                        GeoPoint point=controller.getGeoPoint(destinazioneSelezionata);
-                        //tutti questi parametri verranno presi dal database se ne avremo bisogno
-                        //per ora ho scelto delle descrizioni fisse per non complicare troppo il codice
-                        scelta.setPosition(point);
-                        scelta.setTitle("Nome del luogo");
-                        scelta.setSubDescription("Piano 1");
-                        scelta.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
-                        addRemoveMarker(true,scelta);
-                    }
+                        FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                        ex.execute();
+
+
+                }//Se l'utente non ha scelto una partenza allora mostro solo la destinazione
+                if(destinazioneSelezionata != null && map != null){
+                    mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
+                    mapController.setZoom(18);
+                    addRemoveMarker(false,aulaSelezionata);
+                    aulaSelezionata=null;
+                    GeoPoint point = controller.getGeoPoint(destinazioneSelezionata);
+                    //creo il marker per poter segnalare il posto
+                    aulaSelezionata=new Marker(map);
+                    aulaSelezionata.setPosition(point);
+                    aulaSelezionata.setTitle("Nome del luogo");
+                    aulaSelezionata.setSubDescription("Piano 1");
+                    aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
+                    addRemoveMarker(true,aulaSelezionata);
                 }
-
             }
 
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // Non viene selezionata alcuna opzione
-            }
         });
+
+
 
         // Imposta il listener sul menu a tendina della destinazione, stesse considerazioni del listener
         // della partenza.
-        spinnerDestinazione.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerDestinazione.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int posizione, long id) {
+            public void onItemClick(AdapterView<?> adapterView, View view, int posizione, long id) {
                 // Quando viene selezionata un'opzione dalla lista della destinazione, si salva il valore in una variabile
                 destinazioneSelezionata = (String) adapterView.getItemAtPosition(posizione);
+                addRemoveMarker(false, aulaSelezionata);
                 // Eseguire l'operazione desiderata con il valore selezionato
                 if (partenzaSelezionata!=null && destinazioneSelezionata != null && map != null) {
-                    if(partenzaSelezionata!="") {
                         // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
                         waypoints2 = new ArrayList<GeoPoint>();
 
@@ -387,25 +375,16 @@ public class FragmentOSM extends Fragment {
                             waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
                         }
 
-                        addRemoveMarker(false, aulaSelezionata);
-                        aulaSelezionata = null;
 
                         //SE E' UN AULA
                         if (controller.getFloor(destinazioneSelezionata) != null) {
-                            addRemoveMarker(false, aulaSelezionata);
-                            //prendo il punto dove devo metterlo
-                            GeoPoint point = controller.getGeoPoint(destinazioneSelezionata);
-                            //creo il marker per poter segnalare il posto
-                            aulaSelezionata = new Marker(map);
-                            //tutti questi parametri verranno presi dal database se ne avremo bisogno
-                            //per ora ho scelto delle descrizioni fisse per non complicare troppo il codice
-                            aulaSelezionata.setPosition(point);
-                            aulaSelezionata.setTitle("Nome del luogo");
-                            aulaSelezionata.setSubDescription("Piano 1");
-                            aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
-                            addRemoveMarker(true, aulaSelezionata);
-                            getFloorDestinazione(controller.getFloor(destinazioneSelezionata));
+                            //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                            //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                            // a qualche edificio,
+                            getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+
                         } else {
+                            addRemoveMarker(true, aulaSelezionata);
                             if (overlay != null) {
                                 map.getOverlayManager().remove(overlay);
                             }
@@ -414,35 +393,35 @@ public class FragmentOSM extends Fragment {
 
                         FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
                         ex.execute();
-                    }else{
-                        mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
-                        addRemoveMarker(false,scelta);
-                        //prendo il punto dove devo metterlo
-                        mapController.setZoom(18);
-                        GeoPoint point=controller.getGeoPoint(destinazioneSelezionata);
-                        //creo il marker per poter segnalare il posto
-                        //tutti questi parametri verranno presi dal database se ne avremo bisogno
-                        //per ora ho scelto delle descrizioni fisse per non complicare troppo il codice
-                        scelta.setPosition(point);
-                        scelta.setTitle("Nome del luogo");
-                        scelta.setSubDescription("Piano 1");
-                        scelta.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
-                        addRemoveMarker(true,scelta);
-                    }
+                }
+                if(destinazioneSelezionata != null && map != null){
+                    addRemoveMarker(false,aulaSelezionata);
+                    aulaSelezionata=null;
+                    //prendo il punto dove devo metterlo
+                    GeoPoint point = controller.getGeoPoint(destinazioneSelezionata);
+                    //creo il marker per poter segnalare il posto
+                    aulaSelezionata = new Marker(map);
+                    //tutti questi parametri verranno presi dal database se ne avremo bisogno
+                    //per ora ho scelto delle descrizioni fisse per non complicare troppo il codice
+                    aulaSelezionata.setPosition(point);
+                    aulaSelezionata.setTitle("Nome del luogo");
+                    aulaSelezionata.setSubDescription("Piano 1");
+                    aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
+                    addRemoveMarker(true, aulaSelezionata);
+                    mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
+                    //prendo il punto dove devo metterlo
+                    mapController.setZoom(18);
                 }
             }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                // Non viene selezionata alcuna opzione
-            }
         });
+
 
         //Per selezionare il piano corretto
         gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                getFloorDestinazione(position);
+                //per cambiare piano devo esserci sopra con la visuale e devo zoommare
+                getFloorEdificio(position, false);
             }
         });
 
@@ -471,7 +450,7 @@ public class FragmentOSM extends Fragment {
                 boolean ciao = false;
                 edificioScoperto=null;
                 if (map.getZoomLevelDouble() >= 19) {
-                    for (GeoPoint geo : posizioneEdificio) {
+                    for (GeoPoint geo : posizioneEdifici) {
                         if (box.contains(geo)) {
                             edificioScoperto = controller.getName(geo);
                             Log.d("edificio",edificioScoperto);
@@ -479,13 +458,23 @@ public class FragmentOSM extends Fragment {
                         }
                     }
                     if (ciao == true) {
-                        gridView.setVisibility(View.VISIBLE);
-                        updateItems(controller.getNumberOfFloor(edificioScoperto));
-                        visitaGuidata.setVisibility(View.VISIBLE);
+                        Log.d("destination",""+destinazioneSelezionata);
+                        if(destinazioneSelezionata==null){
+                            gridView.setVisibility(View.VISIBLE);
+                            updateItems(controller.getNumberOfFloor(edificioScoperto));
+                            visitaGuidata.setVisibility(View.VISIBLE);
+                        }else if(destinazioneSelezionata != null && edificioScoperto == controller.getAppartenenza(destinazioneSelezionata)){
+                            gridView.setVisibility(View.VISIBLE);
+                            updateItems(controller.getNumberOfFloor(edificioScoperto));
+                            visitaGuidata.setVisibility(View.VISIBLE);
+                        }else{
+                            gridView.setVisibility(View.GONE);
+                            visitaGuidata.setVisibility(View.GONE);
+                        }
                     } else {
                         gridView.setVisibility(View.GONE);
                         visitaGuidata.setVisibility(View.GONE);
-                        if(aulaSelezionata==null) {
+                        if(controller.getFloor(destinazioneSelezionata) == null) {
                             map.getOverlays().remove(overlay);
                             overlay = null;
                         }
@@ -493,7 +482,7 @@ public class FragmentOSM extends Fragment {
                 } else {
                     gridView.setVisibility(View.GONE);
                     visitaGuidata.setVisibility(View.GONE);
-                    if(aulaSelezionata==null) {
+                    if(controller.getFloor(destinazioneSelezionata) == null) {
                         map.getOverlays().remove(overlay);
                         overlay = null;
                     }
@@ -721,8 +710,22 @@ public class FragmentOSM extends Fragment {
         }
     }
 
+    /**
+     * int i sta ad indicare il piano;
+     * call sta ad indicare chi lo chiama, poichè la destinazione e l'edificio scoperto(dallo zoom) sono
+     * due comportamenti completamente diversi;
+     * */
     //Con questo metodo vado a mostrare la bitMap relative al piano indicato
-    public void getFloorDestinazione(int i){
+    public void getFloorEdificio(int i, boolean call){
+        if(call){
+            getFloorDestination(i);
+        }else{
+            getFloorCam(i);
+        }
+
+    }
+
+    public void getFloorCam(int i){
         String edificio = edificioScoperto;
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificioScoperto);
         int position = i ;
@@ -743,17 +746,47 @@ public class FragmentOSM extends Fragment {
             map.getOverlayManager().add(overlay);
 
             //Tiene traccia della destinazione, se è un aula allora va a stampare il marker dell'aula quando si va sul piano giusto
-            if (aulaSelezionata != null && controller.getFloor(destinazioneSelezionata) == position) {
-            // Aggiunta del marker alla mappa
-                addRemoveMarker(false, aulaSelezionata);
-                addRemoveMarker(true, aulaSelezionata);
-            }else{
-                addRemoveMarker(false, aulaSelezionata);
+            if (destinazioneSelezionata != null){
+                if (controller.getFloor(destinazioneSelezionata) != null && controller.getFloor(destinazioneSelezionata) == position) {
+                    // Aggiunta del marker alla mappa
+                    addRemoveMarker(false, aulaSelezionata);
+                    addRemoveMarker(true, aulaSelezionata);
+                } else if(controller.getFloor(destinazioneSelezionata) != null && controller.getFloor(destinazioneSelezionata) != position){
+                    addRemoveMarker(false, aulaSelezionata);
+                }
             }
+            map.invalidate();
+        }
+    }
+
+    public void getFloorDestination(int i){
+        String appartenenza = controller.getAppartenenza(destinazioneSelezionata);
+        String edificio = appartenenza;
+        ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificio);
+        int position = i ;
+        Bitmap bitmap = controller.getMap(edificio,position);
+
+        if (overlay != null) {
+            map.getOverlays().remove(overlay);
+        }
+
+        Log.d("prendeIlPiano", ""+bitmap);
+        if(bitmap!=null) {
+            overlay = new GroundOverlay();
+            overlay.setTransparency(0.0f);
+            overlay.setImage(bitmap);
+
+            //Vado a scegliere i punti dove andare a mettere la mappa
+            overlay.setPosition(pointGroundOverley.get(0), pointGroundOverley.get(1), pointGroundOverley.get(2), pointGroundOverley.get(3));
+            //Scelgo l'overlay su dove metterla
+            map.getOverlayManager().add(overlay);
+
+            //Mostro l'aula
+            addRemoveMarker(false, aulaSelezionata);
+            addRemoveMarker(true, aulaSelezionata);
 
             map.invalidate();
         }
-
     }
 
     //Va a calcolarti il percorso data la partenza e destinazione dagli spinner

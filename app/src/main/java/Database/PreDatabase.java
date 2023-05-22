@@ -31,6 +31,10 @@ public class PreDatabase {
         return listOfGeoPoint.getEdifici();
     }
 
+    public String getAppartenenza(String aula){
+        return listOfGeoPoint.getAppartenenza(aula);
+    }
+
     public int getNumberOfFloor(String edificio){
         return listOfGeoPoint.getNumberOfFloor(edificio);
     }

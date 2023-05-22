@@ -33,7 +33,7 @@
             android:backgroundTint="@android:color/transparent"
             android:orientation="horizontal">
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/imageView"
                 android:layout_width="50dp"
                 android:layout_height="50dp"
@@ -46,21 +46,26 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <Spinner
+                <AutoCompleteTextView
                     android:id="@+id/spinner_partenza"
                     android:layout_width="match_parent"
-                    android:layout_height="25dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:background="@color/white"
-                    android:textColor="@android:color/black"
-                    android:contentDescription="@string/Partenza" />
+                    android:completionThreshold="2"
+                    android:hint="@string/Partenza"
+                    android:textColor="@android:color/black" />
 
-                <Spinner
+                <AutoCompleteTextView
                     android:id="@+id/spinner_destinazione"
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="5dp"
                     android:background="@color/white"
-                    android:textColor="@android:color/black"
-                    android:contentDescription="@string/Destinazione" />
+                    android:completionThreshold="2"
+                    android:hint="@string/Destinazione"
+                    android:textColor="@android:color/black" />
+
             </LinearLayout>
 
         </LinearLayout>

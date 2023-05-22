@@ -23,6 +23,8 @@ public class ListOfGeoPoint {
     ArrayList<GeoPoint> mappaU6;
     HashMap<String, Integer> floor;
 
+    HashMap<String,String> contenuto;
+
     //in base all'edificio scelto e al piano gli passo il piano
     HashMap<String, HashMap<Integer, Bitmap>> showFloor;
 
@@ -42,6 +44,7 @@ public class ListOfGeoPoint {
         mappaU14=new ArrayList<>();
         mappaU6 = new ArrayList<>();
         name=new HashMap<>();
+        contenuto=new HashMap<>();
         edifici=new ArrayList<>();
         floor=new HashMap<>();
         showFloor=new HashMap<String, HashMap<Integer, Bitmap>>();
@@ -100,16 +103,21 @@ public class ListOfGeoPoint {
         return mappaU6;
     }
 
+    public String getAppartenenza(String aula){
+        //ritorna l'edificio
+        return contenuto.get(aula);
+    }
+
     private void populate(){
         //popolo il mio database con tutte le posizioni dei punti
         addGeoPoint("u7",u7);
         addGeoPoint("u6",u6);
         addGeoPoint("u14",u14);
-        addGeoPoint("u14FirstFloor",u14FirstFloor);
-        addGeoPoint("u14SecondFloor",u14SecondFloor);
+        addGeoPoint("u14AulaFirstFloor",u14FirstFloor);
+        addGeoPoint("u14AulaSecondFloor",u14SecondFloor);
         //popoli il mio database con le aule dicendo in che piano sono
-        addAule("u14FirstFloor",0);
-        addAule("u14SecondFloor",1);
+        addAule("u14AulaFirstFloor",0);
+        addAule("u14AulaSecondFloor",1);
         //popolo il mio database con solo gli edifici
         addEdificio(u6);
         addEdificio(u14);
@@ -130,12 +138,15 @@ public class ListOfGeoPoint {
         floor.put("u6",6);
         //popolo i piani per ogni edificio(non riguardano più i Marker)
         showFloor.put("u14",new HashMap<Integer, Bitmap>());
-        Log.d("floor", showFloor.get("u14")+"");
         showFloor.get("u14").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina1));
-        Log.d("floor", showFloor.get("u14").get(0)+"");
         showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
         showFloor.put("u6",new HashMap<>());
         showFloor.get("u6").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u6));
+        //relazione tra edificio e aule
+        contenuto.put("u14","u14");
+        contenuto.put("u14AulaFirstFloor","u14");
+        contenuto.put("u14AulaSecondFloor","u14");
+        contenuto.put("u6","u6");
     }
 
 }
