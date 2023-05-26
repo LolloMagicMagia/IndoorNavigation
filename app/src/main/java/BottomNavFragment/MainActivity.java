@@ -69,8 +69,12 @@ import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Marker;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 
+import dataFirebase.EdificiDatabase;
+import dataFirebase.ViewModel;
+
 
 public class MainActivity extends AppCompatActivity {
+    private EdificiDatabase edificiDatabase;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -90,5 +94,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 }
+
 
 

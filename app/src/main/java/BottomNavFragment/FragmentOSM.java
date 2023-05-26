@@ -24,7 +24,6 @@ import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -46,22 +45,27 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Animation;
 import com.example.osmdroidex2.IndoorNavActivity;
 
 import Adapter.CustomAdapter;
-import Database.PreDatabase;
+import dataFirebase.Edificio;
+import dataFirebase.PreDatabase;
+import dataFirebase.ViewModel;
+
 import com.example.osmdroidex2.R;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
 
 public class FragmentOSM extends Fragment {
 
@@ -94,8 +98,6 @@ public class FragmentOSM extends Fragment {
 
     //Controller e manager per poter lavorare con i punti geospaziali.
     private IMapController mapController;
-    private LocationManager locationManager;
-    private MyLocationNewOverlay myLocationNewOverlay;
 
     //Viene usato per capire dove l'utente stia zommando e quindi capire se mostrare i bottoni dei layer
     BoundingBox box;
@@ -111,10 +113,17 @@ public class FragmentOSM extends Fragment {
     boolean posizioneAttuale = false;
 
     ImageButton logoReset;
+    GpsManager gpsManager;
+
+    //Per collegarsi a Room
+    private ViewModel mViewModel;
+    private Edificio mEdificio;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        mViewModel = new ViewModelProvider(this).get(ViewModel.class);
     }
 
     @Override
@@ -176,7 +185,10 @@ public class FragmentOSM extends Fragment {
         //Marker per mostrare solo la destinazione
         scelta= new Marker(map);
 
-        myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
+        //**** chiama il metodo enableMyLocationOverlay
+        gpsManager=new GpsManager(map);
+        gpsManager.enableMyLocationOverlay();
+        //myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
 
         //per avere solo una porzione di mappa dell'uni
        /*map.setScrollableAreaLimitLatitude(45.5329, 45.5075, 0);
@@ -253,8 +265,9 @@ public class FragmentOSM extends Fragment {
         //aggiornarla.
         map.invalidate();
 
-        //GPS//
-        locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
+        //******//GPS//
+        gpsManager.gpsStart();
+        /*locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
         boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
 
         // Se il GPS è attivo, aggiungi l'icona sulla mappa, poichè il listener del gps non funziona
@@ -262,7 +275,7 @@ public class FragmentOSM extends Fragment {
         if (isGPSEnabled) {
             map.getOverlayManager().add(myLocationNewOverlay);
             myLocationNewOverlay.enableFollowLocation();
-        }
+        }*/
 
         logoReset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -290,40 +303,42 @@ public class FragmentOSM extends Fragment {
                     // in una strada da dare in pasto al RoadManager
                     Log.d("routing", partenzaSelezionata);
 
-                        waypoints2 = new ArrayList<GeoPoint>();
+                    waypoints2 = new ArrayList<GeoPoint>();
 
-                        //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
-                        //da poter capire da dove parte, in questo caso dal gps
-                        if(partenzaSelezionata == "Posizione Attuale"){
-                            posizioneAttuale=true;
-                            //controllo che ci sia il gps
-                            if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
-                                getPosizioneAttuale();
-                            } else {
-                                showAlertMessageLocationDisabled();
-                            }
+                    //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
+                    //da poter capire da dove parte, in questo caso dal gps
+                    if(partenzaSelezionata == "Posizione Attuale"){
+                        posizioneAttuale=true;
+                        //controllo che ci sia il gps
 
-                        }else{
-                            posizioneAttuale=false;
-                            waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                        if (gpsManager.gpsEnabled()) {
+                            getPosizioneAttuale();
+                        } else {
+                            showAlertMessageLocationDisabled();
                         }
 
-                        // In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
-                        //quale destinazioni sono delle aule, e quindi se lo sono mi va a mostrare l'aula
-                        // scelta tramite il marker
-                        if(controller.getFloor(destinazioneSelezionata) != null){
-                            //prendo il punto dove devo mettere il marker
-                            getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+                    }else{
+                        posizioneAttuale=false;
 
-                        }else{
-                            addRemoveMarker(true, aulaSelezionata);
-                            if (overlay != null) {
-                                map.getOverlayManager().remove(overlay);
-                            }
-                            map.invalidate();
+                        waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                    }
+
+                    // In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
+                    //quale destinazioni sono delle aule, e quindi se lo sono mi va a mostrare l'aula
+                    // scelta tramite il marker
+                    if(controller.getFloor(destinazioneSelezionata) != null){
+                        //prendo il punto dove devo mettere il marker
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+
+                    }else{
+                        addRemoveMarker(true, aulaSelezionata);
+                        if (overlay != null) {
+                            map.getOverlayManager().remove(overlay);
                         }
-                        FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                        ex.execute();
+                        map.invalidate();
+                    }
+                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                    ex.execute();
 
 
                 }//Se l'utente non ha scelto una partenza allora mostro solo la destinazione
@@ -357,42 +372,42 @@ public class FragmentOSM extends Fragment {
                 addRemoveMarker(false, aulaSelezionata);
                 // Eseguire l'operazione desiderata con il valore selezionato
                 if (partenzaSelezionata!=null && destinazioneSelezionata != null && map != null) {
-                        // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
-                        waypoints2 = new ArrayList<GeoPoint>();
+                    // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
+                    waypoints2 = new ArrayList<GeoPoint>();
 
-                        //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
-                        //da poter capire da dove parte, in questo caso dal gps
-                        if (partenzaSelezionata == "Posizione Attuale") {
-                            posizioneAttuale=true;
-                            //controllo che ci sia il gps
-                            if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
-                                getPosizioneAttuale();
-                            } else {
-                                showAlertMessageLocationDisabled();
-                            }
+                    //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
+                    //da poter capire da dove parte, in questo caso dal gps
+                    if (partenzaSelezionata == "Posizione Attuale") {
+                        posizioneAttuale=true;
+                        //controllo che ci sia il gps
+                        if (gpsManager.gpsEnabled()) {
+                            getPosizioneAttuale();
                         } else {
-                            posizioneAttuale = false;
-                            waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                            showAlertMessageLocationDisabled();
                         }
+                    } else {
+                        posizioneAttuale = false;
+                        waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                    }
 
 
-                        //SE E' UN AULA
-                        if (controller.getFloor(destinazioneSelezionata) != null) {
-                            //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
-                            //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
-                            // a qualche edificio,
-                            getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+                    //SE E' UN AULA
+                    if (controller.getFloor(destinazioneSelezionata) != null) {
+                        //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                        //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                        // a qualche edificio,
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
 
-                        } else {
-                            addRemoveMarker(true, aulaSelezionata);
-                            if (overlay != null) {
-                                map.getOverlayManager().remove(overlay);
-                            }
-                            map.invalidate();
+                    } else {
+                        addRemoveMarker(true, aulaSelezionata);
+                        if (overlay != null) {
+                            map.getOverlayManager().remove(overlay);
                         }
+                        map.invalidate();
+                    }
 
-                        FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                        ex.execute();
+                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                    ex.execute();
                 }
                 if(destinazioneSelezionata != null && map != null){
                     addRemoveMarker(false,aulaSelezionata);
@@ -514,7 +529,7 @@ public class FragmentOSM extends Fragment {
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (locationManager.isProviderEnabled(locationManager.GPS_PROVIDER)) {
+                if (gpsManager.gpsEnabled()) {
                     Log.d("getLocation","prova il get");
                     getLocation();
                 } else {
@@ -524,92 +539,90 @@ public class FragmentOSM extends Fragment {
         });
 
         //Prima del locationManager bisogna vedere questi permessi, devo vedere se riesco a toglierli
-        //però per ora funziona, quindi lascio così.
-
+        //però per ora funziona, quindi lascio così. Devo chiedere i permessi ogni qualvolta abiliti il gps
         if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             getLocation();
         }
 
-        locationManager.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
-                Log.d("ChangeLocation", "entrato");
-                if(posizioneAttuale == true) {
+        //Forse questo if devo toglierlo, devo metterlo e ogni volta che abilito o faccio qualche operazione col gps, chiedo i permessi
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            gpsManager.getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, new LocationListener() {
+                @Override
+                public void onLocationChanged(Location location) {
+                    //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
+                    if(posizioneAttuale == true) {
 
-                    //serve per capire se sono fuori dall'uni
-                    GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                    BoundingBox boxUni2 = map.getBoundingBox();
-                    Log.d("CONTIENE", "dentro? " + boxUni2.contains(currentLocation));
+                        //serve per capire se sono fuori dall'uni
+                        GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                        BoundingBox boxUni2 = map.getBoundingBox();
 
-                    //Fatta per non calcolare il percorso fuori dalla mappa dell'uni, poichè pensavo che
-                    //se sono fuori dall'area dell'uni, non vado manco a calcolare il percorso. Così
-                    //da avere solo un pezzo di mappa
+                        //Fatta per non calcolare il percorso fuori dalla mappa dell'uni, poichè pensavo che
+                        //se sono fuori dall'area dell'uni, non vado manco a calcolare il percorso. Così
+                        //da avere solo un pezzo di mappa
 
-                    if (boxUni2.contains(currentLocation)) {
-                        if(!map.getOverlayManager().contains(myLocationNewOverlay)){
-                            Log.d("entratoIf", "pronti");
-                            map.getOverlayManager().add(myLocationNewOverlay);
+                        if (boxUni2.contains(currentLocation)) {
+                            if(!map.getOverlayManager().contains(gpsManager.getMyLocationNewOverlay())){
+                                gpsManager.enableMyLocation();
+                            /*map.getOverlayManager().add(myLocationNewOverlay);
                             myLocationNewOverlay.enableMyLocation();
-                            myLocationNewOverlay.enableFollowLocation();
-                        }
+                            myLocationNewOverlay.enableFollowLocation();*/
+                            }
 
-                        //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
-                        if (waypoints2 != null && roadOverlay != null) {
+                            //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
+                            if (waypoints2 != null && roadOverlay != null) {
 
-                            Log.d("ChangeLocation", "dove " + location.getLatitude() + " " + location.getLongitude());
-                            // Verifica se la distanza supera la soglia massima
-                            ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
-                            double minDistance = 300;
-                            for (GeoPoint roadPoint : strada) {
-                                Location roadLocation = new Location("");
-                                roadLocation.setLatitude(roadPoint.getLatitude());
-                                roadLocation.setLongitude(roadPoint.getLongitude());
-                                double distance = location.distanceTo(roadLocation);
-                                if (distance < minDistance) {
-                                    minDistance = distance;
+                                // Verifica se la distanza supera la soglia massima
+                                ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
+                                double minDistance = 300;
+                                for (GeoPoint roadPoint : strada) {
+                                    Location roadLocation = new Location("");
+                                    roadLocation.setLatitude(roadPoint.getLatitude());
+                                    roadLocation.setLongitude(roadPoint.getLongitude());
+                                    double distance = location.distanceTo(roadLocation);
+                                    if (distance < minDistance) {
+                                        minDistance = distance;
+                                    }
                                 }
+
+                                if (minDistance >= 50) {
+                                    waypoints2 = new ArrayList<GeoPoint>();
+                                    waypoints2.add(currentLocation);
+                                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                                    ex.execute();
+                                }
+
                             }
 
-                            if (minDistance >= 50) {
-                                Log.d("cambioPercorso", "effettuato");
-                                waypoints2 = new ArrayList<GeoPoint>();
-                                waypoints2.add(currentLocation);
-                                FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                                ex.execute();
+                        } else {
+                            if (gpsManager.getLocationNewOverlay() != null) {
+
+                                map.getOverlays().remove(gpsManager.getLocationNewOverlay());
+
+                                if (roadOverlay != null) {
+                                    addRemoveLayerLine(false, roadOverlay);
+                                }
+
+                                map.invalidate();
                             }
 
                         }
-
-                    } else {
-                        if (myLocationNewOverlay != null) {
-
-                            map.getOverlays().remove(myLocationNewOverlay);
-
-                            if (roadOverlay != null) {
-                                addRemoveLayerLine(false, roadOverlay);
-                            }
-
-                            map.invalidate();
-                        }
-
                     }
                 }
-            }
 
-            //Cosa fare se tolgo il gps
-            @Override
-            public void onProviderDisabled(String provider) {
-                map.getOverlays().remove(myLocationNewOverlay);
-                map.invalidate();
-            }
+                //Cosa fare se tolgo il gps
+                @Override
+                public void onProviderDisabled(String provider) {
+                    gpsManager.disableMyLocation();
+                /*map.getOverlays().remove(myLocationNewOverlay);
+                map.invalidate();*/
+                }
 
-            //Cosa fare se abilito il gps
-            @Override
-            public void onProviderEnabled(String provider) {
-                //In questo caso aggiorno la posizione
-
-                map.getOverlayManager().remove(myLocationNewOverlay);
+                //Cosa fare se abilito il gps
+                @Override
+                public void onProviderEnabled(String provider) {
+                    //In questo caso aggiorno la posizione
+                    gpsManager.enableMyLocation();
+                /*map.getOverlayManager().remove(myLocationNewOverlay);
                 if(myLocationNewOverlay != null){
                     myLocationNewOverlay.disableFollowLocation();
                 }
@@ -617,14 +630,15 @@ public class FragmentOSM extends Fragment {
                 map.getOverlayManager().add(myLocationNewOverlay);
                 myLocationNewOverlay.enableMyLocation();
                 myLocationNewOverlay.enableFollowLocation();
-                map.invalidate();
-            }
+                map.invalidate();*/
+                }
 
-            @Override
-            public void onStatusChanged(String provider, int status,
-                                        Bundle extras) {
-            }
-        });
+                @Override
+                public void onStatusChanged(String provider, int status,
+                                            Bundle extras) {
+                }
+            });
+        }
 
         return view;
     }
@@ -632,26 +646,27 @@ public class FragmentOSM extends Fragment {
     private void getLocation(){
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
             if(partenzaSelezionata!="Posizione Attuale"){
+                gpsManager.enableMyLocation();
+                /*
                 map.getOverlayManager().remove(myLocationNewOverlay);
                 map.getOverlayManager().add(myLocationNewOverlay);
                 myLocationNewOverlay.enableMyLocation();
                 myLocationNewOverlay.enableFollowLocation();
+                */
             }else{
-                mapController.animateTo(myLocationNewOverlay.getMyLocation());
+                mapController.animateTo(gpsManager.getMyLocationNewOverlay());
             }
 
         } else {
-            Log.d("getLocation","permessi mancanti");
             requestPermission();
         }
     }
 
     private void getPosizioneAttuale(){
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
-            waypoints2.add(myLocationNewOverlay.getMyLocation());
-            mapController.animateTo(myLocationNewOverlay.getMyLocation());
+            waypoints2.add(gpsManager.getMyLocationNewOverlay());
+            mapController.animateTo(gpsManager.getMyLocationNewOverlay());
         } else {
-            Log.d("getLocation","permessi mancanti");
             requestPermission();
         }
     }
@@ -718,8 +733,13 @@ public class FragmentOSM extends Fragment {
     //Con questo metodo vado a mostrare la bitMap relative al piano indicato
     public void getFloorEdificio(int i, boolean call){
         if(call){
+            //In questo caso non posso affidarmi alla camera del punto in cui sta guardando l'utente
+            //ma devo guardare la destinazione e capire a che edificio sta indicando così da scegliere
+            //la mappa corretta da mostrare(bitmap)
             getFloorDestination(i);
         }else{
+            //Sono sopra l'edificio e quindi posso prendere il punto direttamente a dove sto guardando
+            //con il metodo onTouch e onTick
             getFloorCam(i);
         }
 
@@ -770,7 +790,6 @@ public class FragmentOSM extends Fragment {
             map.getOverlays().remove(overlay);
         }
 
-        Log.d("prendeIlPiano", ""+bitmap);
         if(bitmap!=null) {
             overlay = new GroundOverlay();
             overlay.setTransparency(0.0f);
@@ -807,6 +826,7 @@ public class FragmentOSM extends Fragment {
         }
     }
 
+    //Vado a mostrare il numero dei piani riguardante il singolo edificio che sto guardando
     private void updateItems(int nfloor) {
         // Aggiorna la lista degli elementi
         items.clear();
@@ -822,11 +842,12 @@ public class FragmentOSM extends Fragment {
     public void onResume() {
         super.onResume();
 
-        if (myLocationNewOverlay != null) {
+        gpsManager.enableMyLocation();
+        /*if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableMyLocation();
             myLocationNewOverlay.enableFollowLocation();
         }
-
+*/
         map.onResume();
     }
 
@@ -834,21 +855,23 @@ public class FragmentOSM extends Fragment {
     public void onPause() {
         super.onPause();
 
-        if (myLocationNewOverlay != null) {
+        gpsManager.disableMyLocation();
+        /*if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
         }
 
-        myLocationNewOverlay.disableFollowLocation();
+        myLocationNewOverlay.disableFollowLocation();*/
         map.onPause();
     }
 
     @Override
     public void onDestroy() {
         super.onDestroy();
-
+        gpsManager.disableMyLocation();
+/*
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
-        }
+        }*/
 
         map.onDetach();
     }
@@ -857,9 +880,11 @@ public class FragmentOSM extends Fragment {
     public void onStop() {
         super.onStop();
 
+        gpsManager.disableMyLocation();
+/*
         if (myLocationNewOverlay != null) {
             myLocationNewOverlay.enableFollowLocation();
-        }
+        }*/
 
     }
 

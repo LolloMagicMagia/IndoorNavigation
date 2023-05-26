@@ -1,9 +1,8 @@
-package Database;
+package dataFirebase;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.example.osmdroidex2.R;
@@ -15,19 +14,24 @@ import java.util.HashMap;
 
 public class ListOfGeoPoint {
     Context mcontext;
+    //Relazione tra edificio/aula e punto sulla mappa
     HashMap<String,GeoPoint> mGeoPointList;
+    //Il contrario della relazione di prima, in questo caso dal punto risalvo all'edificio, serve
+    // per capire a quale edificio sto zoommando
     HashMap<GeoPoint,String> name;
+    //Dico le aule a che piano sono
     HashMap<String, Integer> auleU14;
+    //Vado ad indicare gli edifici possibili(u14/u6)
     ArrayList<GeoPoint> edifici;
+    //Vado ad indicare i punti dove andrò a mettere le bitmap
     ArrayList<GeoPoint> mappaU14;
     ArrayList<GeoPoint> mappaU6;
+    //Numero di piani che ha un edificio
     HashMap<String, Integer> floor;
-
+    //A che edificio corrispondono le aule
     HashMap<String,String> contenuto;
-
-    //in base all'edificio scelto e al piano gli passo il piano
+    //In base all'edificio scelto e al piano gli passo la BitMap
     HashMap<String, HashMap<Integer, Bitmap>> showFloor;
-
     //GeoPoint riguardante i punti degli edifici e delle aule. Successivamente saranno in un database
     GeoPoint u7 = new GeoPoint(45.51731, 9.21291);
     GeoPoint u6 = new GeoPoint(45.51847, 9.21297);
@@ -82,7 +86,6 @@ public class ListOfGeoPoint {
     }
 
     public GeoPoint getGeoPoint(String posizione){
-        Log.d("ciao23", ""+mGeoPointList.get(posizione));
         return mGeoPointList.get(posizione);
     }
 

@@ -5,7 +5,7 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    tools:context="com.example.osmdroidex2.BottomNavFragment.FragmentOSM">
+    tools:context="BottomNavFragment.MainActivity">
 
     <!-- Mapnik è una fonte di tessere predefinita disponibile in OsmDroid che utilizza dati
          di OpenStreetMap. Questa fonte di tessere offre una visualizzazione dettagliata della mappa
