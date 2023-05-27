@@ -6,13 +6,14 @@ import android.graphics.Bitmap;
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class PreDatabase {
     ListOfGeoPoint listOfGeoPoint;
 
-    public PreDatabase(Context context){
+    public PreDatabase(Context context, List<Edificio> edificios, List<Aula> aulas){
         super();
-        listOfGeoPoint= new ListOfGeoPoint(context);
+        listOfGeoPoint= new ListOfGeoPoint(context, edificios, aulas);
     }
 
     public GeoPoint getGeoPoint(String posizione){
@@ -44,7 +45,7 @@ public class PreDatabase {
     }
 
     public ArrayList<GeoPoint> getPlanimetria(String edificio){
-        if(edificio == "u14"){
+        if(edificio.equals("u14")){
             return listOfGeoPoint.getPlanimetriaU14();
         }else{
             return listOfGeoPoint.getPlanimetriaU6();

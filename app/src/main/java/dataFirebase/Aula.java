@@ -18,28 +18,29 @@ import org.osmdroid.util.GeoPoint;
                 parentColumns = "nomeEdificio",
                 childColumns = "nomeEdificio",
                 onDelete = ForeignKey.CASCADE))
-@TypeConverters({GeoPointConverter.class,BitMapConverter.class})
+/*@TypeConverters({GeoPointConverter.class,BitMapConverter.class})*/
+@TypeConverters(GeoPointConverter.class)
 public class Aula {
 
     @NonNull
     String nomeEdificio;
     @NonNull
     String nomeAula;
-    Bitmap bitmap;
+    /*Bitmap bitmap;*/
     int piano;
     GeoPoint posizione;
 
-    public Aula(int piano, GeoPoint posizione, Bitmap bitmap, String nomeEdificio, String nomeAula){
-        this.bitmap=bitmap;
+    public Aula(int piano, GeoPoint posizione, /*Bitmap bitmap,*/ String nomeEdificio, String nomeAula){
+        /*this.bitmap=bitmap;*/
         this.piano=piano;
         this.posizione=posizione;
         this.nomeAula=nomeAula;
         this.nomeEdificio=nomeEdificio;
     }
 
-    public Bitmap getBitmap() {
+    /*public Bitmap getBitmap() {
         return bitmap;
-    }
+    }*/
 
     public int getPiano() {
         return piano;
@@ -49,9 +50,9 @@ public class Aula {
         return posizione;
     }
 
-    public void setBitmap(Bitmap bitmap) {
+    /*public void setBitmap(Bitmap bitmap) {
         this.bitmap = bitmap;
-    }
+    }*/
 
     public void setPiano(int piano) {
         this.piano = piano;

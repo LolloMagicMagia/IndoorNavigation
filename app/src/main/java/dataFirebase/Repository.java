@@ -5,16 +5,23 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
+import java.util.List;
+
 public class Repository {
     private EdificioDao mEdificioDao;
-    /*private AulaDao mAulaDao;*/
-    private LiveData<Edificio> mEdificioLiveData;
-    /*private LiveData<Aula> mAulaLiveData;*/
+    private AulaDao mAulaDao;
+    private LiveData<List<Edificio>> allEdifiocs;
+    private LiveData<List<Aula>> allAule;
+    private Edificio mEdificioLiveData;
 
 
     public Repository(Application application){
         EdificiDatabase database = EdificiDatabase.getInstance(application);
         mEdificioDao = database.edificioDao();
+        mAulaDao = database.AulaDao();
+        allEdifiocs=mEdificioDao.getAllEdificio();
+        allAule=mAulaDao.getAllAule();
+
     }
 
     public void insertEdificio(Edificio edificio){
@@ -27,12 +34,14 @@ public class Repository {
         new DeleteEdificiAsyncTask(mEdificioDao).execute(edificio);
     }
 
-
-    //il live Data va a farlo automaticamente su un thread a parte ma gli altri metodi no
-    public LiveData<Edificio> getEdificio(String edificio){
-        mEdificioLiveData = mEdificioDao.getEdificio(edificio);
-        return mEdificioLiveData;
+    public LiveData<List<Edificio>> getAllEdificios(){
+        return allEdifiocs;
     }
+
+    public LiveData<List<Aula>> getAllAule(){
+        return allAule;
+    }
+
 
     private static class InsertEdificiAsyncTask extends AsyncTask<Edificio, Void, Void>{
         private EdificioDao edificioDao;
@@ -75,5 +84,6 @@ public class Repository {
             return null;
         }
     }
+
 
 }

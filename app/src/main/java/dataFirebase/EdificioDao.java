@@ -24,9 +24,7 @@ public interface EdificioDao {
     /*@Query("DELETE FROM edificio_universita")
     void deleteAllEdifici();*/
 
-    /*@Query("SELECT * FROM edificio_universita ORDER BY nomeEdificio DESC")
-    List<Edificio> getAllEdificio();*/
+    @Query("SELECT * FROM edificio_universita ORDER BY nomeEdificio DESC")
+     LiveData<List<Edificio>> getAllEdificio();
 
-    @Query("SELECT * FROM edificio_universita WHERE nomeEdificio = :name")
-    LiveData<Edificio> getEdificio(String name);
 }

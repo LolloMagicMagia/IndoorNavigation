@@ -6,9 +6,12 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import java.util.List;
+
 public class ViewModel extends AndroidViewModel {
     private Repository mRepository;
     private LiveData<Edificio> mEdificioLiveData;
+    private LiveData<Aula> mAulaLiveData;
 
     public ViewModel(@NonNull Application application) {
         super(application);
@@ -26,9 +29,14 @@ public class ViewModel extends AndroidViewModel {
         mRepository.deleteEdificio(edificio);
     }
 
-    public LiveData<Edificio> getEdificio(String s){
-        mEdificioLiveData = mRepository.getEdificio(s);
-        return mEdificioLiveData;
+    public LiveData<List<Edificio>> getAllEdificios(){
+        return mRepository.getAllEdificios();
     }
+
+    public LiveData<List<Aula>> getAllAule(){
+        return mRepository.getAllAule();
+    }
+
+
 
 }

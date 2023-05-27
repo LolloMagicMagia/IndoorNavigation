@@ -57,6 +57,7 @@ import com.example.osmdroidex2.Animation;
 import com.example.osmdroidex2.IndoorNavActivity;
 
 import Adapter.CustomAdapter;
+import dataFirebase.Aula;
 import dataFirebase.Edificio;
 import dataFirebase.PreDatabase;
 import dataFirebase.ViewModel;
@@ -117,13 +118,26 @@ public class FragmentOSM extends Fragment {
 
     //Per collegarsi a Room
     private ViewModel mViewModel;
-    private Edificio mEdificio;
 
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
+        //devo metterlo dove chiedo l'edificio, listener ogni volta che il dato cambia
+        mViewModel.getAllEdificios().observe(getActivity(), new Observer<List<Edificio>>() {
+            @Override
+            public void onChanged(List<Edificio> edificios) {
+                mViewModel.getAllAule().observe(getActivity(), new Observer<List<Aula>>() {
+                    @Override
+                    public void onChanged(List<Aula> aulas) {
+                        controller = new PreDatabase(getContext(),edificios,aulas);
+                        posizioneEdifici =controller.getEdificio();
+                        map.invalidate();
+                    }
+                });
+            }
+        });
     }
 
     @Override
@@ -133,9 +147,6 @@ public class FragmentOSM extends Fragment {
 
         AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
         AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
-
-        controller = new PreDatabase(getContext());
-        posizioneEdifici =controller.getEdificio();
 
         //per resettare le scelte
         logoReset=view.findViewById(R.id.imageView);
@@ -302,9 +313,8 @@ public class FragmentOSM extends Fragment {
                     // Visto che sono state selezionate vado a creare una lista di punti che poi verrà trasformata
                     // in una strada da dare in pasto al RoadManager
                     Log.d("routing", partenzaSelezionata);
-
                     waypoints2 = new ArrayList<GeoPoint>();
-
+                    ////
                     //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
                     //da poter capire da dove parte, in questo caso dal gps
                     if(partenzaSelezionata == "Posizione Attuale"){
@@ -319,7 +329,6 @@ public class FragmentOSM extends Fragment {
 
                     }else{
                         posizioneAttuale=false;
-
                         waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
                     }
 
@@ -733,6 +742,7 @@ public class FragmentOSM extends Fragment {
     //Con questo metodo vado a mostrare la bitMap relative al piano indicato
     public void getFloorEdificio(int i, boolean call){
         if(call){
+            Log.d("provaGetFloor", "call");
             //In questo caso non posso affidarmi alla camera del punto in cui sta guardando l'utente
             //ma devo guardare la destinazione e capire a che edificio sta indicando così da scegliere
             //la mappa corretta da mostrare(bitmap)
@@ -785,6 +795,7 @@ public class FragmentOSM extends Fragment {
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificio);
         int position = i ;
         Bitmap bitmap = controller.getMap(edificio,position);
+        Log.d("provaGetFloor", edificio+" "+bitmap+ " " + overlay);
 
         if (overlay != null) {
             map.getOverlays().remove(overlay);

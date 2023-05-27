@@ -27,6 +27,8 @@ public abstract class EdificiDatabase extends RoomDatabase {
     public static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
+
+
     //Room crea in automatico i metodi abstract tramite questo databse
     public static synchronized  EdificiDatabase getInstance(Context context){
         if(instance == null){
@@ -49,9 +51,12 @@ public abstract class EdificiDatabase extends RoomDatabase {
 
     private static class PopulateDbAsyncTask extends AsyncTask<Void, Void, Void> {
         private EdificioDao mEdificioDao;
+        private AulaDao mAulaDao;
+
 
         private PopulateDbAsyncTask(EdificiDatabase db){
             mEdificioDao=db.edificioDao();
+            mAulaDao=db.AulaDao();
         }
 
         @Override
@@ -68,6 +73,8 @@ public abstract class EdificiDatabase extends RoomDatabase {
             mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,"u6",new GeoPoint(45.51847, 9.21297),6));
             mEdificioDao.insertEdificio(new Edificio(null,null,null,null,"u7", new GeoPoint(45.51731, 9.21291), 4));
 
+            mAulaDao.insertAula(new Aula(0,new GeoPoint(45.52361, 9.21971),"u14","u14AulaFirstFloor"));
+            mAulaDao.insertAula(new Aula(1,new GeoPoint(45.52352, 9.21994),"u14","u14AulaSecondFloor"));
             return null;
         }
     }

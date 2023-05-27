@@ -21,6 +21,6 @@ public interface AulaDao {
     @Delete
     void deleteAula(Aula aula);
 
-    @Query("SELECT * FROM aula_universita WHERE nomeEdificio = :name")
-    LiveData<Aula> getEdificio(String name);
+    @Query("SELECT * FROM aula_universita ORDER BY nomeEdificio DESC")
+    LiveData<List<Aula>> getAllAule();
 }
