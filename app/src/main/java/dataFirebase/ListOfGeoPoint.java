@@ -14,9 +14,22 @@ import java.util.HashMap;
 import java.util.List;
 
 public class ListOfGeoPoint {
+    //Quello che vado a fare è andare a prendere i dati dal database e poi metterli in ArrayList e HashMap
+    //per andare a definire le relazioni esistenti che mi serviranno nell'applicazione. Tutti i dati utili
+    //per andare a definirle vengono presi direttamente nel database, e al cambio dei dati nel database
+    //la classe verrà ridefinita.
 
     private ViewModel mViewModel;
+
+    //Dati del natabase
+    List<Edificio> mEdificios;
+    Edificio u14D;
+    Edificio u6D;
+    Edificio u7D;
+    List<Aula> mAulas;
     Context mcontext;
+
+
     //Relazione tra edificio/aula e punto sulla mappa
     HashMap<String,GeoPoint> mGeoPointList;
     //Il contrario della relazione di prima, in questo caso dal punto risalvo all'edificio, serve
@@ -29,25 +42,14 @@ public class ListOfGeoPoint {
     //Vado ad indicare i punti dove andrò a mettere le bitmap
     ArrayList<GeoPoint> mappaU14;
     ArrayList<GeoPoint> mappaU6;
+
+
     //Numero di piani che ha un edificio
     HashMap<String, Integer> floor;
     //A che edificio corrispondono le aule
     HashMap<String,String> contenuto;
     //In base all'edificio scelto e al piano gli passo la BitMap
     HashMap<String, HashMap<Integer, Bitmap>> showFloor;
-    //GeoPoint riguardante i punti degli edifici e delle aule. Successivamente saranno in un database
-    GeoPoint u7 = new GeoPoint(45.51731, 9.21291);
-    GeoPoint u6 = new GeoPoint(45.51847, 9.21297);
-    GeoPoint u14 = new GeoPoint(45.52374,9.21971);
-    GeoPoint u14FirstFloor = new GeoPoint(45.52361, 9.21971);
-    GeoPoint u14SecondFloor = new GeoPoint(45.52352, 9.21994);
-
-
-    List<Edificio> mEdificios;
-    Edificio u14D;
-    Edificio u6D;
-    Edificio u7D;
-    List<Aula> mAulas;
 
     public ListOfGeoPoint(Context context, List<Edificio> edificios, List<Aula> aulas){
         super();
@@ -66,7 +68,7 @@ public class ListOfGeoPoint {
         populate();
     }
 
-    public void addName(String nome,GeoPoint geo){
+    private void addName(String nome,GeoPoint geo){
         name.put(geo,nome);
     }
 
@@ -74,7 +76,7 @@ public class ListOfGeoPoint {
         return name.get(posizione);
     }
 
-    public void addGeoPoint(String nome,GeoPoint geo){
+    private void addGeoPoint(String nome,GeoPoint geo){
         mGeoPointList.put(nome,geo);
     }
 
@@ -82,7 +84,7 @@ public class ListOfGeoPoint {
         return mGeoPointList.get(posizione);
     }
 
-    public void addAule(String nome, int layer){
+    private void addAule(String nome, int layer){
        auleU14.put(nome,layer);
     }
 
@@ -92,14 +94,13 @@ public class ListOfGeoPoint {
         return bitmap;
     }
 
-    public void addEdificio(GeoPoint geo){
+    private void addEdificio(GeoPoint geo){
         edifici.add(geo);
     }
 
     public ArrayList<GeoPoint> getEdifici(){
         return edifici;
     }
-
 
     public Integer getFloor(String posizione){
         return auleU14.get(posizione);
@@ -108,7 +109,6 @@ public class ListOfGeoPoint {
     public int getNumberOfFloor(String edificio){
         return floor.get(edificio);
     }
-
 
     public ArrayList<GeoPoint> getPlanimetriaU14(){
         return mappaU14;
@@ -144,13 +144,13 @@ public class ListOfGeoPoint {
                 mappaU6.add(u6D.getRight_down());
                 addGeoPoint("u6", u6D.getPosizione());
                 floor.put("u6",6);
-                contenuto.put("u14","u14");
+                contenuto.put("u6","u6");
                 addEdificio(u6D.getPosizione());
                 addName("u6",u6D.getPosizione());
             }else if(ed.getNomeEdificio().equals("u7")){
                 u7D=ed;
                 addGeoPoint("u7",u7D.getPosizione());
-                contenuto.put("u14","u14");
+                contenuto.put("u7","u7");
             }
         }
         for(Aula a:mAulas){
@@ -164,46 +164,6 @@ public class ListOfGeoPoint {
         showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
         showFloor.put("u6",new HashMap<>());
         showFloor.get("u6").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u6));
-        //popolo il mio database con tutte le posizioni dei punti
-        /*addGeoPoint("u7",u7);
-        addGeoPoint("u6",u6);
-        addGeoPoint("u14",u14);*/
-        /*addGeoPoint("u14AulaFirstFloor",u14FirstFloor);
-        addGeoPoint("u14AulaSecondFloor",u14SecondFloor);*/
-        //popoli il mio database con le aule dicendo in che piano sono
-        /*addAule("u14AulaFirstFloor",0);
-        addAule("u14AulaSecondFloor",1);*/
-        //popolo il mio database con solo gli edifici
-        /*addEdificio(u6);
-        addEdificio(u14);*/
-
-        //popolo il mio database con il perimetro, Planimetria
-        /*mappaU14.add(new GeoPoint(45.52391, 9.21894));
-        mappaU14.add(new GeoPoint(45.52345, 9.22015));
-        mappaU14.add(new GeoPoint(45.52335, 9.22009));
-        mappaU14.add(new GeoPoint(45.52381, 9.21886));
-        mappaU6.add(new GeoPoint(45.51773, 9.2126));
-        mappaU6.add(new GeoPoint(45.51929, 9.21347));
-        mappaU6.add(new GeoPoint(45.51906, 9.21426));
-        mappaU6.add(new GeoPoint(45.51752, 9.21341));*/
-
-        //popolo il mio arraylist inverso per ricevere i geopoint
-        /*addName("u6",u6);
-        addName("u14",u14);*/
-        //popolo quanti piani ha un edificio
-        /*floor.put("u14", 2);
-        floor.put("u6",6);*/
-        //popolo i piani per ogni edificio(non riguardano più i Marker)
-        /*showFloor.put("u14",new HashMap<Integer, Bitmap>());
-        showFloor.get("u14").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina1));
-        showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
-        showFloor.put("u6",new HashMap<>());
-        showFloor.get("u6").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u6));*/
-        //relazione tra edificio e aule
-        /*contenuto.put("u14","u14");
-        contenuto.put("u14AulaFirstFloor","u14");
-        contenuto.put("u14AulaSecondFloor","u14");
-        contenuto.put("u6","u6");*/
     }
 
 }

@@ -157,8 +157,6 @@ public class FragmentOSM extends Fragment {
 
         visitaGuidata = (ImageButton) view.findViewById(R.id.appGhero);
         visitaGuidata.setVisibility(View.GONE);
-        /*zoomButton = (Button) view.findViewById(R.id.buttonZoom);
-        deZoomButton = (Button) view.findViewById(R.id.buttonZoom2);*/
 
         //per la listView
         gridView = view.findViewById(R.id.grid_view);
@@ -217,9 +215,9 @@ public class FragmentOSM extends Fragment {
         mapController = map.getController();
         mapController.setZoom(15);
         //per regolare il max/min zoom
-        map.setMaxZoomLevel(22.0);
+        map.setMaxZoomLevel(19.0);
         //map.setMinZoomLevel(15.0);
-        //map.setMinZoomLevel(10.0);
+        map.setMinZoomLevel(12.0);
 
         map.setBuiltInZoomControls(true);
 
@@ -278,15 +276,6 @@ public class FragmentOSM extends Fragment {
 
         //******//GPS//
         gpsManager.gpsStart();
-        /*locationManager = (LocationManager) getContext().getSystemService(Context.LOCATION_SERVICE);
-        boolean isGPSEnabled = locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER);
-
-        // Se il GPS è attivo, aggiungi l'icona sulla mappa, poichè il listener del gps non funziona
-        // da subito, quindi c'è bisogno di un controllo iniziale
-        if (isGPSEnabled) {
-            map.getOverlayManager().add(myLocationNewOverlay);
-            myLocationNewOverlay.enableFollowLocation();
-        }*/
 
         logoReset.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -296,6 +285,7 @@ public class FragmentOSM extends Fragment {
                 partenzaSelezionata=null;
                 destinazioneSelezionata=null;
                 addRemoveMarker(false,aulaSelezionata);
+                addRemoveLayerLine(false,roadOverlay);
                 map.getOverlayManager().remove(overlay);
 
             }
@@ -328,7 +318,7 @@ public class FragmentOSM extends Fragment {
                         }
 
                     }else{
-                        posizioneAttuale=false;
+                        posizioneAttuale = false;
                         waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
                     }
 
@@ -622,8 +612,6 @@ public class FragmentOSM extends Fragment {
                 @Override
                 public void onProviderDisabled(String provider) {
                     gpsManager.disableMyLocation();
-                /*map.getOverlays().remove(myLocationNewOverlay);
-                map.invalidate();*/
                 }
 
                 //Cosa fare se abilito il gps
@@ -631,15 +619,6 @@ public class FragmentOSM extends Fragment {
                 public void onProviderEnabled(String provider) {
                     //In questo caso aggiorno la posizione
                     gpsManager.enableMyLocation();
-                /*map.getOverlayManager().remove(myLocationNewOverlay);
-                if(myLocationNewOverlay != null){
-                    myLocationNewOverlay.disableFollowLocation();
-                }
-                Log.d("getLocation","val1"+myLocationNewOverlay);
-                map.getOverlayManager().add(myLocationNewOverlay);
-                myLocationNewOverlay.enableMyLocation();
-                myLocationNewOverlay.enableFollowLocation();
-                map.invalidate();*/
                 }
 
                 @Override
@@ -656,12 +635,6 @@ public class FragmentOSM extends Fragment {
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
             if(partenzaSelezionata!="Posizione Attuale"){
                 gpsManager.enableMyLocation();
-                /*
-                map.getOverlayManager().remove(myLocationNewOverlay);
-                map.getOverlayManager().add(myLocationNewOverlay);
-                myLocationNewOverlay.enableMyLocation();
-                myLocationNewOverlay.enableFollowLocation();
-                */
             }else{
                 mapController.animateTo(gpsManager.getMyLocationNewOverlay());
             }
@@ -825,7 +798,7 @@ public class FragmentOSM extends Fragment {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            GeoPoint destinazione = controller.getGeoPoint(destinazioneSelezionata);
+            GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
             addRemoveLayerLine(false,roadOverlay);
             waypoints2.add(destinazione);
             Road road = roadManager.getRoad(waypoints2);
@@ -854,11 +827,6 @@ public class FragmentOSM extends Fragment {
         super.onResume();
 
         gpsManager.enableMyLocation();
-        /*if (myLocationNewOverlay != null) {
-            myLocationNewOverlay.enableMyLocation();
-            myLocationNewOverlay.enableFollowLocation();
-        }
-*/
         map.onResume();
     }
 
@@ -867,11 +835,6 @@ public class FragmentOSM extends Fragment {
         super.onPause();
 
         gpsManager.disableMyLocation();
-        /*if (myLocationNewOverlay != null) {
-            myLocationNewOverlay.enableFollowLocation();
-        }
-
-        myLocationNewOverlay.disableFollowLocation();*/
         map.onPause();
     }
 
@@ -879,24 +842,13 @@ public class FragmentOSM extends Fragment {
     public void onDestroy() {
         super.onDestroy();
         gpsManager.disableMyLocation();
-/*
-        if (myLocationNewOverlay != null) {
-            myLocationNewOverlay.enableFollowLocation();
-        }*/
-
         map.onDetach();
     }
 
     @Override
     public void onStop() {
         super.onStop();
-
         gpsManager.disableMyLocation();
-/*
-        if (myLocationNewOverlay != null) {
-            myLocationNewOverlay.enableFollowLocation();
-        }*/
-
     }
 
 }
