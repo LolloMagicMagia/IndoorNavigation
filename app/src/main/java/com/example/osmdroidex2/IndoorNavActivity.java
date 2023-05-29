@@ -1,6 +1,7 @@
 package com.example.osmdroidex2;
 
 import android.app.Dialog;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -19,7 +20,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -30,6 +30,8 @@ import com.google.android.material.textfield.TextInputEditText;
 
 import java.util.List;
 import java.util.Locale;
+
+import dataFirebase.PreDatabase;
 
 
 /**
@@ -117,6 +119,8 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
 
     private TextView txt_passi;
 
+    PreDatabase controller;
+
     /**
      * Metodo onCreate per la creazione dell'activity.
      * Inizializza le variabili e carica l'immagine della planimetria.
@@ -128,6 +132,20 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.indoornavactivity);
+        drawBtn = findViewById(R.id.drawBtn);
+        controller = PreDatabase.getInstance(null,null,null);
+
+        //Prendo i dati dall'activity precedente per capire che piantina prendere e l'aula da scegliere
+        Intent intent=getIntent();
+        String edificio = intent.getStringExtra("edificio");
+        String destinazione = null;
+
+        if(intent.getStringExtra("destinazione")!=null){
+            destinazione = intent.getStringExtra("destinazione");
+        }
+
+        getMapFloor(edificio,destinazione);
+        /////////////////////////////
 
         txt_passi = findViewById(R.id.txt_passi);
         txt_passi.setText("0");
@@ -139,11 +157,6 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
 
         btn_start = findViewById(R.id.btn_avvia);
         start[0] = false;
-
-        map = getResources().getDrawable(R.drawable.planimetria);
-        drawBtn = findViewById(R.id.drawBtn);
-        mapBitmap = BitmapFactory.decodeResource(getResources(),
-                R.drawable.planimetria);
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -715,6 +728,24 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
             }
         }
         return true;
+    }
+
+    public void getMapFloor(String edificio, String destinazione){
+        Bitmap bit;
+        if(destinazione==null){
+            bit = controller.getMap(edificio, 0);
+        }
+        else{
+            if(controller.getFloor(destinazione)!=null){
+                int i = controller.getFloor(destinazione);
+                String appartenenzaEdificio = controller.getAppartenenza(destinazione);
+                bit = controller.getMap(appartenenzaEdificio, i);
+            }else{
+                bit = controller.getMap(edificio, 0);
+            }
+        }
+
+        mapBitmap = bit;
     }
 
 }

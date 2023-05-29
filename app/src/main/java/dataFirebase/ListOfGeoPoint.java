@@ -132,7 +132,7 @@ public class ListOfGeoPoint {
                 mappaU14.add(u14D.getRight_up());
                 mappaU14.add(u14D.getRight_down());
                 addGeoPoint("u14", u14D.getPosizione());
-                floor.put("u14", 2);
+                floor.put("u14", 3);
                 contenuto.put("u14","u14");
                 addEdificio(u14D.getPosizione());
                 addName("u14",u14D.getPosizione());
@@ -154,6 +154,7 @@ public class ListOfGeoPoint {
             }
         }
         for(Aula a:mAulas){
+            Log.d("database",""+a.getNomeAula()+" "+  a.getNomeEdificio());
             contenuto.put(a.getNomeAula(),a.getNomeEdificio());
             contenuto.put(a.getNomeAula(),a.getNomeEdificio());
             addGeoPoint(a.getNomeAula(),a.getPosizione());
@@ -162,6 +163,7 @@ public class ListOfGeoPoint {
         showFloor.put("u14",new HashMap<Integer, Bitmap>());
         showFloor.get("u14").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina1));
         showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
+        showFloor.get("u14").put(2, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u14));
         showFloor.put("u6",new HashMap<>());
         showFloor.get("u6").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u6));
     }

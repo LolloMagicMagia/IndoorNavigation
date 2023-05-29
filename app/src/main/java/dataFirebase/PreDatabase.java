@@ -10,10 +10,17 @@ import java.util.List;
 
 public class PreDatabase {
     ListOfGeoPoint listOfGeoPoint;
+    private static PreDatabase controller;
 
-    public PreDatabase(Context context, List<Edificio> edificios, List<Aula> aulas){
-        super();
-        listOfGeoPoint= new ListOfGeoPoint(context, edificios, aulas);
+    private PreDatabase(Context context, List<Edificio> edificios, List<Aula> aulas){
+        listOfGeoPoint = new ListOfGeoPoint(context, edificios, aulas);
+    }
+
+    public static PreDatabase getInstance(Context context, List<Edificio> edificios, List<Aula> aulas){
+        if(controller==null) {
+            controller = new PreDatabase(context, edificios, aulas);
+        }
+        return controller;
     }
 
     public GeoPoint getGeoPoint(String posizione){

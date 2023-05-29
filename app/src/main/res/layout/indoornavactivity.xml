@@ -144,8 +144,7 @@
             android:id="@+id/map_image"
             android:layout_width="580dp"
             android:layout_height="580dp"
-            android:layout_weight="1"
-            android:src="@drawable/planimetria" />
+            android:layout_weight="1" />
 
         <com.github.chrisbanes.photoview.PhotoView
             android:layout_weight="1"

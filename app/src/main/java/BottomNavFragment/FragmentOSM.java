@@ -53,6 +53,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Animation;
+import com.example.osmdroidex2.IndoorNavActivity;
 import com.example.osmdroidex2.IndoorNavigation;
 
 import Adapter.CustomAdapter;
@@ -130,7 +131,7 @@ public class FragmentOSM extends Fragment {
                 mViewModel.getAllAule().observe(getActivity(), new Observer<List<Aula>>() {
                     @Override
                     public void onChanged(List<Aula> aulas) {
-                        controller = new PreDatabase(getContext(),edificios,aulas);
+                        controller = PreDatabase.getInstance(getContext(),edificios,aulas);
                         posizioneEdifici =controller.getEdificio();
                         map.invalidate();
                     }
@@ -213,7 +214,7 @@ public class FragmentOSM extends Fragment {
         mapController = map.getController();
         mapController.setZoom(15);
         //per regolare il max/min zoom
-        map.setMaxZoomLevel(19.0);
+        map.setMaxZoomLevel(19.5);
         //map.setMinZoomLevel(15.0);
         map.setMinZoomLevel(12.0);
 
@@ -352,6 +353,20 @@ public class FragmentOSM extends Fragment {
                     aulaSelezionata.setSubDescription("Piano 1");
                     aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
                     addRemoveMarker(true,aulaSelezionata);
+
+                    if (controller.getFloor(destinazioneSelezionata) != null) {
+                        //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                        //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                        // a qualche edificio,
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+
+                    } else {
+                        addRemoveMarker(true, aulaSelezionata);
+                        if (overlay != null) {
+                            map.getOverlayManager().remove(overlay);
+                        }
+                        map.invalidate();
+                    }
                 }
             }
 
@@ -423,6 +438,19 @@ public class FragmentOSM extends Fragment {
                     mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
                     //prendo il punto dove devo metterlo
                     mapController.setZoom(18);
+                    if (controller.getFloor(destinazioneSelezionata) != null) {
+                        //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                        //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                        // a qualche edificio,
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+
+                    } else {
+                        addRemoveMarker(true, aulaSelezionata);
+                        if (overlay != null) {
+                            map.getOverlayManager().remove(overlay);
+                        }
+                        map.invalidate();
+                    }
                 }
             }
         });
@@ -465,21 +493,25 @@ public class FragmentOSM extends Fragment {
                     for (GeoPoint geo : posizioneEdifici) {
                         if (box.contains(geo)) {
                             edificioScoperto = controller.getName(geo);
-                            Log.d("edificio",edificioScoperto);
+                            Log.d("destination",edificioScoperto);
                             ciao = true;
                         }
                     }
                     if (ciao == true) {
-                        Log.d("destination",""+destinazioneSelezionata);
+                        Log.d("destination","c"+destinazioneSelezionata);
+                        Log.d("destination","d"+controller.getAppartenenza(destinazioneSelezionata));
+                        Log.d("destination","e"+edificioScoperto);
                         if(destinazioneSelezionata==null){
                             gridView.setVisibility(View.VISIBLE);
                             updateItems(controller.getNumberOfFloor(edificioScoperto));
                             visitaGuidata.setVisibility(View.VISIBLE);
-                        }else if(destinazioneSelezionata != null && edificioScoperto == controller.getAppartenenza(destinazioneSelezionata)){
+                        }else if(destinazioneSelezionata != null && edificioScoperto.equals(controller.getAppartenenza(destinazioneSelezionata))){
+                            Log.d("destination","entrato");
                             gridView.setVisibility(View.VISIBLE);
                             updateItems(controller.getNumberOfFloor(edificioScoperto));
                             visitaGuidata.setVisibility(View.VISIBLE);
                         }else{
+                            Log.d("destination","balzato");
                             gridView.setVisibility(View.GONE);
                             visitaGuidata.setVisibility(View.GONE);
                         }
@@ -516,13 +548,15 @@ public class FragmentOSM extends Fragment {
         visitaGuidata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), IndoorNavigation.class);
+                Intent intent = new Intent(getContext(), IndoorNavActivity.class);
                 //Se passo alla parte della navigazione Indoor ho bisogno di due informazioni, la prima è
                 //l'edificio così da prendere la mappa giusto, e la seconda è per la navigazione indoor effettiva
                 //cioè l'aula. Per vedere se effettivamente è un aula, vado a guardare se la destinazione ha un piano
                 //se non lo ha è semplicemente un edificio e quindi è inutile mandarlo nell'intent.
                 intent.putExtra("edificio", edificioScoperto);
                 if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
+                    //questo serve per mettere il punto di arrivo
+                    Log.d("intentCall","eccoci "+ destinazioneSelezionata);
                     intent.putExtra("destinazione", destinazioneSelezionata);
                 }
                 startActivity(intent);
@@ -805,8 +839,6 @@ public class FragmentOSM extends Fragment {
             Road road = roadManager.getRoad(waypoints2);
             roadOverlay = RoadManager.buildRoadOverlay(road);
             addRemoveLayerLine(true,roadOverlay);
-
-            map.invalidate();
             return null;
         }
     }
