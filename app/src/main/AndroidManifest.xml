@@ -34,7 +34,7 @@
         </activity>
 
         <activity
-            android:name=".IndoorNavActivity"
+            android:name=".IndoorNavigation"
             android:exported="true">
         </activity>
     </application>

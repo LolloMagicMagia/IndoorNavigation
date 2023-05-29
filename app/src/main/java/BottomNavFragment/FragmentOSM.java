@@ -45,7 +45,6 @@ import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
 import android.widget.ImageButton;
-import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -54,7 +53,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Animation;
-import com.example.osmdroidex2.IndoorNavActivity;
+import com.example.osmdroidex2.IndoorNavigation;
 
 import Adapter.CustomAdapter;
 import dataFirebase.Aula;
@@ -517,7 +516,7 @@ public class FragmentOSM extends Fragment {
         visitaGuidata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), IndoorNavActivity.class);
+                Intent intent = new Intent(getContext(), IndoorNavigation.class);
                 //Se passo alla parte della navigazione Indoor ho bisogno di due informazioni, la prima è
                 //l'edificio così da prendere la mappa giusto, e la seconda è per la navigazione indoor effettiva
                 //cioè l'aula. Per vedere se effettivamente è un aula, vado a guardare se la destinazione ha un piano
