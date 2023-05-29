@@ -197,7 +197,6 @@ public class FragmentOSM extends Fragment {
         //**** chiama il metodo enableMyLocationOverlay
         gpsManager=new GpsManager(map);
         gpsManager.enableMyLocationOverlay();
-        //myLocationNewOverlay = new MyLocationNewOverlay(new GpsMyLocationProvider(getContext()), map);
 
         //per avere solo una porzione di mappa dell'uni
        /*map.setScrollableAreaLimitLatitude(45.5329, 45.5075, 0);
@@ -519,6 +518,14 @@ public class FragmentOSM extends Fragment {
             @Override
             public void onClick(View view) {
                 Intent intent = new Intent(getContext(), IndoorNavActivity.class);
+                //Se passo alla parte della navigazione Indoor ho bisogno di due informazioni, la prima è
+                //l'edificio così da prendere la mappa giusto, e la seconda è per la navigazione indoor effettiva
+                //cioè l'aula. Per vedere se effettivamente è un aula, vado a guardare se la destinazione ha un piano
+                //se non lo ha è semplicemente un edificio e quindi è inutile mandarlo nell'intent.
+                intent.putExtra("edificio", edificioScoperto);
+                if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
+                    intent.putExtra("destinazione", destinazioneSelezionata);
+                }
                 startActivity(intent);
             }
         });
@@ -553,20 +560,17 @@ public class FragmentOSM extends Fragment {
 
                         //serve per capire se sono fuori dall'uni
                         GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                        BoundingBox boxUni2 = map.getBoundingBox();
+                       /* BoundingBox boxUni2 = map.getBoundingBox();*/
 
                         //Fatta per non calcolare il percorso fuori dalla mappa dell'uni, poichè pensavo che
                         //se sono fuori dall'area dell'uni, non vado manco a calcolare il percorso. Così
-                        //da avere solo un pezzo di mappa
+                        //da avere solo un pezzo di mappa. La parte commentata è proprio questo comportamento
+                        //che ho rimosso
 
-                        if (boxUni2.contains(currentLocation)) {
+                        /*if (boxUni2.contains(currentLocation)) {*/
                             if(!map.getOverlayManager().contains(gpsManager.getMyLocationNewOverlay())){
                                 gpsManager.enableMyLocation();
-                            /*map.getOverlayManager().add(myLocationNewOverlay);
-                            myLocationNewOverlay.enableMyLocation();
-                            myLocationNewOverlay.enableFollowLocation();*/
                             }
-
                             //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
                             if (waypoints2 != null && roadOverlay != null) {
 
@@ -592,19 +596,17 @@ public class FragmentOSM extends Fragment {
 
                             }
 
-                        } else {
+                        /*} else {
                             if (gpsManager.getLocationNewOverlay() != null) {
-
                                 map.getOverlays().remove(gpsManager.getLocationNewOverlay());
 
                                 if (roadOverlay != null) {
                                     addRemoveLayerLine(false, roadOverlay);
                                 }
-
                                 map.invalidate();
                             }
 
-                        }
+                        }*/
                     }
                 }
 
