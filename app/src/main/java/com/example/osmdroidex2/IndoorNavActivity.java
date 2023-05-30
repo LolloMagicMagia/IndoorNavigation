@@ -133,6 +133,7 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.indoornavactivity);
         drawBtn = findViewById(R.id.drawBtn);
+        endPoint = findViewById(R.id.endPoint);
         controller = PreDatabase.getInstance(null,null,null);
 
         //Prendo i dati dall'activity precedente per capire che piantina prendere e l'aula da scegliere
@@ -142,6 +143,8 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
 
         if(intent.getStringExtra("destinazione")!=null){
             destinazione = intent.getStringExtra("destinazione");
+            //Serve per settare direttamente l'aula indicata come punto di destinazione nell'altra activity
+            endPoint.setText(destinazione);
         }
 
         getMapFloor(edificio,destinazione);
@@ -153,7 +156,7 @@ public class IndoorNavActivity extends AppCompatActivity implements SensorEventL
         position[1] = 0;
 
         startPoint = findViewById(R.id.starPoint);
-        endPoint = findViewById(R.id.endPoint);
+
 
         btn_start = findViewById(R.id.btn_avvia);
         start[0] = false;
