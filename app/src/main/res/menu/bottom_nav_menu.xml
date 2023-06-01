@@ -13,5 +13,5 @@
     <item android:id="@+id/fragmentIndoor"
         android:enabled="true"
         android:title="Indoor"
-        android:icon="@drawable/indoor_app_blue"/>
+        android:icon="@drawable/indoor_app"/>
 </menu>

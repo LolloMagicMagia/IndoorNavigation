@@ -33,7 +33,7 @@ public class Animation {
     private ArrayList<GeoPoint> waypoints;
     //polyline animata
     public static final String TITLE = "10K race in Paris";
-    private static final float LINE_WIDTH_BIG = 12;
+    private static final float LINE_WIDTH_BIG = 6;
     private static final float TEXT_SIZE = 20;
     private double mAnimatedMetersSoFar;
     private boolean mAnimationEnded;
@@ -41,6 +41,7 @@ public class Animation {
     private static final int COLOR_POLYLINE_ANIMATED = Color.GREEN;
     private static final int COLOR_BACKGROUND = Color.WHITE;
     Context ctx;
+    Polyline line;
 
 
     public Animation(MapView map, ArrayList<GeoPoint> waypoints,Context ctx){
@@ -50,7 +51,8 @@ public class Animation {
     }
 
     public void addOverlays() {
-        final Polyline line = new Polyline(map);
+        map.getOverlayManager().remove(line);
+        line = new Polyline(map);
         line.getOutlinePaint().setColor(COLOR_POLYLINE_STATIC);
         line.getOutlinePaint().setStrokeWidth(LINE_WIDTH_BIG);
         line.setPoints(waypoints);
@@ -68,8 +70,8 @@ public class Animation {
         managers.add(getStartManager(bitmap));
         line.setMilestoneManagers(managers);
         map.getOverlayManager().add(line);
-        final ValueAnimator percentageCompletion = ValueAnimator.ofFloat(0, 100); // 10 kilometers
-        percentageCompletion.setDuration(5000); // 5 seconds
+        final ValueAnimator percentageCompletion = ValueAnimator.ofFloat(0, 1000); // 10 kilometers
+        percentageCompletion.setDuration(15000); // 5 seconds
         percentageCompletion.setStartDelay(1000); // 1 second
         percentageCompletion.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
             @Override

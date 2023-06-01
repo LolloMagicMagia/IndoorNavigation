@@ -1,5 +1,6 @@
 package BottomNavFragment;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.view.LayoutInflater;
@@ -51,6 +52,9 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+import androidx.navigation.fragment.NavHostFragment;
 
 import com.example.osmdroidex2.Animation;
 import com.example.osmdroidex2.IndoorNavActivity;
@@ -63,6 +67,7 @@ import dataFirebase.PreDatabase;
 import dataFirebase.ViewModel;
 
 import com.example.osmdroidex2.R;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -83,7 +88,7 @@ public class FragmentOSM extends Fragment {
 
     ArrayList<GeoPoint> posizioneEdifici;
     MapView map;
-    String edificioScoperto=null;
+    String edificioScoperto = null;
     GroundOverlay overlay;
     ArrayList<GeoPoint> waypoints;
     ArrayList<GeoPoint> waypoints2;
@@ -184,12 +189,30 @@ public class FragmentOSM extends Fragment {
 
         //Manager per calcolare in automatico il routing
         roadManager = new OSRMRoadManager(ctx, "Prova indoor");
+        //Per cambiare route e metterlo bike
+        /*((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);*/
 
         //Vado a creare la mappa
         map = (MapView)  view.findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
         map.setHorizontalMapRepetitionEnabled(false);
         map.setVerticalMapRepetitionEnabled(false);
+        //Then we add default zoom buttons, and ability to zoom with 2 fingers (multi-touch)
+        map.setBuiltInZoomControls(true);
+        map.setMultiTouchControls(true);
+
+        //We can move the map on a default view point. For this, we need access to the map controller:
+        mapController = map.getController();
+        mapController.setZoom(15);
+        //per regolare il max/min zoom
+        map.setMaxZoomLevel(19.5);
+        //map.setMinZoomLevel(15.0);
+        map.setMinZoomLevel(12.0);
+
+        map.setBuiltInZoomControls(true);
+
+        //serve per rimuovere lo zoom automatico
+        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
 
         //Marker per mostrare solo la destinazione
         scelta= new Marker(map);
@@ -206,24 +229,9 @@ public class FragmentOSM extends Fragment {
        /* map.setScrollableAreaLimitLatitude(45.61506, 45.61118, 0);
         map.setScrollableAreaLimitLongitude(9.15603, 9.16372, 0);*/
 
-        //Then we add default zoom buttons, and ability to zoom with 2 fingers (multi-touch)
-        map.setBuiltInZoomControls(true);
-        map.setMultiTouchControls(true);
-
-        //We can move the map on a default view point. For this, we need access to the map controller:
-        mapController = map.getController();
-        mapController.setZoom(15);
-        //per regolare il max/min zoom
-        map.setMaxZoomLevel(19.5);
-        //map.setMinZoomLevel(15.0);
-        map.setMinZoomLevel(12.0);
-
-        map.setBuiltInZoomControls(true);
-
-
         //Vado a creare due marker che mi vanno a mostrare il percorso, e il waypoint che poi servirà
         //per andare a creare il percorso tra questi 2 punti
-        GeoPoint startPoint = new GeoPoint(45.52379, 9.21958);
+        /*GeoPoint startPoint = new GeoPoint(45.52379, 9.21958);
         GeoPoint endPoint = new GeoPoint(45.52378, 9.2198);
         GeoPoint middlePoint = new GeoPoint(45.52376, 9.21968);
         Marker startMarker = new Marker(map);
@@ -248,21 +256,17 @@ public class FragmentOSM extends Fragment {
         line.setWidth(5f);
 
         // Add the Polyline to the map view
-        addRemoveLayerLine(true, line);
+        addRemoveLayerLine(true, line);*/
 
-        //serve per rimuovere lo zoom automatico
-        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-
-
-        boxUni = map.getBoundingBox();
+        /*boxUni = map.getBoundingBox();*/
 
         //serve per fare una polilinea animata
-        waypoints = new ArrayList<GeoPoint>();
+        /*waypoints = new ArrayList<GeoPoint>();
         waypoints.add(startPoint);
         waypoints.add(middlePoint);
         waypoints.add(endPoint);
         Animation animation = new Animation(map, waypoints, ctx);
-        animation.addOverlays();
+        animation.addOverlays();*/
 
         //Mostra la bussola
         /*CompassOverlay compassOverlay = new CompassOverlay(ctx, map);
@@ -283,6 +287,7 @@ public class FragmentOSM extends Fragment {
                 spinnerDestinazione.setText("");
                 partenzaSelezionata=null;
                 destinazioneSelezionata=null;
+                posizioneAttuale=false;
                 addRemoveMarker(false,aulaSelezionata);
                 addRemoveLayerLine(false,roadOverlay);
                 map.getOverlayManager().remove(overlay);
@@ -548,18 +553,30 @@ public class FragmentOSM extends Fragment {
         visitaGuidata.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(getContext(), IndoorNavActivity.class);
-                //Se passo alla parte della navigazione Indoor ho bisogno di due informazioni, la prima è
-                //l'edificio così da prendere la mappa giusto, e la seconda è per la navigazione indoor effettiva
-                //cioè l'aula. Per vedere se effettivamente è un aula, vado a guardare se la destinazione ha un piano
-                //se non lo ha è semplicemente un edificio e quindi è inutile mandarlo nell'intent.
-                intent.putExtra("edificio", edificioScoperto);
+                SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+
+                editor.putString("edificio", edificioScoperto);
+
+                if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
+                    //questo serve per mettere il punto di arrivo
+                    editor.putString("destinazione", destinazioneSelezionata);
+                }else{
+                    editor.putString("destinazione", null);
+                }
+                editor.apply();
+
+                BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
+                bottomNavigationView.setSelectedItemId(R.id.fragmentIndoor);
+
+                /*Bundle args = new Bundle();
+                args.putString("edificio", edificioScoperto);
                 if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
                     //questo serve per mettere il punto di arrivo
                     Log.d("intentCall","eccoci "+ destinazioneSelezionata);
-                    intent.putExtra("destinazione", destinazioneSelezionata);
+                    args.putString("destinazione",destinazioneSelezionata);
                 }
-                startActivity(intent);
+                navController.navigate(R.id.action_fragmentOSM_to_fragmentIndoor, args);*/
             }
         });
 
@@ -609,7 +626,7 @@ public class FragmentOSM extends Fragment {
 
                                 // Verifica se la distanza supera la soglia massima
                                 ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
-                                double minDistance = 300;
+                                double minDistance = 100;
                                 for (GeoPoint roadPoint : strada) {
                                     Location roadLocation = new Location("");
                                     roadLocation.setLatitude(roadPoint.getLatitude());
@@ -829,18 +846,25 @@ public class FragmentOSM extends Fragment {
 
     //Va a calcolarti il percorso data la partenza e destinazione dagli spinner
     public class ExecuteTaskInBackGround extends AsyncTask<Void, Void, Void> {
+        /*ArrayList<GeoPoint> waypoint3;*/
 
         @Override
         protected Void doInBackground(Void... voids) {
-
             GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
             addRemoveLayerLine(false,roadOverlay);
             waypoints2.add(destinazione);
             Road road = roadManager.getRoad(waypoints2);
             roadOverlay = RoadManager.buildRoadOverlay(road);
+            /*waypoint3 = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();*/
             addRemoveLayerLine(true,roadOverlay);
             return null;
         }
+       /* @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            Animation animation = new Animation(map, waypoint3, getContext());
+            animation.addOverlays();
+        }*/
     }
 
     //Vado a mostrare il numero dei piani riguardante il singolo edificio che sto guardando

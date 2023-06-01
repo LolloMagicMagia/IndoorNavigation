@@ -19,5 +19,12 @@
         android:id="@+id/fragmentIndoor"
         android:name="BottomNavFragment.FragmentIndoor"
         android:label="FragmentIndoor"
-        tools:layout="@layout/fragment_indoor"/>
+        tools:layout="@layout/fragment_indoor">
+        <argument
+            android:name="edificio"
+            app:argType="string" />
+        <argument
+            android:name="destinazione"
+            app:argType="string" />
+    </fragment>
 </navigation>
