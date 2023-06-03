@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".IndoorNavActivity">
+    tools:context="BottomNavFragment.MainActivity">
 
 
     <FrameLayout
@@ -65,26 +65,17 @@
 
                         </com.google.android.material.textfield.TextInputLayout>
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="match_parent"
+
+                        <com.google.android.material.textfield.TextInputEditText
+                            android:id="@+id/endPoint"
+                            android:layout_width="200dp"
+                            android:layout_height="50dp"
+                            android:layout_marginTop="10dp"
                             android:layout_weight="1"
-                            android:outlineProvider="none"
-                            app:boxCornerRadiusBottomEnd="30dp"
-                            app:boxCornerRadiusBottomStart="30dp"
-                            app:boxCornerRadiusTopEnd="30dp"
-                            app:boxCornerRadiusTopStart="30dp">
+                            android:hint="Arrival Point"
+                            android:outlineProvider="none" />
 
-                            <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/endPoint"
-                                android:layout_width="200dp"
-                                android:layout_height="50dp"
-                                android:layout_marginTop="10dp"
-                                android:layout_weight="1"
-                                android:hint="Arrival Point"
-                                android:outlineProvider="none" />
-
-                            <TextView
+                        <TextView
                                 android:id="@+id/btn_options"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -94,7 +85,7 @@
                                 android:textColor="@color/white"
                                 android:textSize="16sp"
                                 android:textStyle="bold" />
-                        </com.google.android.material.textfield.TextInputLayout>
+
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>
@@ -147,13 +138,13 @@
             android:layout_weight="1" />
 
         <com.github.chrisbanes.photoview.PhotoView
-            android:layout_weight="1"
-            android:clickable="false"
             android:id="@+id/indicator_image"
-            android:layout_marginTop="90dp"
-            android:layout_gravity="center"
             android:layout_width="580dp"
-            android:layout_height="580dp"/>
+            android:layout_height="580dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="90dp"
+            android:layout_weight="1"
+            android:clickable="false" />
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_marginLeft="300dp"

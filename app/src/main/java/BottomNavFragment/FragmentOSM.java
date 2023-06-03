@@ -50,15 +50,13 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
-import com.example.osmdroidex2.Animation;
-import com.example.osmdroidex2.IndoorNavActivity;
-import com.example.osmdroidex2.IndoorNavigation;
 
 import Adapter.CustomAdapter;
 import dataFirebase.Aula;
@@ -564,19 +562,22 @@ public class FragmentOSM extends Fragment {
                 }else{
                     editor.putString("destinazione", null);
                 }
+
                 editor.apply();
 
+                //Serve per il click(ma non resetta tutto)
                 BottomNavigationView bottomNavigationView = getActivity().findViewById(R.id.bottom_navigation);
                 bottomNavigationView.setSelectedItemId(R.id.fragmentIndoor);
 
-                /*Bundle args = new Bundle();
-                args.putString("edificio", edificioScoperto);
-                if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
-                    //questo serve per mettere il punto di arrivo
-                    Log.d("intentCall","eccoci "+ destinazioneSelezionata);
-                    args.putString("destinazione",destinazioneSelezionata);
-                }
-                navController.navigate(R.id.action_fragmentOSM_to_fragmentIndoor, args);*/
+                //Vado a prendere il navController, dell'activity , uso il navController per gestire la navigazione dei fragment
+                //senza il navController il fragment aveva dei comportamenti strani andando a portare dei conflitti
+                //cambiando solo alcune view(mentre per altre le lasciava inalterate EditText), quindi per avere una gestione
+                //migliore l'ho utilizzato e vado a cancellare
+                //ogni volta il fragment indicato, poichè se no va a mantenerli tutti in memoria(+Destroy).
+                NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
+                navController.popBackStack(R.id.fragmentIndoor, true);
+                navController.navigate(R.id.fragmentIndoor);
+
             }
         });
 

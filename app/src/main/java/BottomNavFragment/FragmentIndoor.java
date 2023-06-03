@@ -25,11 +25,14 @@ import android.view.ViewGroup;
 import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.IndoorNavigation;
@@ -91,7 +94,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private double MagnitudePrevious = 0;
     private TextInputEditText startPoint;
 
-    private AutoCompleteTextView endPoint;
+    private TextInputEditText endPoint;
 
     private Switch aSwitch; //stairs
 
@@ -137,11 +140,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indoor, container, false);
-        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
         drawBtn = view.findViewById(R.id.drawBtn);
         endPoint = view.findViewById(R.id.endPoint);
         optTxt = view.findViewById(R.id.btn_options);
         controller = PreDatabase.getInstance(null,null,null);
+        startPoint = view.findViewById(R.id.starPoint);
 
         String edificio = sharedPreferences.getString("edificio", null);
         String destinazione = sharedPreferences.getString("destinazione",null);
@@ -150,6 +154,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             mapBitmap = BitmapFactory.decodeResource(getResources(),
                     R.drawable.u14);
         }else{
+            endPoint.setText(destinazione);  // Imposta il valore di endPoint prima di chiamare getMapFloor()
             getMapFloor(edificio,destinazione);
         }
 
@@ -189,8 +194,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         txt_passi.setText("0");
         position[0] = 0;
         position[1] = 0;
-
-        startPoint = view.findViewById(R.id.starPoint);
 
 
         btn_start = view.findViewById(R.id.btn_avvia);
@@ -601,6 +604,19 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     public void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        Log.d("cabbinculo", "pausa");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d("cabbinculo", "destroy");
+    }
+
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
     }
 
     @Override
@@ -777,8 +793,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         else{
             Log.d("cabbinculo",""+destinazione);
             if(controller.getFloor(destinazione) != null){
-                Log.d("cabbinculo","y "+destinazione);
+                Log.d("cabbinculo","z "+endPoint.getText());
                 endPoint.setText(destinazione);
+                Log.d("cabbinculo","y "+destinazione);
+                endPoint.invalidate();
+                Log.d("cabbinculo","b "+endPoint.getText());
                 optTxt.setText(destinazione);
                 int i = controller.getFloor(destinazione);
                 String appartenenzaEdificio = controller.getAppartenenza(destinazione);
