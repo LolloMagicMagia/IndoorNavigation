@@ -2,4 +2,10 @@
     <string name="app_name">OsmDroidEX2</string>
     <string name="Destinazione">Destinazione</string>
     <string name="Partenza">Partenza</string>
+    <string name="Location">Location</string>
+    <string name="Position">Position</string>
+    <string name="GeoLocation">Geolocation</string>
+    <string name="Bluethoot">Bluethoot</string>
+    <string name="Notification">Send Notification</string>
+    <string name="Version">App Version</string>
 </resources>

@@ -161,9 +161,9 @@ public class ListOfGeoPoint {
             addAule(a.getNomeAula(),a.getPiano());
         }
         showFloor.put("u14",new HashMap<Integer, Bitmap>());
-        showFloor.get("u14").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina1));
-        showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
-        showFloor.get("u14").put(2, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u14));
+        showFloor.get("u14").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u14));
+        showFloor.get("u14").put(1, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina1));
+        showFloor.get("u14").put(2, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.piantina2));
         showFloor.put("u6",new HashMap<>());
         showFloor.get("u6").put(0, BitmapFactory.decodeResource(mcontext.getResources(), R.drawable.u6));
     }

@@ -70,6 +70,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Marker;
+import org.osmdroid.views.overlay.compass.CompassOverlay;
 
 public class FragmentOSM extends Fragment {
 

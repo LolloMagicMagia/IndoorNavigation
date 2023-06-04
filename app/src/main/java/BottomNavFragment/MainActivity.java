@@ -8,6 +8,7 @@ import org.osmdroid.bonuspack.routing.RoadManager;
 import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 
 import org.osmdroid.tileprovider.MapTileProviderBasic;
@@ -91,6 +92,14 @@ public class MainActivity extends AppCompatActivity {
 
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 
+    }
+
+    @Override
+    public void onDestroy(){
+        super.onDestroy();
+        SharedPreferences sharedPreferences = getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.clear();
     }
 
 }

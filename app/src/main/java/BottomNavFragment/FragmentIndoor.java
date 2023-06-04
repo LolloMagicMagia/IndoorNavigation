@@ -128,6 +128,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private TextView txt_passi;
 
     PreDatabase controller;
+    private SharedPreferences sharedPreferences;
+
 
     /**
      * Metodo onCreate per la creazione dell'activity.
@@ -140,13 +142,17 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indoor, container, false);
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
+        //Vado a prendere i valori precedenti
+        sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+
         drawBtn = view.findViewById(R.id.drawBtn);
         endPoint = view.findViewById(R.id.endPoint);
         optTxt = view.findViewById(R.id.btn_options);
         controller = PreDatabase.getInstance(null,null,null);
         startPoint = view.findViewById(R.id.starPoint);
 
+        //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
         String edificio = sharedPreferences.getString("edificio", null);
         String destinazione = sharedPreferences.getString("destinazione",null);
 
@@ -158,31 +164,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             getMapFloor(edificio,destinazione);
         }
 
-
-       /* Bundle args = getArguments();
-        if (args != null) {
-            String edificio = args.getString("edificio");
-            String destinazione = args.getString("destinazione");
-
-            if(edificio==null){
-                mapBitmap = BitmapFactory.decodeResource(getResources(),
-                        R.drawable.u14);
-            }else{
-                if(destinazione!=null){
-                    //Serve per settare direttamente l'aula indicata come punto di destinazione nell'altra activity
-                    endPoint.setText(destinazione);
-                }
-                getMapFloor(edificio,destinazione);
-            }
-        }else{
-            mapBitmap = BitmapFactory.decodeResource(getResources(),
-                    R.drawable.u14);
-        }*/
-
-
-        /*map = getResources().getDrawable(R.drawable.u14);
-        mapBitmap = BitmapFactory.decodeResource(getResources(),
-                R.drawable.u14);*/
+        //////////////////////////
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -784,6 +766,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         return true;
     }
 
+    //Vado a implementare la logica per cui tramite le relazioni vado a prendere la mappa corretta
+    //da mostrare
     public void getMapFloor(String edificio, String destinazione){
         Bitmap bit;
 
@@ -791,13 +775,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             bit = controller.getMap(edificio, 0);
         }
         else{
-            Log.d("cabbinculo",""+destinazione);
             if(controller.getFloor(destinazione) != null){
-                Log.d("cabbinculo","z "+endPoint.getText());
                 endPoint.setText(destinazione);
-                Log.d("cabbinculo","y "+destinazione);
                 endPoint.invalidate();
-                Log.d("cabbinculo","b "+endPoint.getText());
                 optTxt.setText(destinazione);
                 int i = controller.getFloor(destinazione);
                 String appartenenzaEdificio = controller.getAppartenenza(destinazione);
