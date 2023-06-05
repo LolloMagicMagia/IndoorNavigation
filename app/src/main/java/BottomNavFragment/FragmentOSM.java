@@ -672,6 +672,7 @@ public class FragmentOSM extends Fragment {
                 @Override
                 public void onProviderEnabled(String provider) {
                     //In questo caso aggiorno la posizione
+                    Log.d("gpsenabled", "funge");
                     gpsManager.enableMyLocation();
                 }
 

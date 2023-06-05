@@ -8,4 +8,7 @@
     <string name="Bluethoot">Bluethoot</string>
     <string name="Notification">Send Notification</string>
     <string name="Version">App Version</string>
+    <string name="True">True</string>
+    <string name="False">False</string>
+    <string name="Default">----</string>
 </resources>
