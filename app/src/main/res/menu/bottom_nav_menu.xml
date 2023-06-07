@@ -5,13 +5,15 @@
         android:title="Map"
         android:icon="@drawable/map"/>
 
+    <item android:id="@+id/fragmentIndoor"
+        android:enabled="true"
+        android:title="Indoor"
+        android:icon="@drawable/indoor_app"/>
+
     <item android:id="@+id/fragmentNovita"
         android:enabled="true"
         android:title="Notification"
         android:icon="@drawable/notification"/>
 
-    <item android:id="@+id/fragmentIndoor"
-        android:enabled="true"
-        android:title="Indoor"
-        android:icon="@drawable/indoor_app"/>
+
 </menu>

@@ -88,7 +88,7 @@ public class MainActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView=findViewById(R.id.bottom_navigation);
 
         AppBarConfiguration appBarConfiguration=new AppBarConfiguration.Builder(
-                R.id.fragmentOSM,R.id.fragmentNovita, R.id.fragmentIndoor).build();
+                R.id.fragmentOSM, R.id.fragmentIndoor, R.id.fragmentNovita).build();
 
         NavigationUI.setupWithNavController(bottomNavigationView,navController);
 

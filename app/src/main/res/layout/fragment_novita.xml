@@ -8,11 +8,10 @@
     tools:context="BottomNavFragment.MainActivity">
 
     <TextView
-        android:id="@+id/textView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="5dp"
-        android:text="PROFILO"
+        android:text="IMPOSTAZIONI"
         android:textColor="@color/black"
         android:textSize="25dp" />
 
@@ -164,10 +163,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView"
+                        android:id="@+id/Ansia"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="Ansia Sociale" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -192,10 +191,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView"
+                        android:id="@+id/claustrofobia"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="Claustrofobia" />
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
@@ -216,10 +215,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView2"
+                        android:id="@+id/More1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="More1" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -230,10 +229,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView3"
+                        android:id="@+id/More2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="More2" />
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>
@@ -252,10 +251,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView"
+                        android:id="@+id/More3"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="More3" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -266,10 +265,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/carrozina"
+                        android:id="@+id/More4"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Carrozina" />
+                        android:text="More4" />
                 </androidx.cardview.widget.CardView>
 
                 <androidx.cardview.widget.CardView
@@ -280,10 +279,10 @@
                     app:cardCornerRadius="15dp">
 
                     <CheckedTextView
-                        android:id="@+id/checkedTextView"
+                        android:id="@+id/More5"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="CheckedTextView" />
+                        android:text="More5" />
                 </androidx.cardview.widget.CardView>
 
             </LinearLayout>

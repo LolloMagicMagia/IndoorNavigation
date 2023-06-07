@@ -202,7 +202,8 @@ public class FragmentOSM extends Fragment {
 
         //We can move the map on a default view point. For this, we need access to the map controller:
         mapController = map.getController();
-        mapController.setZoom(15);
+        mapController.setZoom(18);
+        mapController.setCenter(new GeoPoint(45.5149, 9.2106));
         //per regolare il max/min zoom
         map.setMaxZoomLevel(19.5);
         //map.setMinZoomLevel(15.0);
@@ -219,6 +220,7 @@ public class FragmentOSM extends Fragment {
         //**** chiama il metodo enableMyLocationOverlay
         gpsManager=new GpsManager(map);
         gpsManager.enableMyLocationOverlay();
+
 
         //per avere solo una porzione di mappa dell'uni
        /*map.setScrollableAreaLimitLatitude(45.5329, 45.5075, 0);

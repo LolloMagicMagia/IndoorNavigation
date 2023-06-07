@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
@@ -42,6 +43,7 @@ import Adapter.CustomAdapter;
 import dataFirebase.PreDatabase;
 import dataFirebase.ViewModel;
 
+import com.example.osmdroidex2.BuildConfig;
 import com.example.osmdroidex2.R;
 
 import org.osmdroid.util.BoundingBox;
@@ -57,6 +59,7 @@ public class FragmentNovità extends Fragment {
     private TextView position;
     private TextView locazione;
     private TextView bluethoot;
+    private TextView versione;
     LocationManager locationManager;
     PreDatabase controller;
     double soglia =0.5;
@@ -77,6 +80,7 @@ public class FragmentNovità extends Fragment {
         position = (TextView) view.findViewById(R.id.position);
         locazione = (TextView) view.findViewById(R.id.locazione);
         bluethoot = (TextView) view.findViewById(R.id.bluethoot);
+        versione = (TextView) view.findViewById(R.id.versione);
         position.setText(R.string.Default);
         locazione.setText(R.string.Default);
 
@@ -166,6 +170,13 @@ public class FragmentNovità extends Fragment {
         //getContext().registerReceiver(bluetoothReceiver, filter), il tuo BroadcastReceiver sarà
         // in grado di ricevere gli intenti associati ai cambiamenti dello stato del Bluetooth
         getContext().registerReceiver(bluetoothReceiver, filter);
+
+        String versionName = BuildConfig.VERSION_NAME;
+        if(versionName==null){
+            versione.setText(R.string.Default);
+        }else{
+            versione.setText(versionName);
+        }
 
 
         return view;
