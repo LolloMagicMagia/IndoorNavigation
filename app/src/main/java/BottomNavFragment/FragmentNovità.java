@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.SharedPreferences;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -61,7 +62,13 @@ public class FragmentNovità extends Fragment {
     private TextView bluethoot;
     private TextView versione;
     LocationManager locationManager;
+    private ImageButton bike;
+    private ImageButton walk;
+    private ImageButton car;
     PreDatabase controller;
+    boolean button1Selected ;
+    boolean button2Selected ;
+    boolean button3Selected ;
     double soglia =0.5;
 
     @Override
@@ -74,6 +81,9 @@ public class FragmentNovità extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_novita, container, false);
+        bike =(ImageButton) view.findViewById(R.id.bike);
+        walk =(ImageButton)  view.findViewById(R.id.walking);
+        car =(ImageButton)  view.findViewById(R.id.car);
         controller = PreDatabase.getInstance(null, null,null);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         geoLocation = (TextView) view.findViewById(R.id.geoLocation);
@@ -178,6 +188,54 @@ public class FragmentNovità extends Fragment {
             versione.setText(versionName);
         }
 
+        /*SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("edificio", edificioScoperto);
+        editor.apply();*/
+
+        SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+
+        bike.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("proviamolo", " bike");
+                editor.putBoolean("bike",true);
+                editor.putBoolean("car",false);
+                editor.apply();
+                /*button1Selected = true;
+                button2Selected = false;
+                button3Selected = false;
+                updateButtonState();*/
+            }
+        });
+        car.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("proviamolo", " car");
+                editor.putBoolean("car",true);
+                editor.putBoolean("bike",false);
+                editor.apply();
+                /*button1Selected = false;
+                button2Selected = true;
+                button3Selected = false;
+                updateButtonState();*/
+            }
+        });
+        walk.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("proviamolo", " walk");
+                editor.putBoolean("car",false);
+                editor.putBoolean("bike",false);
+                editor.apply();
+                /*button1Selected = false;
+                button2Selected = false;
+                button3Selected = true;
+                updateButtonState();*/
+            }
+        });
+
 
         return view;
     }
@@ -204,5 +262,25 @@ public class FragmentNovità extends Fragment {
 
         return distance;
     }
+
+    /*private void updateButtonState() {
+        if (button1Selected) {
+            bike.setSelected(true);
+        } else {
+            bike.setSelected(false);
+        }
+
+        if (button2Selected) {
+            car.setSelected(true);
+        } else {
+            car.setSelected(false);
+        }
+
+        if (button3Selected) {
+            walk.setSelected(true);
+        } else {
+            walk.setSelected(false);
+        }
+    }*/
 
 }

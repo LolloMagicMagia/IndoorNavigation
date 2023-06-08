@@ -66,6 +66,7 @@ import dataFirebase.ViewModel;
 
 import com.example.osmdroidex2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.imageview.ShapeableImageView;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -135,6 +136,8 @@ public class FragmentOSM extends Fragment {
                 mViewModel.getAllAule().observe(getActivity(), new Observer<List<Aula>>() {
                     @Override
                     public void onChanged(List<Aula> aulas) {
+                        //Non ricreo l'oggetto se è Singlenton, ma inverità non mi serve che cambia, a sto punto non serve manco il
+                        //LiveData
                         controller = PreDatabase.getInstance(getContext(),edificios,aulas);
                         posizioneEdifici =controller.getEdificio();
                         map.invalidate();
@@ -186,10 +189,27 @@ public class FragmentOSM extends Fragment {
         Context ctx = getContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
+        ///////// Per scegliere che tipologia di routing voglio
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        boolean bike= sharedPreferences.getBoolean("bike",false);
+        boolean car= sharedPreferences.getBoolean("car",false);
+
         //Manager per calcolare in automatico il routing
         roadManager = new OSRMRoadManager(ctx, "Prova indoor");
         //Per cambiare route e metterlo bike
         /*((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);*/
+
+        if(car){
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
+            Log.d("proviamolo", " car");
+        }else if(bike){
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);
+            Log.d("proviamolo", " bike");
+        }else {
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
+            Log.d("proviamolo", " walk");
+        }
+        ////////////
 
         //Vado a creare la mappa
         map = (MapView)  view.findViewById(R.id.map);

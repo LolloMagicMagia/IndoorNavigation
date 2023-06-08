@@ -290,6 +290,99 @@
         </LinearLayout>
     </ScrollView>
 
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="8dp">
+
+        <ImageButton
+            android:id="@+id/walking"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="25dp"
+            android:background="#D2D2D2"
+            android:padding="2dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView2"
+            app:srcCompat="@drawable/walking" />
+
+        <ImageButton
+            android:id="@+id/bike"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="30dp"
+            android:layout_marginTop="5dp"
+            android:background="#D2D2D2"
+            android:padding="2dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cardView3"
+            app:srcCompat="@drawable/bicicletta" />
+
+        <ImageButton
+            android:id="@+id/car"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:layout_marginTop="5dp"
+            android:background="#D2D2D2"
+            android:padding="2dp"
+            app:layout_constraintEnd_toStartOf="@+id/walking"
+            app:layout_constraintStart_toEndOf="@+id/bike"
+            app:layout_constraintTop_toBottomOf="@+id/cardView"
+            app:srcCompat="@drawable/car" />
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_cardview"
+            app:layout_constraintEnd_toStartOf="@+id/cardView2"
+            app:layout_constraintStart_toEndOf="@+id/cardView3"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckedTextView
+                android:id="@+id/macchina"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Macchina" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView2"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="23dp"
+            android:background="@drawable/bg_cardview"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckedTextView
+                android:id="@+id/Piedi"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Piedi" />
+        </androidx.cardview.widget.CardView>
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/cardView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="15dp"
+            android:background="@drawable/bg_cardview"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <CheckedTextView
+                android:id="@+id/Bicicletta"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Bicicletta" />
+        </androidx.cardview.widget.CardView>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
     <TextView
         android:id="@+id/textView2"
         android:layout_width="match_parent"
