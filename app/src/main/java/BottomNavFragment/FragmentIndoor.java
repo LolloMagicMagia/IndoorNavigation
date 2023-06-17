@@ -133,7 +133,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     PreDatabase controller;
     private SharedPreferences sharedPreferences;
-
     private int floorCount;
 
 
@@ -164,13 +163,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         floorCount = 0;
 
-
-
         //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
         String edificio = sharedPreferences.getString("edificio", null);
         String destinazione = sharedPreferences.getString("destinazione",null);
-
-        changeFloor(edificio);
 
         if(edificio == null){
             mapBitmap = BitmapFactory.decodeResource(getResources(),
@@ -181,7 +176,28 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             getMapFloor(edificio,destinazione);
         }
 
+        changeFloor(edificio);
         //////////////////////////
+
+        /*nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount  < controller.getNumberOfFloor(edificio)){
+                    floorCount++;
+                }else{
+                }
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount > 0){
+                    floorCount--;
+                }else{
+                }
+            }
+        });*/
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -810,9 +826,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(floorCount + 1 < controller.getNumberOfFloor(edificio)){
+                if(floorCount  < controller.getNumberOfFloor(edificio)){
                     floorCount++;
-
+                    Log.d("countFloor", "" + floorCount);
                 }else{
                     //Toast.makeText(this, "limite piani raggiunto", Toast.LENGTH_SHORT).show();
                 }
@@ -822,8 +838,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         backBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(floorCount - 1 < controller.getNumberOfFloor(edificio)){
+                if(floorCount > 0){
                     floorCount--;
+                    Log.d("countFloor", "" + floorCount);
                 }else{
                     //Toast.makeText(this, "limite piani raggiunto", Toast.LENGTH_SHORT).show();
                 }
