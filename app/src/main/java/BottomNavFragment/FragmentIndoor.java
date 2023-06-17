@@ -123,12 +123,18 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private Button btn_start;
 
+    private Button nextBtn;
+
+    private Button backBtn;
+
     private boolean[] user = new boolean[1];
 
     private TextView txt_passi;
 
     PreDatabase controller;
     private SharedPreferences sharedPreferences;
+
+    private int floorCount;
 
 
     /**
@@ -152,13 +158,24 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         controller = PreDatabase.getInstance(null,null,null);
         startPoint = view.findViewById(R.id.starPoint);
 
+
+        nextBtn = view.findViewById(R.id.nextBtn);
+        backBtn = view.findViewById(R.id.backBtn);
+
+        floorCount = 0;
+
+
+
         //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
         String edificio = sharedPreferences.getString("edificio", null);
         String destinazione = sharedPreferences.getString("destinazione",null);
 
+        changeFloor(edificio);
+
         if(edificio == null){
             mapBitmap = BitmapFactory.decodeResource(getResources(),
                     R.drawable.u14);
+            edificio = "u14";
         }else{
             endPoint.setText(destinazione);  // Imposta il valore di endPoint prima di chiamare getMapFloor()
             getMapFloor(edificio,destinazione);
@@ -787,6 +804,31 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         }
 
         mapBitmap = bit;
+    }
+
+    public void changeFloor(String edificio){
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount + 1 < controller.getNumberOfFloor(edificio)){
+                    floorCount++;
+
+                }else{
+                    //Toast.makeText(this, "limite piani raggiunto", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount - 1 < controller.getNumberOfFloor(edificio)){
+                    floorCount--;
+                }else{
+                    //Toast.makeText(this, "limite piani raggiunto", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
     }
 
 }

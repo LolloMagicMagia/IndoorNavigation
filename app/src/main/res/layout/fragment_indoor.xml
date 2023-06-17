@@ -206,22 +206,51 @@
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <Button
-            android:backgroundTint="#8C4444"
-            android:id="@+id/btn_avvia"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="690dp"
-            android:layout_width="wrap_content"
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Start" />
+            android:layout_gravity="bottom">
 
-        <Button
-            android:id="@+id/btn_user"
-            android:layout_width="48dp"
-            android:layout_height="60dp"
-            android:layout_marginLeft="330dp"
-            android:layout_marginTop="690dp"
-            android:backgroundTint="#ff33b5e5" />
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/btn_avvia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:backgroundTint="#8C4444"
+                    android:text="Start" />
+
+                <Button
+                    android:id="@+id/backBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0.3"
+                    android:background="@drawable/baseline_keyboard_arrow_left_24" />
+
+                <Button
+                    android:id="@+id/nextBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0.3"
+                    android:background="@drawable/baseline_keyboard_arrow_right_24" />
+
+                <Button
+                    android:id="@+id/btn_user"
+                    android:layout_width="48dp"
+                    android:layout_height="60dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="1"
+                    android:backgroundTint="#ff33b5e5" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
 
     </FrameLayout>
 
