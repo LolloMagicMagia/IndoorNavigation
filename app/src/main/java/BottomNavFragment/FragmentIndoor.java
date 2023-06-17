@@ -778,7 +778,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             if(controller.getFloor(destinazione) != null){
                 endPoint.setText(destinazione);
                 endPoint.invalidate();
-                optTxt.setText(destinazione);
                 int i = controller.getFloor(destinazione);
                 String appartenenzaEdificio = controller.getAppartenenza(destinazione);
                 bit = controller.getMap(appartenenzaEdificio, i);
