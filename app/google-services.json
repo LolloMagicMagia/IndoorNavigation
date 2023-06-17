@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "945778129603",
+    "project_id": "osmdroid-5c20a",
+    "storage_bucket": "osmdroid-5c20a.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:945778129603:android:e234db9e72f53213930076",
+        "android_client_info": {
+          "package_name": "com.example.osmdroidex2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "945778129603-l8eup1ookqeij30b4gv07dklqaoedr97.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBZooUPSma-PU_Ru6jt3xqvVNDjZhvXFJc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "945778129603-l8eup1ookqeij30b4gv07dklqaoedr97.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
