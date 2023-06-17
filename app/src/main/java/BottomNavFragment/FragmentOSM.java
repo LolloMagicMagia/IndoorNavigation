@@ -138,7 +138,7 @@ public class FragmentOSM extends Fragment {
                     public void onChanged(List<Aula> aulas) {
                         //Non ricreo l'oggetto se è Singlenton, ma inverità non mi serve che cambia, a sto punto non serve manco il
                         //LiveData
-                        controller = PreDatabase.getInstance(getContext(),edificios,aulas);
+                        controller = PreDatabase.newChange(getContext(),edificios,aulas);
                         posizioneEdifici =controller.getEdificio();
                         map.invalidate();
                     }

@@ -23,6 +23,11 @@ public class PreDatabase {
         return controller;
     }
 
+    public static PreDatabase newChange(Context context, List<Edificio> edificios, List<Aula> aulas){
+        controller = new PreDatabase(context, edificios, aulas);
+        return controller;
+    }
+
     public GeoPoint getGeoPoint(String posizione){
         return listOfGeoPoint.getGeoPoint(posizione);
     }
