@@ -381,6 +381,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 if (nodeSphere == null) {
                     btn_start.setVisibility(View.VISIBLE);
                     btn_start.setText("START");
+                    path = null;
                     showpath = false;
                     txt_passi.setText("0");
                 }
