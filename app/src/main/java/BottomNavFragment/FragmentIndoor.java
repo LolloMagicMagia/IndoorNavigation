@@ -647,11 +647,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             mGravity[0] = mGravity[0] - event.values[0];
             mGravity[1] = mGravity[1] - event.values[1];
             mGravity[2] = mGravity[2] - event.values[2];
-            mGravity[0] = 0.09f;
-            mGravity[1] = 0.59f;
-            mGravity[2] = 2.28f;
-        //Toast.makeText(this, ""+mGravity[0]+" "+mGravity[1]+" "+mGravity[2], Toast.LENGTH_SHORT).show();
-           float x_acceleration = event.values[0];
+
+            float x_acceleration = event.values[0];
             float y_acceleration = event.values[1];
             float z_acceleration = event.values[2];
 
