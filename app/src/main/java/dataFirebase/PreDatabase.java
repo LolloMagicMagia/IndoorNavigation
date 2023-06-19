@@ -64,4 +64,8 @@ public class PreDatabase {
         }
     }
 
+    public Edificio getEdificioU6(){
+        return listOfGeoPoint.getEdificioU6();
+    }
+
 }

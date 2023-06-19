@@ -85,6 +85,8 @@ public class FragmentOSM extends Fragment {
     // Dichiarazione del timer
     CountDownTimer timer;
 
+    boolean listenerGps=true;
+
 
     ArrayList<GeoPoint> posizioneEdifici;
     MapView map;
@@ -367,6 +369,7 @@ public class FragmentOSM extends Fragment {
 
                 }//Se l'utente non ha scelto una partenza allora mostro solo la destinazione
                 if(destinazioneSelezionata != null && map != null){
+                    gpsManager.disableFollowLocation();
                     mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
                     mapController.setZoom(18);
                     addRemoveMarker(false,aulaSelezionata);
@@ -456,11 +459,16 @@ public class FragmentOSM extends Fragment {
                     aulaSelezionata = new Marker(map);
                     //tutti questi parametri verranno presi dal database se ne avremo bisogno
                     //per ora ho scelto delle descrizioni fisse per non complicare troppo il codice
+
+                    Log.d("EdificioU6",""+controller.getEdificioU6());
                     aulaSelezionata.setPosition(point);
                     aulaSelezionata.setTitle("Nome del luogo");
                     aulaSelezionata.setSubDescription("Piano 1");
                     aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
                     addRemoveMarker(true, aulaSelezionata);
+
+                    gpsManager.disableFollowLocation();
+
                     mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
                     //prendo il punto dove devo metterlo
                     mapController.setZoom(18);
@@ -496,6 +504,9 @@ public class FragmentOSM extends Fragment {
             @Override
             public void onClick(View view) {
                 if(destinazioneSelezionata!=null){
+
+                    gpsManager.disableFollowLocation();
+
                     mapController = map.getController();
                     mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
                 }
@@ -626,83 +637,7 @@ public class FragmentOSM extends Fragment {
 
         //Forse questo if devo toglierlo, devo metterlo e ogni volta che abilito o faccio qualche operazione col gps, chiedo i permessi
         if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            gpsManager.getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
-                    if(posizioneAttuale == true) {
-
-                        //serve per capire se sono fuori dall'uni
-                        GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
-                       /* BoundingBox boxUni2 = map.getBoundingBox();*/
-
-                        //Fatta per non calcolare il percorso fuori dalla mappa dell'uni, poichè pensavo che
-                        //se sono fuori dall'area dell'uni, non vado manco a calcolare il percorso. Così
-                        //da avere solo un pezzo di mappa. La parte commentata è proprio questo comportamento
-                        //che ho rimosso
-
-                        /*if (boxUni2.contains(currentLocation)) {*/
-                            if(!map.getOverlayManager().contains(gpsManager.getMyLocationNewOverlay())){
-                                gpsManager.enableMyLocation();
-                            }
-                            //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
-                            if (waypoints2 != null && roadOverlay != null) {
-
-                                // Verifica se la distanza supera la soglia massima
-                                ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
-                                double minDistance = 100;
-                                for (GeoPoint roadPoint : strada) {
-                                    Location roadLocation = new Location("");
-                                    roadLocation.setLatitude(roadPoint.getLatitude());
-                                    roadLocation.setLongitude(roadPoint.getLongitude());
-                                    double distance = location.distanceTo(roadLocation);
-                                    if (distance < minDistance) {
-                                        minDistance = distance;
-                                    }
-                                }
-
-                                if (minDistance >= 50) {
-                                    waypoints2 = new ArrayList<GeoPoint>();
-                                    waypoints2.add(currentLocation);
-                                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                                    ex.execute();
-                                }
-
-                            }
-
-                        /*} else {
-                            if (gpsManager.getLocationNewOverlay() != null) {
-                                map.getOverlays().remove(gpsManager.getLocationNewOverlay());
-
-                                if (roadOverlay != null) {
-                                    addRemoveLayerLine(false, roadOverlay);
-                                }
-                                map.invalidate();
-                            }
-
-                        }*/
-                    }
-                }
-
-                //Cosa fare se tolgo il gps
-                @Override
-                public void onProviderDisabled(String provider) {
-                    gpsManager.disableMyLocation();
-                }
-
-                //Cosa fare se abilito il gps
-                @Override
-                public void onProviderEnabled(String provider) {
-                    //In questo caso aggiorno la posizione
-                    Log.d("gpsenabled", "funge");
-                    gpsManager.enableMyLocation();
-                }
-
-                @Override
-                public void onStatusChanged(String provider, int status,
-                                            Bundle extras) {
-                }
-            });
+            getLocation();
         }
 
         return view;
@@ -710,6 +645,11 @@ public class FragmentOSM extends Fragment {
 
     private void getLocation(){
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
+            if(listenerGps==true){
+                Log.d("gpsenabled", "funge10");
+                locationListener();
+                listenerGps=false;
+            }
             if(partenzaSelezionata!="Posizione Attuale"){
                 gpsManager.enableMyLocation();
             }else{
@@ -717,6 +657,7 @@ public class FragmentOSM extends Fragment {
             }
 
         } else {
+            Log.d("gpsenabled", "funge12");
             requestPermission();
         }
     }
@@ -725,7 +666,9 @@ public class FragmentOSM extends Fragment {
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
             waypoints2.add(gpsManager.getMyLocationNewOverlay());
             mapController.animateTo(gpsManager.getMyLocationNewOverlay());
+            Log.d("gpsenabled", "funge13");
         } else {
+            Log.d("gpsenabled", "funge14");
             requestPermission();
         }
     }
@@ -734,34 +677,44 @@ public class FragmentOSM extends Fragment {
         AlertDialog.Builder builder =new AlertDialog.Builder(getContext());
         builder.setMessage("Device location is turned off, Turn on The device location, Do you want to turn on location?");
         builder.setCancelable(false);
+        Log.d("gpsenabled", "funge150");
         builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 startActivity(new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS));
+                Log.d("gpsenabled", "funge151");
             }
         });
         builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                Log.d("gpsenabled", "funge152");
                 dialogInterface.cancel();
             }
         });
+        Log.d("gpsenabled", "funge153");
         AlertDialog dialog=builder.create();
         dialog.show();
     }
 
+
     private void requestPermission(){
-        ActivityCompat.requestPermissions(getActivity(),
+        Log.d("gpsenabled", "funge15");
+        requestPermissions(
                 new String[]{Manifest.permission.ACCESS_FINE_LOCATION},10);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d("gpsenabled", "funge16");
         if (requestCode == 10) {
+            Log.d("gpsenabled", "funge17");
             if (grantResults.length ==1  && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d("gpsenabled", "funge18");
                 getLocation();
             } else {
+                Log.d("gpsenabled", "funge19");
                 // Autorizzazione negata, gestire di conseguenza
             }
         }
@@ -933,4 +886,87 @@ public class FragmentOSM extends Fragment {
         gpsManager.disableMyLocation();
     }
 
+    public void locationListener(){
+        if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
+            Log.d("gpsenabled", "funge0");
+        }
+        Log.d("gpsenabled", "funge1");
+        gpsManager.getLocationManager().requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 5, new LocationListener() {
+            @Override
+            public void onLocationChanged(Location location) {
+                //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
+                if(posizioneAttuale == true) {
+
+                    //serve per capire se sono fuori dall'uni
+                    GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
+                    /* BoundingBox boxUni2 = map.getBoundingBox();*/
+
+                    //Fatta per non calcolare il percorso fuori dalla mappa dell'uni, poichè pensavo che
+                    //se sono fuori dall'area dell'uni, non vado manco a calcolare il percorso. Così
+                    //da avere solo un pezzo di mappa. La parte commentata è proprio questo comportamento
+                    //che ho rimosso
+
+                    /*if (boxUni2.contains(currentLocation)) {*/
+                    if(!map.getOverlayManager().contains(gpsManager.getMyLocationNewOverlay())){
+                        gpsManager.enableMyLocation();
+                    }
+                    //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
+                    if (waypoints2 != null && roadOverlay != null) {
+
+                        // Verifica se la distanza supera la soglia massima
+                        ArrayList<GeoPoint> strada = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();
+                        double minDistance = 100;
+                        for (GeoPoint roadPoint : strada) {
+                            Location roadLocation = new Location("");
+                            roadLocation.setLatitude(roadPoint.getLatitude());
+                            roadLocation.setLongitude(roadPoint.getLongitude());
+                            double distance = location.distanceTo(roadLocation);
+                            if (distance < minDistance) {
+                                minDistance = distance;
+                            }
+                        }
+
+                        if (minDistance >= 50) {
+                            waypoints2 = new ArrayList<GeoPoint>();
+                            waypoints2.add(currentLocation);
+                            FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                            ex.execute();
+                        }
+
+                    }
+
+                        /*} else {
+                            if (gpsManager.getLocationNewOverlay() != null) {
+                                map.getOverlays().remove(gpsManager.getLocationNewOverlay());
+
+                                if (roadOverlay != null) {
+                                    addRemoveLayerLine(false, roadOverlay);
+                                }
+                                map.invalidate();
+                            }
+
+                        }*/
+                }
+            }
+
+            //Cosa fare se tolgo il gps
+            @Override
+            public void onProviderDisabled(String provider) {
+                gpsManager.disableMyLocation();
+            }
+
+            //Cosa fare se abilito il gps
+            @Override
+            public void onProviderEnabled(String provider) {
+                //In questo caso aggiorno la posizione
+                Log.d("gpsenabled", "funge");
+                gpsManager.enableMyLocation();
+            }
+
+            @Override
+            public void onStatusChanged(String provider, int status,
+                                        Bundle extras) {
+            }
+        });
+    }
 }

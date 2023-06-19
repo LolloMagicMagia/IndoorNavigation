@@ -21,7 +21,7 @@ public class ListOfGeoPoint {
 
     private ViewModel mViewModel;
 
-    //Dati del natabase
+    //Dati del database
     List<Edificio> mEdificios;
     Edificio u14D;
     Edificio u6D;
@@ -121,6 +121,16 @@ public class ListOfGeoPoint {
     public String getAppartenenza(String aula){
         //ritorna l'edificio
         return contenuto.get(aula);
+    }
+
+    public Edificio getEdificioU6(){
+        Edificio u6F = null;
+        for(Edificio ed: mEdificios){
+            if(ed.getNomeEdificio().equals("u6")) {
+                u6F = ed;
+            }
+        }
+        return u6F;
     }
 
     private void populate(){

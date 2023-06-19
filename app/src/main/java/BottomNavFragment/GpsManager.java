@@ -55,8 +55,8 @@ public class GpsManager {
         myLocationNewOverlay=null;
         }
         mapView.invalidate();
-
     }
+
     public void enableMyLocation(){
         if(myLocationNewOverlay==null){
             enableMyLocationOverlay();
@@ -69,6 +69,11 @@ public class GpsManager {
         myLocationNewOverlay.enableMyLocation();
         myLocationNewOverlay.enableFollowLocation();
         mapView.invalidate();
+    }
+
+    public void disableFollowLocation(){
+        myLocationNewOverlay.disableMyLocation();
+        myLocationNewOverlay.disableFollowLocation();
     }
 
     public boolean gpsEnabled(){
