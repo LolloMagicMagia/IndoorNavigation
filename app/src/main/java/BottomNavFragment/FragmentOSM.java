@@ -770,12 +770,16 @@ public class FragmentOSM extends Fragment {
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificioScoperto);
         int position = i ;
         Bitmap bitmap = controller.getMap(edificio,position);
+        Log.d("provaGetFloor", edificio+" B "+bitmap+ " O " + overlay+" position "+ position);
 
         if (overlay != null) {
-            map.getOverlays().remove(overlay);
+            map.getOverlayManager().remove(overlay);
+            Log.d("provaGetFloor", "yes");
+            map.invalidate();
         }
 
         if(bitmap!=null) {
+            Log.d("provaGetFloor", "no");
             overlay = new GroundOverlay();
             overlay.setTransparency(0.0f);
             overlay.setImage(bitmap);
@@ -805,10 +809,11 @@ public class FragmentOSM extends Fragment {
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificio);
         int position = i ;
         Bitmap bitmap = controller.getMap(edificio,position);
-        Log.d("provaGetFloor", edificio+" "+bitmap+ " " + overlay);
+        Log.d("provaGetFloor", edificio+" B "+bitmap+ "O " + overlay+" position "+ position);
 
         if (overlay != null) {
-            map.getOverlays().remove(overlay);
+            map.getOverlayManager().remove(overlay);
+            map.invalidate();
         }
 
         if(bitmap!=null) {
