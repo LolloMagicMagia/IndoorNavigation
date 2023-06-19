@@ -20,7 +20,14 @@ public class IndoorNavigation {
         this.indicatorDrawer = indicatorDrawer;
     }
 
-    public Graph.Node stepNavigation(List<Graph.Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start){
+    public Graph.Node stepNavigation(List<Graph.Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean cancel){
+
+        if (cancel) {
+            Toast.makeText(context  , "Canceled Trip", Toast.LENGTH_SHORT).show();
+            start[0] = false;
+            clearPath(mapView, indicatorImage);
+            return null;
+        }
 
         if(path == null || path.size() == 0){
 
