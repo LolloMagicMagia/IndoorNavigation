@@ -6,13 +6,16 @@ import androidx.room.PrimaryKey;
 import androidx.room.Relation;
 import androidx.room.TypeConverters;
 
+import com.example.osmdroidex2.Graph;
+import com.example.osmdroidex2.GraphTypeConverter;
+
 import org.osmdroid.util.GeoPoint;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Entity(tableName = "edificio_universita")
-@TypeConverters(GeoPointConverter.class)
+@TypeConverters({GeoPointConverter.class, GraphTypeConverter.class})
 public class Edificio {
 
     //nome dell'edificio
@@ -29,11 +32,17 @@ public class Edificio {
     GeoPoint posizione;
     int numeroFloor;
 
+    // Conversione di graph0 in formato stringa
+    Graph graph0;
+
+    // Conversione di graph1 in formato stringa
+    Graph graph1;
+
     //Aule 1 e 2 con tutte le informazioni a riguardo
     /*@Relation(parentColumn = "nomeEdificio", entityColumn = "nomeEdificio")
     public List<Aula> aule;*/
 
-    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor){
+    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor,Graph graph0, Graph graph1){
         this.nomeEdificio=nomeEdificio;
         this.left_below=left_below;
         this.left_up=left_up;
@@ -41,6 +50,9 @@ public class Edificio {
         this.right_down=right_down;
         this.posizione=posizione;
         this.numeroFloor=numeroFloor;
+
+        this.graph1 = graph1;
+        this.graph0 = graph0;
     }
 
 

@@ -73,4 +73,5 @@ dependencies {
 
     //ghero
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'
 }

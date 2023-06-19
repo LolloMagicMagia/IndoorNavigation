@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+
 /**
  * La classe Graph rappresenta un grafo non orientato pesato.
  * Fornisce metodi per aggiungere nodi e archi al grafo, e per trovare il percorso più
@@ -23,13 +24,23 @@ public class Graph {
 
     private Bitmap mapBitmap;
 
+    private String piano;
+
     /**
      * Costruttore della classe Graph.
      * Inizializza la mappa dei nodi.
      */
     public Graph(Bitmap mapBitmap) {
         nodes = new HashMap<>();
-        this.mapBitmap = mapBitmap;
+        //this.mapBitmap = mapBitmap;
+    }
+    public Graph(String idPiano) {
+        nodes = new HashMap<>();
+        //this.mapBitmap = mapBitmap;
+        this.piano = idPiano;
+    }
+    public Graph() {
+        nodes = new HashMap<>();
     }
 
     /**
@@ -40,7 +51,7 @@ public class Graph {
      * @param y Coordinata y del nodo
      */
     public void addNode(String id, float x, float y, String roomType, String availability, String crowdness) {
-        nodes.put(id, new Node(id, x * mapBitmap.getWidth(), y * mapBitmap.getHeight(), roomType,
+        nodes.put(id, new Node(id, x /** mapBitmap.getWidth()*/, y /* mapBitmap.getHeight()*/, roomType,
                 availability, crowdness));
     }
 
@@ -208,11 +219,10 @@ public class Graph {
             return roomType;
         }
 
-        /**
-         * Restituisce la lista di archi adiacenti al nodo.
-         *
-         * @return La lista di archi adiacenti al nodo
-         */
+        /*
+         Restituisce la lista di archi adiacenti al nodo.
+         @return La lista di archi adiacenti al nodo
+        */
         public List<Edge> getEdges() {
             return edges;
         }
@@ -238,11 +248,6 @@ public class Graph {
         }
     }
 
-
-    /**
-     * Classe interna Edge che rappresenta un arco nel grafo.
-     * Contiene un nodo destinazione e un peso associato all'arco.
-     */
     public static class Edge {
         private Node destination;
         private int weight;
@@ -252,20 +257,11 @@ public class Graph {
             this.weight = weight;
         }
 
-        /**
-         * Restituisce il nodo destinazione dell'arco.
-         *
-         * @return Il nodo destinazione dell'arco
-         */
         public Node getDestination() {
             return destination;
         }
 
-        /**
-         * Restituisce il peso dell'arco.
-         *
-         * @return Il peso dell'arco
-         */
+
         public int getWeight() {
             return weight;
         }
