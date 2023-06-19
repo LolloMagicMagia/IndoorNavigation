@@ -3,6 +3,7 @@ package BottomNavFragment;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.CountDownTimer;
+import android.os.Environment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,20 +20,28 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import org.osmdroid.tileprovider.MapTileProviderArray;
+import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.modules.IArchiveFile;
+import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.OfflineTileProvider;
+import org.osmdroid.tileprovider.modules.TileDownloader;
+import org.osmdroid.tileprovider.modules.TileWriter;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -50,28 +59,25 @@ import android.widget.ImageButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.FragmentManager;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-import androidx.navigation.fragment.NavHostFragment;
 
 
 import Adapter.CustomAdapter;
 import dataFirebase.Aula;
 import dataFirebase.Edificio;
-import dataFirebase.PreDatabase;
+import dataFirebase.Controller;
 import dataFirebase.ViewModel;
 
 import com.example.osmdroidex2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.android.material.imageview.ShapeableImageView;
+import com.google.gson.Gson;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.compass.CompassOverlay;
 
 public class FragmentOSM extends Fragment {
 
@@ -113,7 +119,7 @@ public class FragmentOSM extends Fragment {
 
     //Ho creato una classe intermezza tra la mia applicazione e i dati. Così l'unica classe che si dovrà
     //andare a modificare è in questo caso il PreDatabase.
-    PreDatabase controller;
+    Controller controller;
 
 
     //Tiene conto della destinazione selezionata, se è un aula prende quel valore se no ritorna null
@@ -140,7 +146,7 @@ public class FragmentOSM extends Fragment {
                     public void onChanged(List<Aula> aulas) {
                         //Non ricreo l'oggetto se è Singlenton, ma inverità non mi serve che cambia, a sto punto non serve manco il
                         //LiveData
-                        controller = PreDatabase.newChange(getContext(),edificios,aulas);
+                        controller = Controller.newChange(getContext(),edificios,aulas);
                         posizioneEdifici =controller.getEdificio();
                         map.invalidate();
                     }
@@ -587,6 +593,7 @@ public class FragmentOSM extends Fragment {
             public void onClick(View view) {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
+
 
                 editor.putString("edificio", edificioScoperto);
 

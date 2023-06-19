@@ -7,13 +7,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
 import android.os.Bundle;
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,37 +20,19 @@ import android.view.ViewGroup;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import org.osmdroid.api.IMapController;
-import org.osmdroid.bonuspack.routing.RoadManager;
-
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
+import org.osmdroid.tileprovider.MapTileProviderBase;
 import org.osmdroid.views.MapView;
-import org.osmdroid.views.overlay.GroundOverlay;
-import org.osmdroid.views.overlay.Polyline;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import androidx.lifecycle.ViewModelProvider;
-
-import Adapter.CustomAdapter;
-import dataFirebase.PreDatabase;
-import dataFirebase.ViewModel;
+import dataFirebase.Controller;
 
 import com.example.osmdroidex2.BuildConfig;
 import com.example.osmdroidex2.R;
+import com.google.gson.Gson;
 
-import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
-import org.osmdroid.views.overlay.Marker;
-import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
-import org.osmdroid.views.overlay.mylocation.MyLocationNewOverlay;
-import org.w3c.dom.Text;
 
 public class FragmentNovità extends Fragment {
     MapView map;
@@ -65,7 +45,7 @@ public class FragmentNovità extends Fragment {
     private ImageButton bike;
     private ImageButton walk;
     private ImageButton car;
-    PreDatabase controller;
+    Controller controller;
     boolean button1Selected ;
     boolean button2Selected ;
     boolean button3Selected ;
@@ -84,7 +64,7 @@ public class FragmentNovità extends Fragment {
         bike =(ImageButton) view.findViewById(R.id.bike);
         walk =(ImageButton)  view.findViewById(R.id.walking);
         car =(ImageButton)  view.findViewById(R.id.car);
-        controller = PreDatabase.getInstance(null, null,null);
+        controller = Controller.getInstance(null, null,null);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
         geoLocation = (TextView) view.findViewById(R.id.geoLocation);
         position = (TextView) view.findViewById(R.id.position);

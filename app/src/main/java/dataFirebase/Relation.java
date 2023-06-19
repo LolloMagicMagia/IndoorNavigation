@@ -13,11 +13,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class ListOfGeoPoint {
+public class Relation {
     //Quello che vado a fare è andare a prendere i dati dal database e poi metterli in ArrayList e HashMap
     //per andare a definire le relazioni esistenti che mi serviranno nell'applicazione. Tutti i dati utili
     //per andare a definirle vengono presi direttamente nel database, e al cambio dei dati nel database
-    //la classe verrà ridefinita.
+    //la classe verrà ridefinita. Questo viene fatto poichè il fragmentOSM richiede dei dati molti velocemente
+    // e quindi sembrava sbagliato andare ogni volta a prendere i dati direttamente dal db
 
     private ViewModel mViewModel;
 
@@ -51,7 +52,7 @@ public class ListOfGeoPoint {
     //In base all'edificio scelto e al piano gli passo la BitMap
     HashMap<String, HashMap<Integer, Bitmap>> showFloor;
 
-    public ListOfGeoPoint(Context context, List<Edificio> edificios, List<Aula> aulas){
+    public Relation(Context context, List<Edificio> edificios, List<Aula> aulas){
         super();
         mcontext=context;
         mEdificios=edificios;

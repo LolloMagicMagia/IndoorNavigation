@@ -4,7 +4,6 @@ import static android.content.Context.SENSOR_SERVICE;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,24 +14,19 @@ import android.graphics.drawable.Drawable;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
-import android.hardware.SensorListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.CompoundButton;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.IndoorNavigation;
@@ -47,7 +41,7 @@ import com.google.android.material.textfield.TextInputEditText;
 import java.util.List;
 import java.util.Locale;
 
-import dataFirebase.PreDatabase;
+import dataFirebase.Controller;
 
 public class FragmentIndoor extends Fragment implements SensorEventListener {
     private int stepCount = 0;
@@ -131,7 +125,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private TextView txt_passi;
 
-    PreDatabase controller;
+    Controller controller;
     private SharedPreferences sharedPreferences;
     private int floorCount;
 
@@ -154,7 +148,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         drawBtn = view.findViewById(R.id.drawBtn);
         endPoint = view.findViewById(R.id.endPoint);
         optTxt = view.findViewById(R.id.btn_options);
-        controller = PreDatabase.getInstance(null,null,null);
+        controller = Controller.getInstance(null,null,null);
         startPoint = view.findViewById(R.id.starPoint);
 
 
