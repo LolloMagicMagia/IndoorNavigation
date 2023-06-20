@@ -27,4 +27,9 @@ public interface EdificioDao {
     @Query("SELECT * FROM edificio_universita ORDER BY nomeEdificio DESC")
      LiveData<List<Edificio>> getAllEdificio();
 
+
+    @Query("SELECT * FROM edificio_universita WHERE nomeEdificio = :edificio")
+     LiveData<Edificio> getEdificioObj(String edificio);
+
+
 }

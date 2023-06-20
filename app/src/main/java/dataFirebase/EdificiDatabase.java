@@ -1,6 +1,9 @@
 package dataFirebase;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.media.Image;
 import android.os.AsyncTask;
 
 import androidx.annotation.NonNull;
@@ -10,13 +13,14 @@ import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.osmdroidex2.Graph;
-import com.example.osmdroidex2.GraphTypeConverter;
+import com.example.osmdroidex2.R;
 
 import org.osmdroid.util.GeoPoint;
 
-import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import BottomNavFragment.FragmentIndoor;
 
 @Database(entities = {Edificio.class,Aula.class}, version=2, exportSchema = false)
 public abstract class EdificiDatabase extends RoomDatabase {
@@ -36,7 +40,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
     public static synchronized  EdificiDatabase getInstance(Context context){
         if(instance == null){
             instance = Room.databaseBuilder(context.getApplicationContext(),
-                    EdificiDatabase.class, "edifici_database")
+                            EdificiDatabase.class, "edifici_database")
                     .fallbackToDestructiveMigration()
                     .addCallback(roomCallback)
                     .build();
@@ -69,7 +73,8 @@ public abstract class EdificiDatabase extends RoomDatabase {
             GeoPoint right_top = new GeoPoint(45.52335, 9.22009);
             GeoPoint right_down = new GeoPoint(45.52381, 9.21886);
 
-            mEdificioDao.insertEdificio(new Edificio(left_down, left_top, right_top, right_down,"u14",new GeoPoint(45.52374,9.21971),2, null, null));
+            mEdificioDao.insertEdificio(new Edificio(left_down, left_top, right_top, right_down,
+                    "u14",new GeoPoint(45.52374,9.21971),2, null, null));
 
             Graph graph_u60 = new Graph();
 
@@ -90,13 +95,15 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u61.addEdge("1", "1.09", 1);
             graph_u61.addEdge("1.09", "1.10", 1);
 
-
             GeoPoint left_downU6= new GeoPoint(45.51773, 9.2126);
             GeoPoint left_topU6= new GeoPoint(45.51929, 9.21347);
             GeoPoint right_topU6 = new GeoPoint(45.51906, 9.21426);
             GeoPoint right_downU6 = new GeoPoint(45.51752, 9.21341);
-            mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,"u6",new GeoPoint(45.51847, 9.21297),6,graph_u60,graph_u61));
-            mEdificioDao.insertEdificio(new Edificio(null,null,null,null,"u7", new GeoPoint(45.51731, 9.21291), 4,null,null));
+            mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,
+                    "u6",new GeoPoint(45.51847, 9.21297),6,
+                    graph_u60, graph_u61));
+            mEdificioDao.insertEdificio(new Edificio(null,null,null,null,
+                    "u7", new GeoPoint(45.51731, 9.21291), 4,null,null));
 
             mAulaDao.insertAula(new Aula(0,new GeoPoint(45.52361, 9.21971),"u14","u14AulaFirstFloor"));
             mAulaDao.insertAula(new Aula(1,new GeoPoint(45.52352, 9.21994),"u14","u14AulaSecondFloor"));

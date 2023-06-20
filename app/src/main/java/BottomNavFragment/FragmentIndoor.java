@@ -26,7 +26,10 @@ import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.IndoorNavigation;
@@ -42,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 
 import dataFirebase.Controller;
+import dataFirebase.Edificio;
+import dataFirebase.ViewModel;
 
 public class FragmentIndoor extends Fragment implements SensorEventListener {
     private int stepCount = 0;
@@ -121,6 +126,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private Button backBtn;
 
+    private Edificio edificioObj;
+
     private boolean[] user = new boolean[1];
 
     private TextView txt_passi;
@@ -140,7 +147,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
+        // INIZIALIZZAZIONE
+
         View view = inflater.inflate(R.layout.fragment_indoor, container, false);
+
+        ViewModel viewModel = new ViewModelProvider(this).get(ViewModel.class);
 
         //Vado a prendere i valori precedenti
         sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -171,27 +183,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         }
 
         changeFloor(edificio);
-        //////////////////////////
-
-        /*nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(floorCount  < controller.getNumberOfFloor(edificio)){
-                    floorCount++;
-                }else{
-                }
-            }
-        });
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(floorCount > 0){
-                    floorCount--;
-                }else{
-                }
-            }
-        });*/
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -227,6 +218,13 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         indoorNav = new IndoorNavigation(mapDrawer, getContext(), indicatorDrawer);
 
         //float[] touchPoint = new float[2];
+
+        viewModel.getEdificioObj(edificio).observe(getActivity(), new Observer<Edificio>() {
+            @Override
+            public void onChanged(Edificio edificio) {
+                setEdificio(edificio);
+            }
+        });
 
         graph = new Graph(mapBitmap);
         path = null;
@@ -296,6 +294,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         graph.addEdge("9", "1.1", 1);
 
         Graph.Node nodeA = graph.getNode("A");
+
 
         mapImage = view.findViewById(R.id.map_image);
         mapImage.setImageDrawable(map);
@@ -412,6 +411,16 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         }); */
         checkPoint(indicatorImage, graph, mapBitmap, touchTransformer, indicatorImage);
         return view;
+    }
+
+
+    @Override
+    public void onStart() {
+        super.onStart();
+
+
+
+
     }
 
     private void disegnaIndicatore(float x, float y) {
@@ -847,5 +856,18 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             }
         });
     }
+
+    public void setEdificio(Edificio edificio) {
+        this.edificioObj = edificio;
+        Log.d("edificio", edificioObj.getNomeEdificio());
+        setGraph(edificioObj.getGraph0());
+        //setMapBitmap();
+        getMapFloor(edificio.getNomeEdificio(), null);
+    }
+
+    public void setGraph(Graph graph){
+        this.graph = graph;
+    }
+
 
 }

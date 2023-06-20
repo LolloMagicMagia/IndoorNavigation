@@ -18,6 +18,9 @@ public class ViewModel extends AndroidViewModel {
         mRepository = new Repository(application);
     }
 
+     public LiveData<Edificio> getEdificioObj(String edificio){
+        return mRepository.getEdificioObj(edificio);
+     }
     public void insert(Edificio edificio){
         mRepository.insertEdificio(edificio);
     }

@@ -1,5 +1,7 @@
 package dataFirebase;
 
+import android.graphics.Bitmap;
+
 import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
@@ -15,7 +17,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity(tableName = "edificio_universita")
-@TypeConverters({GeoPointConverter.class, GraphTypeConverter.class})
+@TypeConverters({GeoPointConverter.class, GraphTypeConverter.class, BitMapConverter.class})
 public class Edificio {
 
     //nome dell'edificio
@@ -110,5 +112,9 @@ public class Edificio {
 
     public void setRight_down(GeoPoint right_down) {
         this.right_down = right_down;
+    }
+
+    public Graph getGraph0(){
+        return graph0;
     }
 }

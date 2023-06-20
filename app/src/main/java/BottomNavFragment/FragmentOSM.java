@@ -619,6 +619,8 @@ public class FragmentOSM extends Fragment {
                 navController.popBackStack(R.id.fragmentIndoor, true);
                 navController.navigate(R.id.fragmentIndoor);
 
+
+
             }
         });
 

@@ -13,7 +13,11 @@ public class Repository {
     private LiveData<List<Edificio>> allEdifiocs;
     private LiveData<List<Aula>> allAule;
     private Edificio mEdificioLiveData;
- 
+
+    public LiveData<Edificio> getEdificioObj(String edificio){
+        return mEdificioDao.getEdificioObj(edificio);
+    }
+
 
     public Repository(Application application){
         EdificiDatabase database = EdificiDatabase.getInstance(application);
