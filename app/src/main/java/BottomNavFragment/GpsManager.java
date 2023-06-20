@@ -49,10 +49,10 @@ public class GpsManager {
 
     public void disableMyLocation(){
         if(myLocationNewOverlay!=null){
-        myLocationNewOverlay.disableMyLocation();
-        myLocationNewOverlay.disableFollowLocation();
-        mapView.getOverlays().remove(myLocationNewOverlay);
-        myLocationNewOverlay=null;
+            myLocationNewOverlay.disableMyLocation();
+            myLocationNewOverlay.disableFollowLocation();
+            mapView.getOverlays().remove(myLocationNewOverlay);
+            myLocationNewOverlay=null;
         }
         mapView.invalidate();
     }
@@ -72,6 +72,9 @@ public class GpsManager {
     }
 
     public void disableFollowLocation(){
+        if(myLocationNewOverlay==null){
+            enableMyLocationOverlay();
+        }
         myLocationNewOverlay.disableMyLocation();
         myLocationNewOverlay.disableFollowLocation();
     }

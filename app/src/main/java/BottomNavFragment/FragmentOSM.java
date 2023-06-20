@@ -1,6 +1,9 @@
 package BottomNavFragment;
 
+import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
+
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -10,6 +13,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
 import org.osmdroid.bonuspack.routing.Road;
@@ -23,19 +27,29 @@ import android.content.pm.PackageManager;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBase;
 import org.osmdroid.tileprovider.modules.IArchiveFile;
+import org.osmdroid.tileprovider.modules.IFilesystemCache;
 import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
 import org.osmdroid.tileprovider.modules.OfflineTileProvider;
 import org.osmdroid.tileprovider.modules.TileDownloader;
 import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.config.Configuration;
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
+import org.osmdroid.util.MapTileIndex;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -222,11 +236,14 @@ public class FragmentOSM extends Fragment {
         //Vado a creare la mappa
         map = (MapView)  view.findViewById(R.id.map);
         map.setTileSource(TileSourceFactory.MAPNIK);
+
         map.setHorizontalMapRepetitionEnabled(false);
         map.setVerticalMapRepetitionEnabled(false);
         //Then we add default zoom buttons, and ability to zoom with 2 fingers (multi-touch)
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
+
+
 
         //We can move the map on a default view point. For this, we need access to the map controller:
         mapController = map.getController();
