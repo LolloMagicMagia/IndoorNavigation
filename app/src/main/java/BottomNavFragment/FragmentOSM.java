@@ -2,6 +2,8 @@ package BottomNavFragment;
 
 import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
+import android.content.BroadcastReceiver;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -13,6 +15,7 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
+import org.mapsforge.map.layer.cache.TileCache;
 import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
@@ -24,17 +27,27 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
+import org.osmdroid.config.IConfigurationProvider;
+import org.osmdroid.tileprovider.IRegisterReceiver;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.modules.GEMFFileArchive;
 import org.osmdroid.tileprovider.modules.IArchiveFile;
 import org.osmdroid.tileprovider.modules.IFilesystemCache;
+import org.osmdroid.tileprovider.modules.MapTileDownloader;
+import org.osmdroid.tileprovider.modules.MapTileFileArchiveProvider;
 import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
+import org.osmdroid.tileprovider.modules.MapTileModuleProviderBase;
+import org.osmdroid.tileprovider.modules.NetworkAvailabliltyCheck;
 import org.osmdroid.tileprovider.modules.OfflineTileProvider;
 import org.osmdroid.tileprovider.modules.TileDownloader;
 import org.osmdroid.tileprovider.modules.TileWriter;
+import org.osmdroid.tileprovider.tilesource.BitmapTileSourceBase;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
 import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
 import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
 import org.osmdroid.util.MapTileIndex;
 import org.osmdroid.views.CustomZoomButtonsController;
@@ -244,6 +257,8 @@ public class FragmentOSM extends Fragment {
         map.setMultiTouchControls(true);
 
 
+        /*initializeMap(map);*/
+
 
         //We can move the map on a default view point. For this, we need access to the map controller:
         mapController = map.getController();
@@ -259,12 +274,14 @@ public class FragmentOSM extends Fragment {
         //serve per rimuovere lo zoom automatico
         map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
 
+
         //Marker per mostrare solo la destinazione
         scelta= new Marker(map);
 
         //**** chiama il metodo enableMyLocationOverlay
         gpsManager=new GpsManager(map);
         gpsManager.enableMyLocationOverlay();
+
 
 
         //per avere solo una porzione di mappa dell'uni
@@ -853,69 +870,23 @@ public class FragmentOSM extends Fragment {
         }
     }
 
-    //Va a calcolarti il percorso data la partenza e destinazione dagli spinner
-    public class ExecuteTaskInBackGround extends AsyncTask<Void, Void, Void> {
-        /*ArrayList<GeoPoint> waypoint3;*/
+    /*public void initializeMap(MapView map){
+        BoundingBox boundingBox = new BoundingBox(45.5265,9.2231, 45.5166, 9.2093);
+        int zoomMin =(int) map.getMinZoomLevel();
+        int zoomMax =(int) map.getMaxZoomLevel();
 
-        @Override
-        protected Void doInBackground(Void... voids) {
-            GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
-            addRemoveLayerLine(false,roadOverlay);
-            waypoints2.add(destinazione);
-            Road road = roadManager.getRoad(waypoints2);
-            roadOverlay = RoadManager.buildRoadOverlay(road);
-            /*waypoint3 = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();*/
-            addRemoveLayerLine(true,roadOverlay);
-            return null;
+        for (int zoomLevel = zoomMin; zoomLevel <= zoomMax; zoomLevel++) {
+            for (double tileX = boundingBox.getLonEast(); tileX <= boundingBox.getLonWest(); tileX++) {
+                for (double tileY = boundingBox.getLatNorth(); tileY <= boundingBox.getLatSouth(); tileY++) {
+                    // Carica l'immagine di mappa dal servizio esterno nella cache
+                    Drawable tile = MAPNIK.getDrawable(zoomLevel, tileX, tileY);
+                    if (tile != null) {
+                        tileCache.putTile(TileIndex.getTileIndex(zoomLevel, tileX, tileY), tile);
+                    }
+                }
+            }
         }
-       /* @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            Animation animation = new Animation(map, waypoint3, getContext());
-            animation.addOverlays();
-        }*/
-    }
-
-    //Vado a mostrare il numero dei piani riguardante il singolo edificio che sto guardando
-    private void updateItems(int nfloor) {
-        // Aggiorna la lista degli elementi
-        items.clear();
-
-        for (int i = 0; i < nfloor; i++) {
-            items.add("" + (i));
-        }
-        // Aggiorna l'adapter con i nuovi dati
-        adapter.updateItems(items);
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        gpsManager.enableMyLocation();
-        map.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        gpsManager.disableMyLocation();
-        map.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        gpsManager.disableMyLocation();
-        map.onDetach();
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        gpsManager.disableMyLocation();
-    }
+    }*/
 
     public void locationListener(){
         if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -1000,4 +971,70 @@ public class FragmentOSM extends Fragment {
             }
         });
     }
+
+    //Va a calcolarti il percorso data la partenza e destinazione dagli spinner
+    public class ExecuteTaskInBackGround extends AsyncTask<Void, Void, Void> {
+        /*ArrayList<GeoPoint> waypoint3;*/
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
+            addRemoveLayerLine(false,roadOverlay);
+            waypoints2.add(destinazione);
+            Road road = roadManager.getRoad(waypoints2);
+            roadOverlay = RoadManager.buildRoadOverlay(road);
+            /*waypoint3 = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();*/
+            addRemoveLayerLine(true,roadOverlay);
+            return null;
+        }
+       /* @Override
+        protected void onPostExecute(Void result) {
+            super.onPostExecute(result);
+            Animation animation = new Animation(map, waypoint3, getContext());
+            animation.addOverlays();
+        }*/
+    }
+
+    //Vado a mostrare il numero dei piani riguardante il singolo edificio che sto guardando
+    private void updateItems(int nfloor) {
+        // Aggiorna la lista degli elementi
+        items.clear();
+
+        for (int i = 0; i < nfloor; i++) {
+            items.add("" + (i));
+        }
+        // Aggiorna l'adapter con i nuovi dati
+        adapter.updateItems(items);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        gpsManager.enableMyLocation();
+        map.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+
+        gpsManager.disableMyLocation();
+        map.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        gpsManager.disableMyLocation();
+        map.onDetach();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        gpsManager.disableMyLocation();
+    }
+
+
 }

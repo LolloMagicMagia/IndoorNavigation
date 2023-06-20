@@ -242,13 +242,13 @@
                     android:layout_weight="0.3"
                     android:background="@drawable/baseline_keyboard_arrow_right_24" />
 
-                <!--> <Button
+                 <Button
                     android:id="@+id/btn_user"
                     android:layout_width="48dp"
                     android:layout_height="60dp"
                     android:layout_gravity="bottom"
                     android:layout_weight="1"
-                    android:backgroundTint="#ff33b5e5" /> <-->
+                    android:backgroundTint="#ff33b5e5" />
 
             </LinearLayout>
         </androidx.cardview.widget.CardView>
