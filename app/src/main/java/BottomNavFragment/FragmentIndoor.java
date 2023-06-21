@@ -53,7 +53,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private int stepCount = 0;
     private boolean showpath = false;
     private int steppy = 0;
-    private boolean first = true;
+    //private boolean first = true;
     // ATTRIBUTI PER BUSSOLA
     private Graph.Node nodeSphere;
     private SensorManager sensorManager;
@@ -117,17 +117,18 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private IndoorNavigation indoorNav;
 
     private Button drawBtn;
-    private Button userBtn;
+    //private Button userBtn;
 
     private TouchTransformer touchTransformer;
 
     private Button btn_start;
+    private Button stepBtn;
 
     private Button nextBtn;
 
     private Button backBtn;
 
-    private boolean[] user = new boolean[1];
+    //private boolean[] user = new boolean[1];
 
     private TextView txt_passi;
 
@@ -153,15 +154,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         //Vado a prendere i valori precedenti
         sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
-        drawBtn = view.findViewById(R.id.drawBtn);
-        endPoint = view.findViewById(R.id.endPoint);
-        optTxt = view.findViewById(R.id.btn_options);
+        initializeViews(view);
+
         controller = Controller.getInstance(null,null,null);
-        startPoint = view.findViewById(R.id.starPoint);
-
-
-        nextBtn = view.findViewById(R.id.nextBtn);
-        backBtn = view.findViewById(R.id.backBtn);
 
         floorCount = 0;
 
@@ -188,20 +183,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         touchTransformer = new TouchTransformer();
 
-        txt_passi = view.findViewById(R.id.txt_passi);
+
         txt_passi.setText("0");
         position[0] = 0;
         position[1] = 0;
 
-
-        btn_start = view.findViewById(R.id.btn_avvia);
         start[0] = false;
-
-        indicator = getResources().getDrawable(R.drawable.indicator);
-        indicatorBitmap = BitmapFactory.decodeResource(getResources(),
-                R.drawable.indicator);
-
-        touchTransformer = new TouchTransformer();
 
         if (mapBitmap == null || indicatorBitmap == null) {
             Log.e("MainActivity", "Failed to load map image. " +
@@ -218,27 +205,21 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         //float[] touchPoint = new float[2];
 
-
-
         graph = new Graph(mapBitmap);
         path = null;
 
         initializeGraphNodes();
 
-
-
-        mapImage = view.findViewById(R.id.map_image);
         mapImage.setImageDrawable(map);
         mapImage.setImageBitmap(mapDrawer.getMapBitmap());
         mapImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        indicatorImage = view.findViewById(R.id.indicator_image);
         indicatorImage.setImageDrawable(indicator);
         indicatorImage.setImageBitmap(indicatorDrawer.getMapBitmap());
         indicatorImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-
         checkOptions();
+
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -295,8 +276,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             }
         });
 
-        Button stepBtn = view.findViewById(R.id.stepBtn);
-
         stepBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -314,8 +293,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         });
 
         //onCreate per bussola
-        compassImageView = view.findViewById(R.id.compass_image_view);
-        degreeTextView = view.findViewById(R.id.degree_text_view);
         sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
@@ -325,7 +302,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         steps[0] = 0;
 
-        /*userBtn = view.findViewById(R.id.btn_user);
+        /*
         user[0] = true;
         userBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -341,17 +318,27 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
             }
         });*/
-        checkPoint(indicatorImage, graph, mapBitmap, touchTransformer, indicatorImage);
+
+        checkPoint(graph, touchTransformer, indicatorImage);
         return view;
-
-
     }
 
-
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-    ////////////////////////////////////////FUNZIONI////////////////////////////////////////////////
-    ////////////////////////////////////////////////////////////////////////////////////////////////
-
+    private void initializeViews(View view) {
+        //userBtn = view.findViewById(R.id.btn_user);
+        drawBtn = view.findViewById(R.id.drawBtn);
+        endPoint = view.findViewById(R.id.endPoint);
+        optTxt = view.findViewById(R.id.btn_options);
+        startPoint = view.findViewById(R.id.starPoint);
+        nextBtn = view.findViewById(R.id.nextBtn);
+        backBtn = view.findViewById(R.id.backBtn);
+        txt_passi = view.findViewById(R.id.txt_passi);
+        btn_start = view.findViewById(R.id.btn_avvia);
+        mapImage = view.findViewById(R.id.map_image);
+        indicatorImage = view.findViewById(R.id.indicator_image);
+        stepBtn = view.findViewById(R.id.stepBtn);
+        compassImageView = view.findViewById(R.id.compass_image_view);
+        degreeTextView = view.findViewById(R.id.degree_text_view);
+    }
 
     public void next_back_Btn(String edificio){
         nextBtn.setOnClickListener(new View.OnClickListener() {
@@ -442,7 +429,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         graph.addEdge("9", "1.1", 1);
 
-        Graph.Node nodeA = graph.getNode("A");
+        //Graph.Node nodeA = graph.getNode("A");
     }
 
     private void disegnaIndicatore(float x, float y) {
@@ -549,7 +536,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         image.invalidate(); // Forza il ridisegno della PhotoView
     }
 
-    public void checkPoint(PhotoView mapImage, Graph graph, Bitmap mapBitmap, TouchTransformer touchTransformer, PhotoView indicatorImage){
+    public void checkPoint(Graph graph, TouchTransformer touchTransformer, PhotoView indicatorImage){
         indicatorImage.setOnViewTapListener(new OnViewTapListener() {
             @Override
             public void onViewTap(View view, float x, float y) {
@@ -681,9 +668,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             mGravity[0] = mGravity[0] - event.values[0];
             mGravity[1] = mGravity[1] - event.values[1];
             mGravity[2] = mGravity[2] - event.values[2];
-            mGravity[0] = 0.09f;
-            mGravity[1] = 0.59f;
-            mGravity[2] = 2.28f;
             //Toast.makeText(this, ""+mGravity[0]+" "+mGravity[1]+" "+mGravity[2], Toast.LENGTH_SHORT).show();
             float x_acceleration = event.values[0];
             float y_acceleration = event.values[1];
@@ -707,7 +691,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         float R[] = new float[9];
         float I[] = new float[9];
-        boolean success = getRotationMatrix(R, I, mGravity, mGeomagnetic);
+        boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
 
         if (success) {
             float orientation[] = new float[3];
@@ -757,80 +741,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
 
-    }
-
-    // metodo di SensorManager, trasferito in native per efficienza:
-    public static boolean getRotationMatrix(float[] R, float[] I,
-                                            float[] gravity, float[] geomagnetic) {
-        // TODO: move this to native code for efficiency
-        float Ax = gravity[0];
-        float Ay = gravity[1];
-        float Az = gravity[2];
-
-        final float normsqA = (Ax * Ax + Ay * Ay + Az * Az);
-        final float g = 9.81f;
-        final float freeFallGravitySquared = 0.01f * g * g;
-        if (normsqA < freeFallGravitySquared) {
-            // gravity less than 10% of normal value
-            return false;
-        }
-
-        final float Ex = geomagnetic[0];
-        final float Ey = geomagnetic[1];
-        final float Ez = geomagnetic[2];
-        float Hx = Ey * Az - Ez * Ay;
-        float Hy = Ez * Ax - Ex * Az;
-        float Hz = Ex * Ay - Ey * Ax;
-        final float normH = (float) Math.sqrt(Hx * Hx + Hy * Hy + Hz * Hz);
-
-        if (normH < 0.1f) {
-            // device is close to free fall (or in space?), or close to
-            // magnetic north pole. Typical values are  > 100.
-            return false;
-        }
-        final float invH = 1.0f / normH;
-        Hx *= invH;
-        Hy *= invH;
-        Hz *= invH;
-        final float invA = 1.0f / (float) Math.sqrt(Ax * Ax + Ay * Ay + Az * Az);
-        Ax *= invA;
-        Ay *= invA;
-        Az *= invA;
-        final float Mx = Ay * Hz - Az * Hy;
-        final float My = Az * Hx - Ax * Hz;
-        final float Mz = Ax * Hy - Ay * Hx;
-        if (R != null) {
-            if (R.length == 9) {
-                R[0] = Hx;     R[1] = Hy;     R[2] = Hz;
-                R[3] = Mx;     R[4] = My;     R[5] = Mz;
-                R[6] = Ax;     R[7] = Ay;     R[8] = Az;
-            } else if (R.length == 16) {
-                R[0]  = Hx;    R[1]  = Hy;    R[2]  = Hz;   R[3]  = 0;
-                R[4]  = Mx;    R[5]  = My;    R[6]  = Mz;   R[7]  = 0;
-                R[8]  = Ax;    R[9]  = Ay;    R[10] = Az;   R[11] = 0;
-                R[12] = 0;     R[13] = 0;     R[14] = 0;    R[15] = 1;
-            }
-        }
-        if (I != null) {
-            // compute the inclination matrix by projecting the geomagnetic
-            // vector onto the Z (gravity) and X (horizontal component
-            // of geomagnetic vector) axes.
-            final float invE = 1.0f / (float) Math.sqrt(Ex * Ex + Ey * Ey + Ez * Ez);
-            final float c = (Ex * Mx + Ey * My + Ez * Mz) * invE;
-            final float s = (Ex * Ax + Ey * Ay + Ez * Az) * invE;
-            if (I.length == 9) {
-                I[0] = 1;     I[1] = 0;     I[2] = 0;
-                I[3] = 0;     I[4] = c;     I[5] = s;
-                I[6] = 0;     I[7] = -s;     I[8] = c;
-            } else if (I.length == 16) {
-                I[0] = 1;     I[1] = 0;     I[2] = 0;
-                I[4] = 0;     I[5] = c;     I[6] = s;
-                I[8] = 0;     I[9] = -s;     I[10] = c;
-                I[3] = I[7] = I[11] = I[12] = I[13] = I[14] = 0;
-                I[15] = 1;
-            }
-        }
-        return true;
     }
 
     //Vado a implementare la logica per cui tramite le relazioni vado a prendere la mappa corretta
