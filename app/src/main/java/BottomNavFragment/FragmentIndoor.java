@@ -334,6 +334,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         checkPoint(indicatorImage, graph, mapBitmap, touchTransformer, indicatorImage);
         return view;
 
+
     }
 
 
