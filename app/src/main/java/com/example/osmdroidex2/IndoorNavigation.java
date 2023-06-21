@@ -58,7 +58,14 @@ public class IndoorNavigation {
 
     }*/
 
-    public Graph.Node stepNavigation(List<Graph.Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start){
+    public Graph.Node stepNavigation(List<Graph.Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop){
+
+        if(stop) {
+            Toast.makeText(context  , "Trip Canceled", Toast.LENGTH_SHORT).show();
+            start[0] = true;
+            clearPath(mapView, indicatorImage);
+            return null;
+        }
 
         if(path == null || path.size() == 0){
 

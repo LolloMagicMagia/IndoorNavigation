@@ -242,16 +242,24 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start);
+                if (btn_start.getText() == "CANCEL") {
+                    path = null;
+                    indoorNav.stepNavigation(null, mapImage, steppy, indicatorImage, start, true);
+                    btn_start.setText("START");
+                    showpath = false;
+                }
+                indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
                 steppy ++;
                 if (start[0]) {
                     start[0] = false;
-                    disegnaIndicatore(0, 0);
+                    //disegnaIndicatore(0, 0);
+                    btn_start.setText("START");
                 }
                 else {
                     if(showpath) {
                         start[0] = true;
-                        btn_start.setVisibility(View.GONE);
+                        //btn_start.setVisibility(View.GONE);
+                        btn_start.setText("CANCEL");
                     }
                 }
             }
@@ -293,7 +301,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
                 clearPath(true);
-                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start);
+                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
                 steppy ++;
                 if (nodeSphere == null) {
                     btn_start.setVisibility(View.VISIBLE);
@@ -315,7 +323,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         steps[0] = 0;
 
-        userBtn = view.findViewById(R.id.btn_user);
+        /*userBtn = view.findViewById(R.id.btn_user);
         user[0] = true;
         userBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -330,7 +338,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 }
 
             }
-        });
+        });*/
         checkPoint(indicatorImage, graph, mapBitmap, touchTransformer, indicatorImage);
         return view;
 
@@ -547,13 +555,13 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap);
                 float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap);
 
-                if (!user[0]) {
+                /*if (!user[0]) {
                     disegnaIndicatore(pointX, pointY);
                     position[0] = pointX;
                     position[1] = pointY;
                     user[0] = true;
                     userBtn.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
-                }
+                }*/
 
                 Graph.Node node = indoorNav.checkNode(graph, pointX, pointY);
                 final Dialog dialog = new Dialog(getContext());
@@ -725,7 +733,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         double dy = Math.abs(position[1]-nodeSphere.getY());
                         if (dx < 50 && dy < 50) {
                             clearPath(true);
-                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start);
+                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
                             steppy ++;
                             if (nodeSphere == null) {
                                 btn_start.setVisibility(View.VISIBLE);
