@@ -307,6 +307,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     btn_start.setVisibility(View.VISIBLE);
                     showpath = false;
                     txt_passi.setText("0");
+                    btn_start.setText("START");
+                    path = null;
                 }
             }
         });
