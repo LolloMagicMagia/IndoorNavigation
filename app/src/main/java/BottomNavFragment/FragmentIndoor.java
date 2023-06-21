@@ -143,6 +143,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
      *
      * @param savedInstanceState Bundle contenente lo stato precedente dell'activity
      */
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -177,27 +179,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         }
 
         changeFloor(edificio);
-        //////////////////////////
 
-        /*nextBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(floorCount  < controller.getNumberOfFloor(edificio)){
-                    floorCount++;
-                }else{
-                }
-            }
-        });
-
-        backBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(floorCount > 0){
-                    floorCount--;
-                }else{
-                }
-            }
-        });*/
+        next_back_Btn(edificio);
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -227,6 +210,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             return view;
         }
 
+
         mapDrawer = new MapDrawer(mapBitmap);
         indicatorDrawer = new MapDrawer(indicatorBitmap);
 
@@ -234,74 +218,14 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         //float[] touchPoint = new float[2];
 
+
+
         graph = new Graph(mapBitmap);
         path = null;
 
-        graph.addNode("1", (float) 2020.6055 / 3520, (float) 1991.6936 / 4186,  "atrium", "available", "notCrow");
-        graph.addNode("1.1", (float) 2278.0957 / 3520, (float) 1913.4905 / 4186,  "atrium", "available", "notCrow");
-        graph.addNode("1.2", (float) 1769.668 / 3520, (float) 1773.3766 / 4186,  "atrium", "available", "notCrow");
+        initializeGraphNodes();
 
-        graph.addNode("2", (float) 1965.1758 / 3520, (float) 2835.8684 / 4186,  "atrium", "available", "notCrow");
-        graph.addNode("2.1", (float) 1776.2207 / 3520, (float) 2523.056 / 4186,  "atrium", "available", "notCrow");
 
-        graph.addNode("3", (float) 866.89453 / 3520, (float) 2128.549 / 4186, "classroom", "available", "notCrow");
-        graph.addNode("3.1", (float) 1450.3027 / 3520, (float) 2089.4475 / 4186, "classroom", "available", "notCrow");
-
-        graph.addNode("4", (float) 827.79297 / 3520, (float) 1600.678 / 4186, "bathroom", "available", "notCrow");
-        graph.addNode("4.1", (float) 1029.8535 / 3520, (float) 1493.1487 / 4186, "bathroom", "available", "notCrow");
-
-        graph.addNode("5", (float) 1342.7734 / 3520, (float) 909.651 / 4186, "classroom", "available", "notCrow");
-        graph.addNode("5.1", (float) 1463.3008 / 3520, (float) 1209.4297 / 4186, "classroom", "available", "notCrow");
-
-        graph.addNode("6", (float) 1939.1797 / 3520, (float) 883.5833 / 4186, "classroom", "available", "notCrow");
-        graph.addNode("6.1", (float) 1763.1152 / 3520, (float) 1248.5312 / 4186, "classroom", "available", "notCrow");
-
-        graph.addNode("7", (float) 2046.709 / 3520, (float) 1493.1487 / 4186, "stairs", "available", "notCrow");  ////////////////////////////////////////////////// modificare
-
-        graph.addNode("8", (float) 1450.3027 / 3520, (float) 1519.2164 / 4186, "hallway", "available", "notCrow");
-        graph.addNode("8.1", (float) 1450.3027 / 3520, (float) 1789.669 / 4186, "hallway", "available", "notCrow");
-        graph.addNode("8.2", (float) 1776.2207 / 3520, (float) 1467.081 / 4186, "hallway", "available", "notCrow");
-
-        graph.addNode("9", (float) 2591.0156 / 3520, (float) 1913.4905 / 4186,  "atrium", "available", "notCrow");
-
-        graph.addEdge("1", "7", 1);    ////////////////////////////////////////// cancellare
-        graph.addEdge("7", "6", 1);    ////////////////////////////////////////// cancellare
-
-        graph.addEdge("1", "1.1", 1);
-        graph.addEdge("1", "1.2", 1);
-
-        graph.addEdge("2", "2.1", 1);
-
-        graph.addEdge("3", "3.1", 1);
-
-        graph.addEdge("4", "4.1", 1);
-
-        graph.addEdge("5", "5.1", 1);
-
-        graph.addEdge("6", "6.1", 1);
-
-        graph.addEdge("8", "8.1", 1);
-
-        graph.addEdge("8", "8.2", 1);
-
-        graph.addEdge("1", "2.1", 1);
-
-        graph.addEdge("1.2", "2.1", 1);
-        graph.addEdge("1.2", "8.1", 1);
-
-        graph.addEdge("3.1", "8.1", 1);
-
-        graph.addEdge("4.1", "8", 1);
-
-        graph.addEdge("5.1", "8", 1);
-
-        graph.addEdge("6.1", "8.2", 1);
-
-        graph.addEdge("7", "8.2", 1);
-
-        graph.addEdge("9", "1.1", 1);
-
-        Graph.Node nodeA = graph.getNode("A");
 
         mapImage = view.findViewById(R.id.map_image);
         mapImage.setImageDrawable(map);
@@ -409,6 +333,105 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         });
         checkPoint(indicatorImage, graph, mapBitmap, touchTransformer, indicatorImage);
         return view;
+
+    }
+
+
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+    ////////////////////////////////////////FUNZIONI////////////////////////////////////////////////
+    ////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    public void next_back_Btn(String edificio){
+        nextBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount  < controller.getNumberOfFloor(edificio)){
+                    floorCount++;
+                    Log.d("Piani", "" + floorCount);
+                }else{
+                }
+            }
+        });
+
+        backBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(floorCount > 0){
+                    floorCount--;
+                    Log.d("Piani", "" + floorCount);
+                }else{
+                }
+            }
+        });
+    }
+
+    public void initializeGraphNodes(){
+        graph.addNode("1", (float) 2020.6055 / 3520, (float) 1991.6936 / 4186,  "atrium", "available", "notCrow");
+        graph.addNode("1.1", (float) 2278.0957 / 3520, (float) 1913.4905 / 4186,  "atrium", "available", "notCrow");
+        graph.addNode("1.2", (float) 1769.668 / 3520, (float) 1773.3766 / 4186,  "atrium", "available", "notCrow");
+
+        graph.addNode("2", (float) 1965.1758 / 3520, (float) 2835.8684 / 4186,  "atrium", "available", "notCrow");
+        graph.addNode("2.1", (float) 1776.2207 / 3520, (float) 2523.056 / 4186,  "atrium", "available", "notCrow");
+
+        graph.addNode("3", (float) 866.89453 / 3520, (float) 2128.549 / 4186, "classroom", "available", "notCrow");
+        graph.addNode("3.1", (float) 1450.3027 / 3520, (float) 2089.4475 / 4186, "classroom", "available", "notCrow");
+
+        graph.addNode("4", (float) 827.79297 / 3520, (float) 1600.678 / 4186, "bathroom", "available", "notCrow");
+        graph.addNode("4.1", (float) 1029.8535 / 3520, (float) 1493.1487 / 4186, "bathroom", "available", "notCrow");
+
+        graph.addNode("5", (float) 1342.7734 / 3520, (float) 909.651 / 4186, "classroom", "available", "notCrow");
+        graph.addNode("5.1", (float) 1463.3008 / 3520, (float) 1209.4297 / 4186, "classroom", "available", "notCrow");
+
+        graph.addNode("6", (float) 1939.1797 / 3520, (float) 883.5833 / 4186, "classroom", "available", "notCrow");
+        graph.addNode("6.1", (float) 1763.1152 / 3520, (float) 1248.5312 / 4186, "classroom", "available", "notCrow");
+
+        graph.addNode("7", (float) 2046.709 / 3520, (float) 1493.1487 / 4186, "stairs", "available", "notCrow");  ////////////////////////////////////////////////// modificare
+
+        graph.addNode("8", (float) 1450.3027 / 3520, (float) 1519.2164 / 4186, "hallway", "available", "notCrow");
+        graph.addNode("8.1", (float) 1450.3027 / 3520, (float) 1789.669 / 4186, "hallway", "available", "notCrow");
+        graph.addNode("8.2", (float) 1776.2207 / 3520, (float) 1467.081 / 4186, "hallway", "available", "notCrow");
+
+        graph.addNode("9", (float) 2591.0156 / 3520, (float) 1913.4905 / 4186,  "atrium", "available", "notCrow");
+
+        graph.addEdge("1", "7", 1);    ////////////////////////////////////////// cancellare
+        graph.addEdge("7", "6", 1);    ////////////////////////////////////////// cancellare
+
+        graph.addEdge("1", "1.1", 1);
+        graph.addEdge("1", "1.2", 1);
+
+        graph.addEdge("2", "2.1", 1);
+
+        graph.addEdge("3", "3.1", 1);
+
+        graph.addEdge("4", "4.1", 1);
+
+        graph.addEdge("5", "5.1", 1);
+
+        graph.addEdge("6", "6.1", 1);
+
+        graph.addEdge("8", "8.1", 1);
+
+        graph.addEdge("8", "8.2", 1);
+
+        graph.addEdge("1", "2.1", 1);
+
+        graph.addEdge("1.2", "2.1", 1);
+        graph.addEdge("1.2", "8.1", 1);
+
+        graph.addEdge("3.1", "8.1", 1);
+
+        graph.addEdge("4.1", "8", 1);
+
+        graph.addEdge("5.1", "8", 1);
+
+        graph.addEdge("6.1", "8.2", 1);
+
+        graph.addEdge("7", "8.2", 1);
+
+        graph.addEdge("9", "1.1", 1);
+
+        Graph.Node nodeA = graph.getNode("A");
     }
 
     private void disegnaIndicatore(float x, float y) {

@@ -95,15 +95,15 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u61.addEdge("1", "1.09", 1);
             graph_u61.addEdge("1.09", "1.10", 1);*/
 
-            /*GeoPoint left_downU6= new GeoPoint(45.51773, 9.2126);
+            GeoPoint left_downU6= new GeoPoint(45.51773, 9.2126);
             GeoPoint left_topU6= new GeoPoint(45.51929, 9.21347);
             GeoPoint right_topU6 = new GeoPoint(45.51906, 9.21426);
             GeoPoint right_downU6 = new GeoPoint(45.51752, 9.21341);
             mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,
                     "u6",new GeoPoint(45.51847, 9.21297),6,
-                    graph_u60, graph_u61));
+                    null,null));
             mEdificioDao.insertEdificio(new Edificio(null,null,null,null,
-                    "u7", new GeoPoint(45.51731, 9.21291), 4,null,null));*/
+                    "u7", new GeoPoint(45.51731, 9.21291), 4,null,null));
 
             mAulaDao.insertAula(new Aula(0,new GeoPoint(45.52361, 9.21971),"u14","u14AulaFirstFloor"));
             mAulaDao.insertAula(new Aula(1,new GeoPoint(45.52352, 9.21994),"u14","u14AulaSecondFloor"));

@@ -197,6 +197,9 @@ public class MapDrawer {
     }
 
 
+    public void setMapBitmap(Bitmap mapBitmap){
+        this.mapBitmap = mapBitmap;
+    }
 
 
 
