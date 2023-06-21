@@ -465,7 +465,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     aSwitch.setChecked(true);
                 }
                 else aSwitch.setChecked(false);
-                if (available == "available") {
+                if (available == "unavailable") {
                     bSwitch.setChecked(true);
                 }
                 else bSwitch.setChecked(false);
