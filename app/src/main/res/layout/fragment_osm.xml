@@ -52,6 +52,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:background="@color/white"
+                    android:inputType="text|textNoSuggestions"
                     android:completionThreshold="2"
                     android:hint="@string/Partenza"
                     android:textColor="@android:color/black" />
@@ -62,7 +63,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="5dp"
                     android:background="@color/white"
-                    android:completionThreshold="2"
+                    android:completionThreshold="1"
+                    android:inputType="text|textNoSuggestions"
                     android:hint="@string/Destinazione"
                     android:textColor="@android:color/black" />
 

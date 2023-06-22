@@ -1,6 +1,5 @@
 package BottomNavFragment;
 
-import static org.osmdroid.tileprovider.tilesource.TileSourceFactory.MAPNIK;
 
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
@@ -9,6 +8,7 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -190,6 +190,8 @@ public class FragmentOSM extends Fragment {
         AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
         AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
 
+        spinnerDestinazione.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+        spinnerPartenza.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
         //per resettare le scelte
         logoReset=view.findViewById(R.id.imageView);
 

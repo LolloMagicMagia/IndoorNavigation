@@ -3,6 +3,7 @@ package BottomNavFragment;
 import android.content.Context;
 import android.location.LocationManager;
 
+import org.osmdroid.tileprovider.modules.MapTileModuleProviderBase;
 import org.osmdroid.util.GeoPoint;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.mylocation.GpsMyLocationProvider;
