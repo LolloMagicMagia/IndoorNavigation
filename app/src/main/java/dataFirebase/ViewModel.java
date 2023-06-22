@@ -6,7 +6,14 @@ import androidx.annotation.NonNull;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class ViewModel extends AndroidViewModel {
     private Repository mRepository;
@@ -38,6 +45,11 @@ public class ViewModel extends AndroidViewModel {
 
     public LiveData<List<Aula>> getAllAule(){
         return mRepository.getAllAule();
+    }
+
+    public Polyline routeCalculation(RoadManager roadManager, ArrayList<GeoPoint> waypoints2, Polyline roadOverlay) throws ExecutionException, InterruptedException {
+        Polyline roadRet = mRepository.routeCalculation(roadManager,waypoints2,roadOverlay);
+        return roadRet;
     }
 
 

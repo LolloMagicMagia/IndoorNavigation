@@ -66,6 +66,7 @@ import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -391,7 +392,7 @@ public class FragmentOSM extends Fragment {
                         waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
                     }
 
-                    // In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
+                    /*// In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
                     //quale destinazioni sono delle aule, e quindi se lo sono mi va a mostrare l'aula
                     // scelta tramite il marker
                     if(controller.getFloor(destinazioneSelezionata) != null){
@@ -404,9 +405,16 @@ public class FragmentOSM extends Fragment {
                             map.getOverlayManager().remove(overlay);
                         }
                         map.invalidate();
+                    }*/
+                    /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                    ex.execute();*/
+                    try {
+                        routeCalculation();
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
                     }
-                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                    ex.execute();
 
 
                 }//Se l'utente non ha scelto una partenza allora mostro solo la destinazione
@@ -475,7 +483,7 @@ public class FragmentOSM extends Fragment {
 
 
                     //SE E' UN AULA
-                    if (controller.getFloor(destinazioneSelezionata) != null) {
+                   /* if (controller.getFloor(destinazioneSelezionata) != null) {
                         //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
                         //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
                         // a qualche edificio,
@@ -487,11 +495,18 @@ public class FragmentOSM extends Fragment {
                             map.getOverlayManager().remove(overlay);
                         }
                         map.invalidate();
-                    }
+                    }*/
 
-                    FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                    ex.execute();
-                }
+                    /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                    ex.execute();*/
+                    try {
+                        routeCalculation();
+                    } catch (ExecutionException e) {
+                        throw new RuntimeException(e);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                }//ho messo qua un if che si ripete col primo perchè in questo modo va a farmi queste operazioni sia se partenza è null o non null
                 if(destinazioneSelezionata != null && map != null){
                     addRemoveMarker(false,aulaSelezionata);
                     aulaSelezionata=null;
@@ -519,7 +534,6 @@ public class FragmentOSM extends Fragment {
                         //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
                         // a qualche edificio,
                         getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
-
                     } else {
                         addRemoveMarker(true, aulaSelezionata);
                         if (overlay != null) {
@@ -770,16 +784,18 @@ public class FragmentOSM extends Fragment {
         if(add == true) {
             map.getOverlayManager().add(marker);
         } else {
-            map.getOverlays().remove(marker);
+            map.getOverlayManager().remove(marker);
         }
+        map.invalidate();
     }
 
     public void addRemoveLayerLine(boolean add, Polyline line){
         if(add == true) {
             map.getOverlayManager().add(line);
         }else{
-            map.getOverlays().remove(line);
+            map.getOverlayManager().remove(line);
         }
+        map.invalidate();
     }
 
     /**
@@ -933,8 +949,16 @@ public class FragmentOSM extends Fragment {
                         if (minDistance >= 50) {
                             waypoints2 = new ArrayList<GeoPoint>();
                             waypoints2.add(currentLocation);
-                            FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
-                            ex.execute();
+                            //forse devo chiamare il viewModel
+                            /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
+                            ex.execute();*/
+                            try {
+                                routeCalculation();
+                            } catch (ExecutionException e) {
+                                throw new RuntimeException(e);
+                            } catch (InterruptedException e) {
+                                throw new RuntimeException(e);
+                            }
                         }
 
                     }
@@ -975,8 +999,7 @@ public class FragmentOSM extends Fragment {
     }
 
     //Va a calcolarti il percorso data la partenza e destinazione dagli spinner
-    public class ExecuteTaskInBackGround extends AsyncTask<Void, Void, Void> {
-        /*ArrayList<GeoPoint> waypoint3;*/
+    /*public class ExecuteTaskInBackGround extends AsyncTask<Void, Void, Void> {
 
         @Override
         protected Void doInBackground(Void... voids) {
@@ -985,17 +1008,19 @@ public class FragmentOSM extends Fragment {
             waypoints2.add(destinazione);
             Road road = roadManager.getRoad(waypoints2);
             roadOverlay = RoadManager.buildRoadOverlay(road);
-            /*waypoint3 = (ArrayList<GeoPoint>) roadOverlay.getActualPoints();*/
             addRemoveLayerLine(true,roadOverlay);
             return null;
         }
-       /* @Override
-        protected void onPostExecute(Void result) {
-            super.onPostExecute(result);
-            Animation animation = new Animation(map, waypoint3, getContext());
-            animation.addOverlays();
-        }*/
+    }*/
+    public void routeCalculation() throws ExecutionException, InterruptedException {
+        //non cancella ne il path ne il marker
+        GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
+        addRemoveLayerLine(false,roadOverlay);
+        waypoints2.add(destinazione);
+        roadOverlay = mViewModel.routeCalculation(roadManager, waypoints2, roadOverlay);
+        addRemoveLayerLine(true,roadOverlay);
     }
+
 
     //Vado a mostrare il numero dei piani riguardante il singolo edificio che sto guardando
     private void updateItems(int nfloor) {

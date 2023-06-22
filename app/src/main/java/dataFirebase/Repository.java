@@ -5,7 +5,15 @@ import android.os.AsyncTask;
 
 import androidx.lifecycle.LiveData;
 
+import org.osmdroid.bonuspack.routing.Road;
+import org.osmdroid.bonuspack.routing.RoadManager;
+import org.osmdroid.util.GeoPoint;
+import org.osmdroid.views.MapView;
+import org.osmdroid.views.overlay.Polyline;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class Repository {
     private EdificioDao mEdificioDao;
@@ -36,6 +44,12 @@ public class Repository {
     }
     public void deleteEdificio(Edificio edificio){
         new DeleteEdificiAsyncTask(mEdificioDao).execute(edificio);
+    }
+
+    public Polyline routeCalculation(RoadManager roadManager, ArrayList<GeoPoint> waypoints2, Polyline roadOverlay) throws ExecutionException, InterruptedException {
+        Repository.RouteCalculationAsyncTask ex = new Repository.RouteCalculationAsyncTask(roadManager, waypoints2,roadOverlay);
+        Polyline roadRet = ex.execute().get();
+        return roadRet;
     }
 
     public LiveData<List<Edificio>> getAllEdificios(){
@@ -86,6 +100,25 @@ public class Repository {
         protected Void doInBackground(Edificio... edificios){
             edificioDao.delete(edificios[0]);
             return null;
+        }
+    }
+
+    private static class RouteCalculationAsyncTask extends AsyncTask<Void, Void, Polyline>{
+        private RoadManager roadManager;
+        private ArrayList<GeoPoint> waypoints2;
+        Polyline roadOverlay;
+
+        public RouteCalculationAsyncTask(RoadManager roadManager, ArrayList<GeoPoint> waypoints2, Polyline roadOverlay) {
+            this.roadManager=roadManager;
+            this.waypoints2 = waypoints2;
+            this.roadOverlay = roadOverlay;
+        }
+
+        @Override
+        protected Polyline doInBackground(Void... voids){
+            Road road =  roadManager.getRoad(waypoints2);
+            roadOverlay = RoadManager.buildRoadOverlay(road);
+            return roadOverlay;
         }
     }
 
