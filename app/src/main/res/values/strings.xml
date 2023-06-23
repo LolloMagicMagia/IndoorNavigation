@@ -11,4 +11,32 @@
     <string name="True">True</string>
     <string name="False">False</string>
     <string name="Default">----</string>
+
+    <string name="blank"></string>
+    <string name="u14">u14</string>
+    <string name="u6">u6</string>
+    <string name="PosizioneAttuale">Posizione Attuale</string>
+    <string name="u7">u7</string>
+    <string name="u14AulaFirstFloor">u14AulaFirstFloor</string>
+    <string name="StartingPoint">Starting Point</string>
+
+    <string name="ArrivalPoint">ArrivalPoint</string>
+    <string name="PathOptions">PathOptions</string>
+    <string name="ShowPath">Show Path</string>
+    <string name="SHOWSTEPS">SHOW STEPS</string>
+    <string name="Start">Start</string>
+    <string name="Franco">Utente</string>
+
+    <string name="Step">Steps:</string>
+    <string name="AnsiaSociale">Ansia Sociale</string>
+    <string name="Carrozina">Carrozina</string>
+    <string name="Claustrofobia">Claustrofobia</string>
+    <string name="Bicicletta">Bicicletta</string>
+    <string name="Macchina">Macchina</string>
+    <string name="Piedi">Piedi</string>
+    <string name="SendaProblem">Send a Problem</string>
+
+
+
+
 </resources>

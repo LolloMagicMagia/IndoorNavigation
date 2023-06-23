@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import org.mapsforge.map.layer.cache.TileCache;
@@ -31,6 +32,7 @@ import org.osmdroid.config.IConfigurationProvider;
 import org.osmdroid.tileprovider.IRegisterReceiver;
 import org.osmdroid.tileprovider.MapTileProviderArray;
 import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.cachemanager.CacheManager;
 import org.osmdroid.tileprovider.modules.GEMFFileArchive;
 import org.osmdroid.tileprovider.modules.IArchiveFile;
 import org.osmdroid.tileprovider.modules.IFilesystemCache;
@@ -78,11 +80,13 @@ import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.GridView;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -251,7 +255,7 @@ public class FragmentOSM extends Fragment {
 
         //Vado a creare la mappa
         map = (MapView)  view.findViewById(R.id.map);
-        map.setTileSource(TileSourceFactory.MAPNIK);
+        /*map.setTileSource(TileSourceFactory.MAPNIK);*/
 
         map.setHorizontalMapRepetitionEnabled(false);
         map.setVerticalMapRepetitionEnabled(false);
@@ -284,6 +288,8 @@ public class FragmentOSM extends Fragment {
         //**** chiama il metodo enableMyLocationOverlay
         gpsManager=new GpsManager(map);
         gpsManager.enableMyLocationOverlay();
+
+
 
 
 
@@ -702,6 +708,50 @@ public class FragmentOSM extends Fragment {
         return view;
     }
 
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        /*CacheManager c =new CacheManager(map);
+        BoundingBox boundingBox = new BoundingBox(45.5265,9.2231, 45.5166, 9.2093);
+        int zoomMin =12;
+        int zoomMax =19;
+        try{
+        c.downloadAreaAsync(getContext(), boundingBox, zoomMin, zoomMax, new CacheManager.CacheManagerCallback() {
+            @Override
+            public void onTaskComplete() {
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "Download complete!", Toast.LENGTH_LONG).show();
+                }
+            }
+
+            @Override
+            public void updateProgress(int progress, int currentZoomLevel, int zoomMin, int zoomMax) {
+
+            }
+
+            @Override
+            public void downloadStarted() {
+
+            }
+
+            @Override
+            public void setPossibleTilesInArea(int total) {
+
+            }
+
+            @Override
+            public void onTaskFailed(int errors) {
+                if (getActivity() != null) {
+                    Toast.makeText(getActivity(), "Download complete with " + errors + " errors", Toast.LENGTH_LONG).show();
+                }
+            }
+        });
+        } catch (WindowManager.BadTokenException e) {
+            e.printStackTrace();
+        }*/
+    }
+
     private void getLocation(){
         if(ActivityCompat.checkSelfPermission(getContext(),Manifest.permission.ACCESS_FINE_LOCATION)==PackageManager.PERMISSION_GRANTED){
             if(listenerGps==true){
@@ -1048,6 +1098,7 @@ public class FragmentOSM extends Fragment {
 
         gpsManager.disableMyLocation();
         map.onPause();
+
     }
 
     @Override
