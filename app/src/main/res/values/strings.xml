@@ -15,10 +15,10 @@
     <string name="blank"></string>
     <string name="u14">u14</string>
     <string name="u6">u6</string>
-    <string name="PosizioneAttuale">Posizione Attuale</string>
+    <string name="posizioneAttuale">Posizione Attuale</string>
     <string name="u7">u7</string>
     <string name="u14AulaFirstFloor">u14AulaFirstFloor</string>
-    <string name="StartingPoint">Starting Point</string>
+    <string name="u14AulaSecondFloor">u14AulaSecondFloor</string>
 
     <string name="ArrivalPoint">ArrivalPoint</string>
     <string name="PathOptions">PathOptions</string>
@@ -36,7 +36,15 @@
     <string name="Piedi">Piedi</string>
     <string name="SendaProblem">Send a Problem</string>
 
+    <string name="Latitude">Latitude</string>
+    <string name="Longitude">Longitude</string>
+    <string name="ZeroPointZero">0.0</string>
+    <string name="Go">Go</string>
+    <string name="Cancel">Cancel</string>
+    <string name="AvoidStaircase">Avoid Staircase</string>
+    <string name="AvoidUnavailablePaths">Avoid Unavailable Paths</string>
+    <string name="AvoidCrowdedPaths">Avoid Crowded Paths</string>
 
-
+    <string name="StartingPoint">StartingPoint</string>
 
 </resources>

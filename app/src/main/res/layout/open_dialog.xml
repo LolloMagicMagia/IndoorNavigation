@@ -26,7 +26,7 @@
             android:layout_marginTop="20dp"
             android:layout_weight="1"
             android:minHeight="48dp"
-            android:text="Avoid Staircase"
+            android:text="@string/AvoidStaircase"
             android:textColor="@color/black"/>
 
         <Switch
@@ -40,7 +40,7 @@
             android:layout_weight="1"
             android:checked="false"
             android:minHeight="48dp"
-            android:text="Avoid Unavailable Paths"
+            android:text="@string/AvoidUnavailablePaths"
             android:textColor="@color/black"
             android:textSize="26sp"
             tools:ignore="DuplicateClickableBoundsCheck" />
@@ -57,7 +57,7 @@
             android:layout_weight="1"
             android:checked="false"
             android:minHeight="48dp"
-            android:text="Avoid Crowded Paths"
+            android:text="@string/AvoidCrowdedPaths"
             android:textColor="@color/black"
             android:textSize="26sp" />
 

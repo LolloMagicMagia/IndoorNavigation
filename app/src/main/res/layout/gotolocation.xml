@@ -9,9 +9,10 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Latitude"/>
+            android:layout_height="wrap_content"
+            android:text="@string/Latitude"/>
         <EditText
-            android:hint="0.0"
+            android:hint="@string/ZeroPointZero"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="numberDecimal|numberSigned"
@@ -24,21 +25,22 @@
         android:layout_height="wrap_content">
         <TextView
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" android:text="Longitude"/>
+            android:layout_height="wrap_content"
+            android:text="@string/Longitude"/>
         <EditText
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="0.0"
+            android:hint="@string/ZeroPointZero"
             android:inputType="numberDecimal|numberSigned"
             android:id="@+id/latlonPicker_longitude"/>
     </LinearLayout>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:id="@+id/latlonPicker_ok" android:text="Go"/>
+        android:layout_height="wrap_content" android:id="@+id/latlonPicker_ok" android:text="@string/Go"/>
 
     <Button
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" android:id="@+id/latlonPicker_cancel" android:text="Cancel"/>
+        android:layout_height="wrap_content" android:id="@+id/latlonPicker_cancel" android:text="@string/Cancel"/>
 
 </LinearLayout>

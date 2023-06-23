@@ -195,8 +195,8 @@ public class FragmentOSM extends Fragment {
         AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
         AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
 
-        spinnerDestinazione.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
-        spinnerPartenza.setFilters(new InputFilter[]{new InputFilter.LengthFilter(10)});
+        spinnerDestinazione.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
+        spinnerPartenza.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
         //per resettare le scelte
         logoReset=view.findViewById(R.id.imageView);
 
@@ -216,8 +216,11 @@ public class FragmentOSM extends Fragment {
         gridView.setAdapter(adapter);
 
         //popolo le mie scelte, successivamente si andranno a prendere dal database
-        List<String> opzioniPartenza = Arrays.asList("","u14","u6","Posizione Attuale","u7", "u14AulaFirstFloor","u14AulaSecondFloor");
-        List<String> opzioniDestinazione = Arrays.asList("u6","u14", "u7", "u14AulaFirstFloor","u14AulaSecondFloor");
+        List<String> opzioniPartenza = Arrays.asList(getString(R.string.blank),getString(R.string.u14),
+                getString(R.string.u6),getString(R.string.posizioneAttuale),getString(R.string.u7),
+                getString(R.string.u14AulaFirstFloor),getString(R.string.u14AulaSecondFloor));
+        List<String> opzioniDestinazione = Arrays.asList(getString(R.string.u6),getString(R.string.u14),
+                getString(R.string.u7), getString(R.string.u14AulaFirstFloor),getString(R.string.u14AulaSecondFloor));
         // Crea un adapter per le opzioni di selezione della partenza
         ArrayAdapter<String> adapterPartenza = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, opzioniPartenza);
         adapterPartenza.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -378,12 +381,12 @@ public class FragmentOSM extends Fragment {
                 if (partenzaSelezionata != null && destinazioneSelezionata != null && map != null) {
                     // Visto che sono state selezionate vado a creare una lista di punti che poi verrà trasformata
                     // in una strada da dare in pasto al RoadManager
-                    Log.d("routing", partenzaSelezionata);
+                    Log.d("partenzaSele", partenzaSelezionata);
                     waypoints2 = new ArrayList<GeoPoint>();
                     ////
                     //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
                     //da poter capire da dove parte, in questo caso dal gps
-                    if(partenzaSelezionata == "Posizione Attuale"){
+                    if(partenzaSelezionata.equals(getString(R.string.posizioneAttuale))){
                         posizioneAttuale=true;
                         //controllo che ci sia il gps
 
@@ -446,7 +449,6 @@ public class FragmentOSM extends Fragment {
                         getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
 
                     } else {
-                        addRemoveMarker(true, aulaSelezionata);
                         if (overlay != null) {
                             map.getOverlayManager().remove(overlay);
                         }
@@ -471,10 +473,11 @@ public class FragmentOSM extends Fragment {
                 if (partenzaSelezionata!=null && destinazioneSelezionata != null && map != null) {
                     // Entrambe le opzioni sono state selezionate, quindi è possibile eseguire il calcolo del percorso
                     waypoints2 = new ArrayList<GeoPoint>();
+                    Log.d("partenzaSele", partenzaSelezionata);
 
                     //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
                     //da poter capire da dove parte, in questo caso dal gps
-                    if (partenzaSelezionata == "Posizione Attuale") {
+                    if (partenzaSelezionata.equals(getString(R.string.posizioneAttuale))) {
                         posizioneAttuale=true;
                         //controllo che ci sia il gps
                         if (gpsManager.gpsEnabled()) {
@@ -541,7 +544,6 @@ public class FragmentOSM extends Fragment {
                         // a qualche edificio,
                         getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
                     } else {
-                        addRemoveMarker(true, aulaSelezionata);
                         if (overlay != null) {
                             map.getOverlayManager().remove(overlay);
                         }
