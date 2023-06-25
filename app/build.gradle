@@ -71,6 +71,8 @@ dependencies {
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.8.10"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.8.10"
 
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
     //ghero
     implementation 'com.github.chrisbanes:PhotoView:2.3.0'
     implementation 'com.fasterxml.jackson.core:jackson-databind:2.12.5'

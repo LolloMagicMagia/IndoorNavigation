@@ -2,9 +2,11 @@ package BottomNavFragment;
 
 
 import android.content.BroadcastReceiver;
+import android.content.ContextWrapper;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
-import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
@@ -14,13 +16,11 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
-import org.mapsforge.map.layer.cache.TileCache;
-import org.mapsforge.map.layer.download.tilesource.TileSource;
 import org.osmdroid.api.IMapController;
 import org.osmdroid.bonuspack.routing.OSRMRoadManager;
-import org.osmdroid.bonuspack.routing.Road;
 import org.osmdroid.bonuspack.routing.RoadManager;
 
 import android.Manifest;
@@ -28,43 +28,26 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 
-import org.osmdroid.config.IConfigurationProvider;
-import org.osmdroid.tileprovider.IRegisterReceiver;
-import org.osmdroid.tileprovider.MapTileProviderArray;
-import org.osmdroid.tileprovider.MapTileProviderBase;
-import org.osmdroid.tileprovider.cachemanager.CacheManager;
-import org.osmdroid.tileprovider.modules.GEMFFileArchive;
-import org.osmdroid.tileprovider.modules.IArchiveFile;
-import org.osmdroid.tileprovider.modules.IFilesystemCache;
-import org.osmdroid.tileprovider.modules.MapTileDownloader;
-import org.osmdroid.tileprovider.modules.MapTileFileArchiveProvider;
-import org.osmdroid.tileprovider.modules.MapTileFilesystemProvider;
-import org.osmdroid.tileprovider.modules.MapTileModuleProviderBase;
-import org.osmdroid.tileprovider.modules.NetworkAvailabliltyCheck;
-import org.osmdroid.tileprovider.modules.OfflineTileProvider;
-import org.osmdroid.tileprovider.modules.TileDownloader;
-import org.osmdroid.tileprovider.modules.TileWriter;
-import org.osmdroid.tileprovider.tilesource.BitmapTileSourceBase;
-import org.osmdroid.tileprovider.tilesource.ITileSource;
-import org.osmdroid.tileprovider.tilesource.OnlineTileSourceBase;
-import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.config.Configuration;
+import org.osmdroid.tileprovider.modules.ArchiveFileFactory;
+import org.osmdroid.tileprovider.modules.OfflineTileProvider;
+import org.osmdroid.tileprovider.modules.SqliteArchiveTileWriter;
+import org.osmdroid.tileprovider.tilesource.ITileSource;
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory;
 import org.osmdroid.tileprovider.tilesource.XYTileSource;
 import org.osmdroid.tileprovider.util.SimpleRegisterReceiver;
-import org.osmdroid.util.MapTileIndex;
+import org.osmdroid.tileprovider.util.StorageUtils;
 import org.osmdroid.views.CustomZoomButtonsController;
 import org.osmdroid.views.MapView;
 import org.osmdroid.views.overlay.GroundOverlay;
 import org.osmdroid.views.overlay.Polyline;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -75,12 +58,10 @@ import android.graphics.Bitmap;
 import android.location.Location;
 import android.location.LocationListener;
 import android.location.LocationManager;
-import android.os.AsyncTask;
 import android.preference.PreferenceManager;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -98,14 +79,15 @@ import androidx.navigation.Navigation;
 
 
 import Adapter.CustomAdapter;
-import dataFirebase.Aula;
-import dataFirebase.Edificio;
-import dataFirebase.Controller;
-import dataFirebase.ViewModel;
+import Adapter.NetworkViewModel;
+import dataAndRelation.Aula;
+import dataAndRelation.Edificio;
+import dataAndRelation.Controller;
+import dataAndRelation.ViewModel;
 
+import com.example.osmdroidex2.GpsManager;
 import com.example.osmdroidex2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.google.gson.Gson;
 
 import org.osmdroid.util.BoundingBox;
 import org.osmdroid.util.GeoPoint;
@@ -115,7 +97,7 @@ public class FragmentOSM extends Fragment {
 
     //per la listView
     private GridView gridView;
-
+    private static final int REQUEST_WRITE_STORAGE = 1;
     Marker scelta;
     private CustomAdapter adapter;
     private List<String> items;
@@ -163,6 +145,7 @@ public class FragmentOSM extends Fragment {
 
     //Per collegarsi a Room
     private ViewModel mViewModel;
+    private NetworkViewModel networkViewModel;
 
 
     @Override
@@ -185,12 +168,18 @@ public class FragmentOSM extends Fragment {
                 });
             }
         });
+        networkViewModel = new ViewModelProvider(this).get(NetworkViewModel.class);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_osm,container,false);
+
+        // Registra un BroadcastReceiver per rilevare i cambiamenti di connessione
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
 
         AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
         AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
@@ -234,56 +223,57 @@ public class FragmentOSM extends Fragment {
         Context ctx = getContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
 
-        ///////// Per scegliere che tipologia di routing voglio
-        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        boolean bike= sharedPreferences.getBoolean("bike",false);
-        boolean car= sharedPreferences.getBoolean("car",false);
+        //Per scegliere il Routing dagli sharedPreferences
+        chooseTransport();
 
-        //Manager per calcolare in automatico il routing
-        roadManager = new OSRMRoadManager(ctx, "Prova indoor");
-        //Per cambiare route e metterlo bike
-        /*((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);*/
-
-        if(car){
-            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
-            Log.d("proviamolo", " car");
-        }else if(bike){
-            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);
-            Log.d("proviamolo", " bike");
-        }else {
-            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
-            Log.d("proviamolo", " walk");
-        }
-        ////////////
+        /*getPermissionExternalStorage();*/
 
         //Vado a creare la mappa
         map = (MapView)  view.findViewById(R.id.map);
-        /*map.setTileSource(TileSourceFactory.MAPNIK);*/
-
+        mapController = map.getController();
+        map.setBuiltInZoomControls(true);
         map.setHorizontalMapRepetitionEnabled(false);
         map.setVerticalMapRepetitionEnabled(false);
         //Then we add default zoom buttons, and ability to zoom with 2 fingers (multi-touch)
         map.setBuiltInZoomControls(true);
         map.setMultiTouchControls(true);
 
+        //Per vedere se l'utente ha abilitato la rete, e quindi scegliere la mappa da mostrare
+        networkViewModel.getNetworkStatus().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
+                    @Override
+                    public void onChanged(Boolean aBoolean) {
+                        map.setScrollableAreaLimitDouble(null);
+                        //We can move the map on a default view point. For this, we need access to the map controller:
+                        mapController.setZoom(18);
+                        mapController.setCenter(new GeoPoint(45.5149, 9.2106));
 
-        /*initializeMap(map);*/
+                        //serve per rimuovere lo zoom automatico
+                        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
+                        // Qui puoi ridefinire i tile della mappa di OSMDroid in base allo stato di connessione
+                        if (aBoolean) {
+                            map.setUseDataConnection(true);
+                            // Connessione Wi-Fi/4G attiva
+                            map.setTileSource(TileSourceFactory.MAPNIK);
+                            map.setMaxZoomLevel(19.5);
+                            map.setMinZoomLevel(15.0);
+                            Toast.makeText(getContext(), "Connessione Wi-Fi attiva", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //la mappa sarebbe da aggiornare con firebase, sarebbe da vedere se è possibile modificare la cartella :"assets/tiles"
+                            map.setUseDataConnection(false);
+                            map.setTileSource(new XYTileSource("tiles", 0, 18, 256, ".png", new String[] {"tiles/"}));
+                            BoundingBox b = new BoundingBox(45.5295, 9.2451, 45.5098,9.1953 );
+                            map.setScrollableAreaLimitDouble(b);
 
-
-        //We can move the map on a default view point. For this, we need access to the map controller:
-        mapController = map.getController();
-        mapController.setZoom(18);
-        mapController.setCenter(new GeoPoint(45.5149, 9.2106));
-        //per regolare il max/min zoom
-        map.setMaxZoomLevel(19.5);
-        //map.setMinZoomLevel(15.0);
-        map.setMinZoomLevel(12.0);
-
-        map.setBuiltInZoomControls(true);
-
-        //serve per rimuovere lo zoom automatico
-        map.getZoomController().setVisibility(CustomZoomButtonsController.Visibility.NEVER);
-
+                            //per regolare il max/min zoom
+                            map.setMaxZoomLevel(19.5);
+                            map.setMinZoomLevel(17.0);
+                            // Nessuna connessione attiva
+                            Toast.makeText(getContext(), "Nessuna connessione attiva", Toast.LENGTH_SHORT).show();
+                        }
+                        // Aggiorna la mappa
+                        map.invalidate();
+                    }
+                });
 
         //Marker per mostrare solo la destinazione
         scelta= new Marker(map);
@@ -291,10 +281,6 @@ public class FragmentOSM extends Fragment {
         //**** chiama il metodo enableMyLocationOverlay
         gpsManager=new GpsManager(map);
         gpsManager.enableMyLocationOverlay();
-
-
-
-
 
         //per avere solo una porzione di mappa dell'uni
        /*map.setScrollableAreaLimitLatitude(45.5329, 45.5075, 0);
@@ -712,8 +698,50 @@ public class FragmentOSM extends Fragment {
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+        /*String osmDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/osmdroid/tiles";
+        String destinationFilePath = osmDir + "/CazziInCulo.sqlite";
 
+        try {
+            InputStream inputStream = getContext().getAssets().open("CazziInCulo.sqlite");
+            File destinationFolder = new File(osmDir);
+            if (!destinationFolder.exists()) {
+                destinationFolder.mkdirs();
+            }
+            Log.d("osmdroidPathDio", "Percorso della cartella: " + destinationFolder.getAbsolutePath());
+
+            OutputStream outputStream = new FileOutputStream(destinationFilePath);
+            byte[] buffer = new byte[1024];
+            int length;
+            while ((length = inputStream.read(buffer)) > 0) {
+                outputStream.write(buffer, 0, length);
+            }
+            outputStream.flush();
+            outputStream.close();
+            inputStream.close();
+            Log.d("osmdroidPathDio", "Percorso della cartella: " + "succes");
+        } catch (IOException e) {
+            e.printStackTrace();
+            // Si è verificato un errore durante la copia del file .sqlite
+            Log.d("osmdroidPathDio", "Percorso della cartella: " + "error");
+        }
+
+        Context context = getContext();
+        File osmdroidPath = new File(StorageUtils.getStorage().getAbsolutePath(), "osmdroid");
+        Configuration.getInstance().setOsmdroidBasePath(osmdroidPath);
+        Configuration.getInstance().setOsmdroidTileCache(osmdroidPath);
+
+        ITileSource tileSource = new XYTileSource("osmdroid", 0, 17, 256, ".png", new String[0]);
+        map.setTileSource(tileSource);*/
+        /*super.onViewCreated(view, savedInstanceState);
+        map.setTileSource(TileSourceFactory.OpenTopo);
+        outputPath = "/data/data/<package>/files" + File.separator + "osmdroid" + File.separator  + "tiles" + File.separator;
+        outputName = outputPath + boxE6.name + ".db";
+
+        try {
+            writer=new SqliteArchiveTileWriter(outputName);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }*/
         /*CacheManager c =new CacheManager(map);
         BoundingBox boundingBox = new BoundingBox(45.5265,9.2231, 45.5166, 9.2093);
         int zoomMin =12;
@@ -817,7 +845,6 @@ public class FragmentOSM extends Fragment {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         Log.d("gpsenabled", "funge16");
         if (requestCode == 10) {
             Log.d("gpsenabled", "funge17");
@@ -829,6 +856,19 @@ public class FragmentOSM extends Fragment {
                 // Autorizzazione negata, gestire di conseguenza
             }
         }
+
+        /*if (requestCode == REQUEST_WRITE_STORAGE) {
+            Log.d("entratoPermission", "ciao4");
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permesso di scrittura ottenuto
+                // Puoi procedere con la modifica della cartella "emulated"
+                Log.d("entratoPermission", "ciao5");
+            } else {
+                Log.d("entratoPermission", "ciao6");
+                // Permesso di scrittura negato
+                // Gestisci il caso in cui l'utente non concede i permessi necessari
+            }
+        }*/
     }
     /////////////////////////////////////////////////
 
@@ -940,23 +980,6 @@ public class FragmentOSM extends Fragment {
         }
     }
 
-    /*public void initializeMap(MapView map){
-        BoundingBox boundingBox = new BoundingBox(45.5265,9.2231, 45.5166, 9.2093);
-        int zoomMin =(int) map.getMinZoomLevel();
-        int zoomMax =(int) map.getMaxZoomLevel();
-
-        for (int zoomLevel = zoomMin; zoomLevel <= zoomMax; zoomLevel++) {
-            for (double tileX = boundingBox.getLonEast(); tileX <= boundingBox.getLonWest(); tileX++) {
-                for (double tileY = boundingBox.getLatNorth(); tileY <= boundingBox.getLatSouth(); tileY++) {
-                    // Carica l'immagine di mappa dal servizio esterno nella cache
-                    Drawable tile = MAPNIK.getDrawable(zoomLevel, tileX, tileY);
-                    if (tile != null) {
-                        tileCache.putTile(TileIndex.getTileIndex(zoomLevel, tileX, tileY), tile);
-                    }
-                }
-            }
-        }
-    }*/
 
     public void locationListener(){
         if(ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED || ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
@@ -1086,6 +1109,59 @@ public class FragmentOSM extends Fragment {
         adapter.updateItems(items);
     }
 
+    public void chooseTransport(){
+        ///////// Per scegliere che tipologia di routing voglio
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        boolean bike= sharedPreferences.getBoolean("bike",false);
+        boolean car= sharedPreferences.getBoolean("car",false);
+
+        //Manager per calcolare in automatico il routing
+        roadManager = new OSRMRoadManager(getContext(), "Prova indoor");
+
+        if(car){
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_CAR);
+            Log.d("proviamolo", " car");
+        }else if(bike){
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_BIKE);
+            Log.d("proviamolo", " bike");
+        }else {
+            ((OSRMRoadManager)roadManager).setMean(OSRMRoadManager.MEAN_BY_FOOT);
+            Log.d("proviamolo", " walk");
+        }
+    }
+
+    /*public void getPermissionExternalStorage(){
+        Log.d("entratoPermission", "ciao1");
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            Log.d("entratoPermission", "ciao2");
+            // Richiedi i permessi di scrittura
+            requestPermissions(
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_WRITE_STORAGE);
+        } else {
+            Log.d("entratoPermission", "ciao3");
+            // Hai già i permessi di scrittura
+            // Puoi procedere con la modifica della cartella "emulated"
+        }
+
+    }*/
+
+    private BroadcastReceiver networkChangeReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Verifica lo stato della connessione e aggiorna il ViewModel
+            boolean isConnected = isNetworkConnected();
+            networkViewModel.setNetworkStatus(isConnected);
+        }
+    };
+
+    private boolean isNetworkConnected() {
+        ConnectivityManager connectivityManager = (ConnectivityManager) getActivity().getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetwork = connectivityManager.getActiveNetworkInfo();
+        return activeNetwork != null && activeNetwork.isConnected();
+    }
+
     @Override
     public void onResume() {
         super.onResume();
@@ -1097,7 +1173,7 @@ public class FragmentOSM extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-
+        getActivity().unregisterReceiver(networkChangeReceiver);
         gpsManager.disableMyLocation();
         map.onPause();
 

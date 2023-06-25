@@ -20,17 +20,17 @@ import android.view.ViewGroup;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
-import org.osmdroid.tileprovider.MapTileProviderBase;
+import org.osmdroid.tileprovider.modules.OfflineTileProvider;
 import org.osmdroid.views.MapView;
 
+import android.widget.CheckedTextView;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import dataFirebase.Controller;
+import dataAndRelation.Controller;
 
 import com.example.osmdroidex2.BuildConfig;
 import com.example.osmdroidex2.R;
-import com.google.gson.Gson;
 
 import org.osmdroid.util.GeoPoint;
 
@@ -45,10 +45,12 @@ public class FragmentNovità extends Fragment {
     private ImageButton bike;
     private ImageButton walk;
     private ImageButton car;
+    private CheckedTextView Ansia;
+    private CheckedTextView carrozzina;
+    private CheckedTextView Claustrofobia;
+
     Controller controller;
-    boolean button1Selected ;
-    boolean button2Selected ;
-    boolean button3Selected ;
+
     double soglia =0.5;
 
     @Override
@@ -63,6 +65,7 @@ public class FragmentNovità extends Fragment {
         View view = inflater.inflate(R.layout.fragment_novita, container, false);
         bike =(ImageButton) view.findViewById(R.id.bike);
         walk =(ImageButton)  view.findViewById(R.id.walking);
+        carrozzina= (CheckedTextView)   view.findViewById(R.id.carrozina);
         car =(ImageButton)  view.findViewById(R.id.car);
         controller = Controller.getInstance(null, null,null);
         locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE);
@@ -216,6 +219,20 @@ public class FragmentNovità extends Fragment {
             }
         });
 
+        carrozzina.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.d("proviamolo", " carrozina 1");
+                if(sharedPreferences.getBoolean("carrozzina",false)){
+                    editor.putBoolean("carrozzina", false);
+                    Log.d("proviamolo", " carrozina 2");
+                }else{
+                    editor.putBoolean("carrozzina", true);
+                    Log.d("proviamolo", " carrozina 3");
+                }
+                editor.apply();
+            }
+        });
 
         return view;
     }

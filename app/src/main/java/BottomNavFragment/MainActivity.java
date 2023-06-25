@@ -19,7 +19,7 @@ import androidx.navigation.ui.NavigationUI;
 import com.example.osmdroidex2.R;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
-import dataFirebase.EdificiDatabase;
+import dataAndRelation.EdificiDatabase;
 
 
 public class MainActivity extends AppCompatActivity {
