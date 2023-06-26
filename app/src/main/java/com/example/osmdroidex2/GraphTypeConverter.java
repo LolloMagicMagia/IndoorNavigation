@@ -42,27 +42,27 @@ public class GraphTypeConverter {
     }
 
     @TypeConverter
-    public static List<Graph.Node> nodeListFromString(String nodeListString) {
+    public static List<Node> nodeListFromString(String nodeListString) {
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Graph.Node>>() {}.getType();
+        Type type = new TypeToken<List<Node>>() {}.getType();
         return gson.fromJson(nodeListString, type);
     }
 
     @TypeConverter
-    public static String nodeListToString(List<Graph.Node> nodeList) {
+    public static String nodeListToString(List<Node> nodeList) {
         Gson gson = new Gson();
         return gson.toJson(nodeList);
     }
 
     @TypeConverter
-    public static List<Graph.Edge> edgeListFromString(String edgeListString) {
+    public static List<Edge> edgeListFromString(String edgeListString) {
         Gson gson = new Gson();
-        Type type = new TypeToken<List<Graph.Edge>>() {}.getType();
+        Type type = new TypeToken<List<Edge>>() {}.getType();
         return gson.fromJson(edgeListString, type);
     }
 
     @TypeConverter
-    public static String edgeListToString(List<Graph.Edge> edgeList) {
+    public static String edgeListToString(List<Edge> edgeList) {
         Gson gson = new Gson();
         return gson.toJson(edgeList);
     }

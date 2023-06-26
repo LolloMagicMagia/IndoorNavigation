@@ -111,4 +111,5 @@ public class Edificio {
     public Graph getGraph0(){
         return graph0;
     }
+
 }

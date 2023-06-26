@@ -58,7 +58,7 @@ public class IndoorNavigation {
 
     }*/
 
-    public Graph.Node stepNavigation(List<Graph.Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop){
+    public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop){
 
         if(stop) {
             Toast.makeText(context  , "Trip Canceled", Toast.LENGTH_SHORT).show();
@@ -81,11 +81,11 @@ public class IndoorNavigation {
 
         }else {
 
-            Graph.Node node2 = path.get(count + 1);
+            Node node2 = path.get(count + 1);
 
-            Graph.Node node = path.get(count);
+            Node node = path.get(count);
 
-            List<Graph.Node> edge = new LinkedList<>();
+            List<Node> edge = new LinkedList<>();
             edge.add(node);
             edge.add(node2);
 
@@ -121,12 +121,12 @@ public class IndoorNavigation {
         indicatorImage.invalidate();
     }*/
 
-    public Graph.Node checkNode(Graph graph, float pointX, float pointY) {
+    public Node checkNode(Graph graph, float pointX, float pointY) {
         String id = "1";
         while (graph.getNode(id) != null) {
-            Graph.Node node = graph.getNode(id);
-            if (Math.abs(pointX - node.getX()) <= 200) {
-                if (Math.abs(pointY - node.getY()) <= 200) {
+            Node node = graph.getNode(id);
+            if (Math.abs(pointX - node.getX()) <= 0.05) {
+                if (Math.abs(pointY - node.getY()) <= 0.05) {
                     return node;
                 }
             }

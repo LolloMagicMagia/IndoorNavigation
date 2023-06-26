@@ -73,18 +73,18 @@ public class MapDrawer {
      *
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
-    public void drawPath(List<Graph.Node> nodes, PhotoView mapView, Boolean lineType ) {
+    public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType ) {
         if (nodes == null || nodes.size() < 2) {
             return;
         }
 
         Path path = new Path();
-        Graph.Node firstNode = nodes.get(0);
-        path.moveTo(firstNode.getX(), firstNode.getY());
+        Node firstNode = nodes.get(0);
+        path.moveTo(firstNode.getX() * mapBitmap.getWidth(), firstNode.getY() * mapBitmap.getHeight());
 
         for (int i = 1; i < nodes.size(); i++) {
-            Graph.Node currentNode = nodes.get(i);
-            path.lineTo(currentNode.getX(), currentNode.getY());
+            Node currentNode = nodes.get(i);
+            path.lineTo(currentNode.getX() * mapBitmap.getWidth(), currentNode.getY() * mapBitmap.getHeight());
         }
 
         if(lineType){
@@ -96,19 +96,19 @@ public class MapDrawer {
         //zoomOnPath(mapView, nodes);
     }
 
-    public void drawStep(List<Graph.Node> nodes, PhotoView mapView, List<Graph.Node> step) {
+    public void drawStep(List<Node> nodes, PhotoView mapView, List<Node> step) {
         drawPath(nodes, mapView, false);
         if (step == null || step.size() < 2) {
             return;
         }
 
         Path path = new Path();
-        Graph.Node firstNode = step.get(0);
-        path.moveTo(firstNode.getX(), firstNode.getY());
+        Node firstNode = step.get(0);
+        path.moveTo(firstNode.getX() * mapBitmap.getWidth(), firstNode.getY() * mapBitmap.getHeight());
 
         for (int i = 1; i < step.size(); i++) {
-            Graph.Node currentNode = step.get(i);
-            path.lineTo(currentNode.getX(), currentNode.getY());
+            Node currentNode = step.get(i);
+            path.lineTo(currentNode.getX() * mapBitmap.getWidth(), currentNode.getY() * mapBitmap.getHeight());
         }
 
         mapCanvas.drawPath(path, linePaint);
@@ -131,11 +131,11 @@ public class MapDrawer {
      * @param mapView La view da zoomare
      * @param nodes   Lista di nodi che rappresentano il percorso
      */
-    public void zoomOnPath(PhotoView mapView, List<Graph.Node> nodes) {
+    public void zoomOnPath(PhotoView mapView, List<Node> nodes) {
         int lengthNodes = nodes.size();
 
-        Graph.Node start = nodes.get(0);
-        Graph.Node end = nodes.get(lengthNodes - 1);
+        Node start = nodes.get(0);
+        Node end = nodes.get(lengthNodes - 1);
 
         float startX = start.getX() * mapBitmap.getWidth();
         float startY = start.getY() * mapBitmap.getHeight();

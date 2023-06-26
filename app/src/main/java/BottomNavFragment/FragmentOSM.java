@@ -1173,7 +1173,6 @@ public class FragmentOSM extends Fragment {
     @Override
     public void onPause() {
         super.onPause();
-        getActivity().unregisterReceiver(networkChangeReceiver);
         gpsManager.disableMyLocation();
         map.onPause();
 
@@ -1184,6 +1183,7 @@ public class FragmentOSM extends Fragment {
         super.onDestroy();
         gpsManager.disableMyLocation();
         map.onDetach();
+        getActivity().unregisterReceiver(networkChangeReceiver);
     }
 
     @Override

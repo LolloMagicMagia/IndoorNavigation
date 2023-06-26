@@ -27,10 +27,13 @@ import android.widget.Switch;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.IndoorNavigation;
 import com.example.osmdroidex2.MapDrawer;
+import com.example.osmdroidex2.Node;
 import com.example.osmdroidex2.R;
 import com.example.osmdroidex2.TouchTransformer;
 import com.github.chrisbanes.photoview.OnMatrixChangedListener;
@@ -42,6 +45,8 @@ import java.util.List;
 import java.util.Locale;
 
 import dataAndRelation.Controller;
+import dataAndRelation.Edificio;
+import dataAndRelation.ViewModel;
 
 public class FragmentIndoor extends Fragment implements SensorEventListener {
     private int stepCount = 0;
@@ -49,7 +54,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private int steppy = 0;
     //private boolean first = true;
     // ATTRIBUTI PER BUSSOLA
-    private Graph.Node nodeSphere;
+    private Node nodeSphere;
     private SensorManager sensorManager;
     private Sensor accelerometer;
     private Sensor magnetometer;
@@ -104,7 +109,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private Graph graph;
 
-    private List<Graph.Node> path;
+    private List<Node> path;
 
     private float currentRotation = 0f;
 
@@ -130,6 +135,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private SharedPreferences sharedPreferences;
     private int floorCount;
 
+    ViewModel viewModel;
+
 
     /**
      * Metodo onCreate per la creazione dell'activity.
@@ -145,6 +152,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_indoor, container, false);
 
+        viewModel = new ViewModelProvider(this).get(ViewModel.class);
+
         //Vado a prendere i valori precedenti
         sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
 
@@ -158,15 +167,17 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         String edificio = sharedPreferences.getString("edificio", null);
         String destinazione = sharedPreferences.getString("destinazione",null);
 
-        if(edificio == null){
+        /*if(edificio == null){
             mapBitmap = BitmapFactory.decodeResource(getResources(),
                     R.drawable.u14);
             edificio = "u14";
         }else{
             endPoint.setText(destinazione);  // Imposta il valore di endPoint prima di chiamare getMapFloor()
             getMapFloor(edificio,destinazione);
-        }
+        }*/
 
+        getMapFloor(edificio, destinazione);
+/*
         changeFloor(edificio);
 
         next_back_Btn(edificio);
@@ -188,7 +199,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             Log.e("MainActivity", "Failed to load map image. " +
                     "Ensure that the image is present in the res/drawable folder " +
                     "and its name matches the one in the code.");
-            return view;
         }
 
 
@@ -199,7 +209,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         //float[] touchPoint = new float[2];
 
-        graph = new Graph(mapBitmap);
+        graph = new Graph();
         path = null;
 
         initializeGraphNodes();
@@ -212,7 +222,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         indicatorImage.setImageBitmap(indicatorDrawer.getMapBitmap());
         indicatorImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
 
-        checkOptions();
+        checkOptions();*/
 
         btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -259,7 +269,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             }
         });
 
-        Log.d("Coordinate", "Width: "+  String.valueOf(mapBitmap.getWidth()) + "  Height: " + String.valueOf(mapBitmap.getHeight()));
+        //Log.d("Coordinate", "Width: "+  String.valueOf(mapBitmap.getWidth()) + "  Height: " + String.valueOf(mapBitmap.getHeight()));
 
         indicatorImage.setOnMatrixChangeListener(new OnMatrixChangedListener() {
             @Override
@@ -285,7 +295,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 }
             }
         });
-
+/*
         //onCreate per bussola
         sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
@@ -295,7 +305,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
         steps[0] = 0;
-
+*/
         /*
         user[0] = true;
         userBtn.setOnClickListener(new View.OnClickListener() {
@@ -313,7 +323,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             }
         });*/
 
-        checkPoint(graph, touchTransformer, indicatorImage);
         return view;
     }
 
@@ -513,7 +522,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
      *
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
-    private void disegnaPercorso(List<Graph.Node> nodes) {
+    private void disegnaPercorso(List<Node> nodes) {
         mapDrawer.drawPath(nodes, mapImage, true);
         mapImage.invalidate();
     }
@@ -539,8 +548,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onViewTap(View view, float x, float y) {
                 //879 1091
-                float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap);
-                float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap);
+                float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap) / mapBitmap.getWidth();
+                float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap) / mapBitmap.getHeight();
 
                 /*if (!user[0]) {
                     disegnaIndicatore(pointX, pointY);
@@ -550,7 +559,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     userBtn.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
                 }*/
 
-                Graph.Node node = indoorNav.checkNode(graph, pointX, pointY);
+                Node node = indoorNav.checkNode(graph, pointX, pointY);
                 final Dialog dialog = new Dialog(getContext());
 
                 //  Imposta il layout del tuo dialog personalizzato
@@ -628,16 +637,16 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+/*        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);*/
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        sensorManager.unregisterListener(this);
+       // sensorManager.unregisterListener(this);
         Log.d("cabbinculo", "pausa");
     }
 
@@ -743,25 +752,120 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     //Vado a implementare la logica per cui tramite le relazioni vado a prendere la mappa corretta
     //da mostrare
-    public void getMapFloor(String edificio, String destinazione){
-        Bitmap bit;
+    public void getMapFloor(String NameEdificioDef, String destinazione){
 
-        if(destinazione==null){
-            bit = controller.getMap(edificio, 0);
-        }
-        else{
-            if(controller.getFloor(destinazione) != null){
-                endPoint.setText(destinazione);
-                endPoint.invalidate();
-                int i = controller.getFloor(destinazione);
-                String appartenenzaEdificio = controller.getAppartenenza(destinazione);
-                bit = controller.getMap(appartenenzaEdificio, i);
-            }else{
-                bit = controller.getMap(edificio, 0);
+
+        viewModel.getEdificioObj(NameEdificioDef).observe(getActivity(), new Observer<Edificio>() {
+            @Override
+            public void onChanged(Edificio edificio) {
+                Bitmap bit;
+
+                String NameEdificio = NameEdificioDef;
+
+                if(NameEdificio == null){
+                    bit = BitmapFactory.decodeResource(getResources(),
+                            R.drawable.u14);
+                    String NameEdificioDef = "u14";
+                    graph = new Graph();
+                    initializeGraphNodes();
+                }else{
+                    if(destinazione==null){
+                        bit = controller.getMap(NameEdificio, 0);
+
+                        graph = new Graph();
+
+                        graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
+                        graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
+                        graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
+
+                        graph.addEdge("1", "1.09", 1);
+                        graph.addEdge("1.09", "1.10", 1);
+
+                    }
+                    else{
+                        if(controller.getFloor(destinazione) != null){
+                            endPoint.setText(destinazione);
+                            endPoint.invalidate();
+                            int i = controller.getFloor(destinazione);
+                            String appartenenzaEdificio = controller.getAppartenenza(destinazione);
+                            bit = controller.getMap(appartenenzaEdificio, i);
+
+                            graph = new Graph();
+
+                            graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
+                            graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
+                            graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
+
+                            graph.addEdge("1", "1.09", 1);
+                            graph.addEdge("1.09", "1.10", 1);
+
+                        }else{
+                            bit = controller.getMap(NameEdificio, 0);
+
+                            graph = new Graph();
+
+                            graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
+                            graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
+                            graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
+
+                            graph.addEdge("1", "1.09", 1);
+                            graph.addEdge("1.09", "1.10", 1);
+
+                        }
+                    }
+                }
+
+                mapBitmap = bit;
+
+
+                changeFloor(NameEdificio);
+
+                next_back_Btn(NameEdificio);
+
+                indicator = getResources().getDrawable(R.drawable.indicator);
+                indicatorBitmap = BitmapFactory.decodeResource(getResources(),
+                        R.drawable.indicator);
+
+                touchTransformer = new TouchTransformer();
+
+
+                txt_passi.setText("0");
+                position[0] = 0;
+                position[1] = 0;
+
+                start[0] = false;
+
+                if (mapBitmap == null || indicatorBitmap == null) {
+                    Log.e("MainActivity", "Failed to load map image. " +
+                            "Ensure that the image is present in the res/drawable folder " +
+                            "and its name matches the one in the code.");
+                }
+
+
+                mapDrawer = new MapDrawer(mapBitmap);
+                indicatorDrawer = new MapDrawer(indicatorBitmap);
+
+                indoorNav = new IndoorNavigation(mapDrawer, getContext(), indicatorDrawer);
+
+                //float[] touchPoint = new float[2];
+
+                path = null;
+
+                mapImage.setImageDrawable(map);
+                mapImage.setImageBitmap(mapDrawer.getMapBitmap());
+                mapImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+                indicatorImage.setImageDrawable(indicator);
+                indicatorImage.setImageBitmap(indicatorDrawer.getMapBitmap());
+                indicatorImage.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+
+                checkOptions();
+                checkPoint(graph, touchTransformer, indicatorImage);
+
             }
-        }
+        });
 
-        mapBitmap = bit;
+
     }
 
     public void changeFloor(String edificio){
