@@ -25,12 +25,14 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Graph;
+import com.example.osmdroidex2.GraphTypeConverter;
 import com.example.osmdroidex2.IndoorNavigation;
 import com.example.osmdroidex2.MapDrawer;
 import com.example.osmdroidex2.Node;
@@ -820,6 +822,19 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     }
                 }
 
+                Log.d("GraphNegro", "ciao");
+
+
+
+                if(GraphTypeConverter.graphToString(graph) == null){
+                    Toast.makeText(getContext(), "null", Toast.LENGTH_SHORT).show();
+                } else if (GraphTypeConverter.stringToGraph(GraphTypeConverter.graphToString(graph)).equals(graph)) {
+                    Toast.makeText(getContext(), "UGUALE BROSKI", Toast.LENGTH_SHORT).show();
+                }else{
+                    Toast.makeText(getContext(), "DIVERSO BROSKI", Toast.LENGTH_SHORT).show();
+                }
+
+
                 mapBitmap = bit;
 
 
@@ -912,3 +927,36 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     }
 
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

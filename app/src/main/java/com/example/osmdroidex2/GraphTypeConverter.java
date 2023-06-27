@@ -1,69 +1,100 @@
 package com.example.osmdroidex2;
 import androidx.room.TypeConverter;
-import com.example.osmdroidex2.Graph;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
-import java.lang.reflect.Type;
-import java.util.ArrayList;
-import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+
 
 public class GraphTypeConverter {
 
     @TypeConverter
     public static String graphToString(Graph graph) {
-        if(graph!=null){
-        ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return objectMapper.writeValueAsString(graph);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-            return null;
-            }
-        }else{
+
+        if(graph == null){
             return null;
         }
-    }
 
-    @TypeConverter
-    public static Graph stringToGraph(String graphString) {
-        if(graphString != null){
-            ObjectMapper objectMapper = new ObjectMapper();
-            try {
-                return objectMapper.readValue(graphString, Graph.class);
-            } catch (JsonProcessingException e) {
-                e.printStackTrace();
-                return null;
+        try {
+            JSONObject graphJson = new JSONObject();
+            JSONArray nodesJson = new JSONArray();
+
+            // Convert nodes to JSON
+            for (Node node : graph.getNodes().values()) {
+                JSONObject nodeJson = new JSONObject();
+                nodeJson.put("id", node.getId());
+                nodeJson.put("x", node.getX());
+                nodeJson.put("y", node.getY());
+                nodeJson.put("roomType", node.getRoomType());
+                nodeJson.put("availability", node.getAvailability());
+                nodeJson.put("crowdness", node.getCrowdness());
+
+                // Convert edges to JSON
+                JSONArray edgesJson = new JSONArray();
+                for (Edge edge : node.getEdges()) {
+                    JSONObject edgeJson = new JSONObject();
+                    edgeJson.put("destination", edge.getDestination().getId());
+                    edgeJson.put("weight", edge.getWeight());
+                    edgesJson.put(edgeJson);
+                }
+                nodeJson.put("edges", edgesJson);
+
+                nodesJson.put(nodeJson);
             }
-        }else{
+
+            graphJson.put("nodes", nodesJson);
+
+            return graphJson.toString();
+        } catch (JSONException e) {
+            e.printStackTrace();
             return null;
         }
+
+
     }
 
-    @TypeConverter
-    public static List<Node> nodeListFromString(String nodeListString) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Node>>() {}.getType();
-        return gson.fromJson(nodeListString, type);
-    }
 
     @TypeConverter
-    public static String nodeListToString(List<Node> nodeList) {
-        Gson gson = new Gson();
-        return gson.toJson(nodeList);
-    }
+    public static Graph stringToGraph(String json) {
 
-    @TypeConverter
-    public static List<Edge> edgeListFromString(String edgeListString) {
-        Gson gson = new Gson();
-        Type type = new TypeToken<List<Edge>>() {}.getType();
-        return gson.fromJson(edgeListString, type);
-    }
+        if(json == null){
+            return null;
+        }
 
-    @TypeConverter
-    public static String edgeListToString(List<Edge> edgeList) {
-        Gson gson = new Gson();
-        return gson.toJson(edgeList);
+        try {
+            Graph graph = new Graph();
+            JSONObject graphJson = new JSONObject(json);
+            JSONArray nodesJson = graphJson.getJSONArray("nodes");
+
+            // Convert JSON to nodes
+            for (int i = 0; i < nodesJson.length(); i++) {
+                JSONObject nodeJson = nodesJson.getJSONObject(i);
+                String id = nodeJson.getString("id");
+                float x = (float) nodeJson.getDouble("x");
+                float y = (float) nodeJson.getDouble("y");
+                String roomType = nodeJson.getString("roomType");
+                String availability = nodeJson.getString("availability");
+                String crowdness = nodeJson.getString("crowdness");
+
+                graph.addNode(id, x, y, roomType, availability, crowdness);
+
+                JSONArray edgesJson = nodeJson.getJSONArray("edges");
+
+                // Convert JSON to edges
+                for (int j = 0; j < edgesJson.length(); j++) {
+                    JSONObject edgeJson = edgesJson.getJSONObject(j);
+                    String destinationId = edgeJson.getString("destination");
+                    int weight = edgeJson.getInt("weight");
+
+                    graph.addEdge(id, destinationId, weight);
+                }
+            }
+
+            return graph;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return null;
+        }
+
     }
 }
