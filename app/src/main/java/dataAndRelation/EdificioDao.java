@@ -31,5 +31,7 @@ public interface EdificioDao {
     @Query("SELECT * FROM edificio_universita WHERE nomeEdificio = :edificio")
      LiveData<Edificio> getEdificioObj(String edificio);
 
+    @Query("SELECT * FROM edificio_universita WHERE nomeEdificio = :edificio")
+    Edificio getEdificio(String edificio);
 
 }

@@ -38,6 +38,7 @@ public class Repository {
     public void insertEdificio(Edificio edificio){
         new InsertEdificiAsyncTask(mEdificioDao).execute(edificio);
     }
+
     public void updateEdificio(Edificio edificio){
         new UpdateEdificiAsyncTask(mEdificioDao).execute(edificio);
     }
@@ -49,6 +50,12 @@ public class Repository {
         Repository.RouteCalculationAsyncTask ex = new Repository.RouteCalculationAsyncTask(roadManager, waypoints2,roadOverlay);
         Polyline roadRet = ex.execute().get();
         return roadRet;
+    }
+
+    public Edificio getEdificio(String edificio) throws ExecutionException, InterruptedException {
+        Repository.EdificioSelezionato ex2 = new Repository.EdificioSelezionato(edificio, mEdificioDao);
+        Edificio ed = ex2.execute().get();
+        return ed;
     }
 
     public LiveData<List<Edificio>> getAllEdificios(){
@@ -118,6 +125,21 @@ public class Repository {
             Road road =  roadManager.getRoad(waypoints2);
             roadOverlay = RoadManager.buildRoadOverlay(road);
             return roadOverlay;
+        }
+    }
+
+    private static class EdificioSelezionato extends AsyncTask<Void, Void, Edificio>{
+        private String nomeEdificio;
+        private EdificioDao edificioDao;
+
+        public EdificioSelezionato(String nomeEdificio, EdificioDao edificioDao) {
+            this.nomeEdificio=nomeEdificio;
+            this.edificioDao=edificioDao;
+        }
+
+        @Override
+        protected Edificio doInBackground(Void... voids) {
+            return edificioDao.getEdificio(nomeEdificio);
         }
     }
 

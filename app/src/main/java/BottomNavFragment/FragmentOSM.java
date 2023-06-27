@@ -152,6 +152,18 @@ public class FragmentOSM extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
+
+        //con il live data non crasha la prima volta, perchè va a modificare quando cambia, mentre in questo caso il database può essere lento
+        //e quindi non riuscire a prendere il dato in tempo
+        /*try {
+            Edificio e = mViewModel.getEdificio("u14");
+            Log.d("edificioMoltoBello", e.getNomeEdificio());
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }*/
+
         //devo metterlo dove chiedo l'edificio, listener ogni volta che il dato cambia
         mViewModel.getAllEdificios().observe(getActivity(), new Observer<List<Edificio>>() {
             @Override
@@ -239,6 +251,7 @@ public class FragmentOSM extends Fragment {
         map.setMultiTouchControls(true);
 
         //Per vedere se l'utente ha abilitato la rete, e quindi scegliere la mappa da mostrare
+        //RESETTARE IN AUTOMATICO LE 2 EDITTEXT
         networkViewModel.getNetworkStatus().observe(getViewLifecycleOwner(), new Observer<Boolean>() {
                     @Override
                     public void onChanged(Boolean aBoolean) {
@@ -373,18 +386,38 @@ public class FragmentOSM extends Fragment {
                     //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
                     //da poter capire da dove parte, in questo caso dal gps
                     if(partenzaSelezionata.equals(getString(R.string.posizioneAttuale))){
-                        posizioneAttuale=true;
-                        //controllo che ci sia il gps
-
-                        if (gpsManager.gpsEnabled()) {
-                            getPosizioneAttuale();
-                        } else {
-                            showAlertMessageLocationDisabled();
+                        if(isNetworkConnected()) {
+                            posizioneAttuale = true;
+                            //controllo che ci sia il gps
+                            if (gpsManager.gpsEnabled()) {
+                                getPosizioneAttuale();
+                            } else {
+                                showAlertMessageLocationDisabled();
+                            }
                         }
-
                     }else{
                         posizioneAttuale = false;
                         waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                        /*if(!isNetworkConnected() && partenzaSelezionata.equals(getString(R.string.posizioneAttuale))){
+                            Toast.makeText(getContext(), "You need connection for routing", Toast.LENGTH_LONG);
+                            showAlertMessageConnectionDisabled();
+                            if (gpsManager.gpsEnabled()) {
+                                getPosizioneAttuale();
+                            } else {
+                                showAlertMessageLocationDisabled();
+                            }
+                        }*/
+                    }
+                    if(isNetworkConnected()){
+                        try {
+                            routeCalculation();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else{
+                       showAlertMessageConnectionDisabled();
                     }
 
                     /*// In questo caso vado ad aggiungere un controllo poichè così facendo riconosco
@@ -403,13 +436,6 @@ public class FragmentOSM extends Fragment {
                     }*/
                     /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
                     ex.execute();*/
-                    try {
-                        routeCalculation();
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
 
 
                 }//Se l'utente non ha scelto una partenza allora mostro solo la destinazione
@@ -463,17 +489,40 @@ public class FragmentOSM extends Fragment {
 
                     //In questo caso devo controllare che lo spinner abbia selezionato la posizioneAttuale così
                     //da poter capire da dove parte, in questo caso dal gps
-                    if (partenzaSelezionata.equals(getString(R.string.posizioneAttuale))) {
-                        posizioneAttuale=true;
-                        //controllo che ci sia il gps
-                        if (gpsManager.gpsEnabled()) {
-                            getPosizioneAttuale();
-                        } else {
-                            showAlertMessageLocationDisabled();
+                    if(partenzaSelezionata.equals(getString(R.string.posizioneAttuale))){
+                        if(isNetworkConnected()) {
+                            posizioneAttuale = true;
+                            //controllo che ci sia il gps
+                            if (gpsManager.gpsEnabled()) {
+                                getPosizioneAttuale();
+                            } else {
+                                showAlertMessageLocationDisabled();
+                            }
                         }
-                    } else {
+                    }else{
                         posizioneAttuale = false;
                         waypoints2.add(controller.getGeoPoint(partenzaSelezionata));
+                        /*if(!isNetworkConnected() && partenzaSelezionata.equals(getString(R.string.posizioneAttuale))){
+                            Toast.makeText(getContext(), "You need connection for routing", Toast.LENGTH_LONG);
+                            showAlertMessageConnectionDisabled();
+                            if (gpsManager.gpsEnabled()) {
+                                getPosizioneAttuale();
+                            } else {
+                                showAlertMessageLocationDisabled();
+                            }
+                        }*/
+                    }
+                    if(isNetworkConnected()){
+                        try {
+                            routeCalculation();
+                        } catch (ExecutionException e) {
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            throw new RuntimeException(e);
+                        }
+                    }else{
+                        showAlertMessageConnectionDisabled();
+                        Toast.makeText(getContext(),"RETRY", Toast.LENGTH_LONG);
                     }
 
 
@@ -494,13 +543,6 @@ public class FragmentOSM extends Fragment {
 
                     /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
                     ex.execute();*/
-                    try {
-                        routeCalculation();
-                    } catch (ExecutionException e) {
-                        throw new RuntimeException(e);
-                    } catch (InterruptedException e) {
-                        throw new RuntimeException(e);
-                    }
                 }//ho messo qua un if che si ripete col primo perchè in questo modo va a farmi queste operazioni sia se partenza è null o non null
                 if(destinazioneSelezionata != null && map != null){
                     addRemoveMarker(false,aulaSelezionata);
@@ -638,14 +680,17 @@ public class FragmentOSM extends Fragment {
                 SharedPreferences sharedPreferences = getContext().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
 
+                Log.d("nomeEdifico",""+destinazioneSelezionata);
 
-                editor.putString("edificio", edificioScoperto);
-
-                if(destinazioneSelezionata!=null && controller.getFloor(destinazioneSelezionata) != null){
+                if(destinazioneSelezionata != null){
                     //questo serve per mettere il punto di arrivo
                     editor.putString("destinazione", destinazioneSelezionata);
                 }else{
-                    editor.putString("destinazione", null);
+                    editor.putString("destinazione", "u14");
+                }
+
+                if(partenzaSelezionata != null){
+                    editor.putString("partenza", partenzaSelezionata);
                 }
 
                 editor.apply();
@@ -673,7 +718,7 @@ public class FragmentOSM extends Fragment {
         location.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (gpsManager.gpsEnabled()) {
+                if (gpsManager.gpsEnabled() && isNetworkConnected()) {
                     Log.d("getLocation","prova il get");
                     getLocation();
                 } else {
@@ -694,92 +739,6 @@ public class FragmentOSM extends Fragment {
         }
 
         return view;
-    }
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        /*String osmDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/osmdroid/tiles";
-        String destinationFilePath = osmDir + "/CazziInCulo.sqlite";
-
-        try {
-            InputStream inputStream = getContext().getAssets().open("CazziInCulo.sqlite");
-            File destinationFolder = new File(osmDir);
-            if (!destinationFolder.exists()) {
-                destinationFolder.mkdirs();
-            }
-            Log.d("osmdroidPathDio", "Percorso della cartella: " + destinationFolder.getAbsolutePath());
-
-            OutputStream outputStream = new FileOutputStream(destinationFilePath);
-            byte[] buffer = new byte[1024];
-            int length;
-            while ((length = inputStream.read(buffer)) > 0) {
-                outputStream.write(buffer, 0, length);
-            }
-            outputStream.flush();
-            outputStream.close();
-            inputStream.close();
-            Log.d("osmdroidPathDio", "Percorso della cartella: " + "succes");
-        } catch (IOException e) {
-            e.printStackTrace();
-            // Si è verificato un errore durante la copia del file .sqlite
-            Log.d("osmdroidPathDio", "Percorso della cartella: " + "error");
-        }
-
-        Context context = getContext();
-        File osmdroidPath = new File(StorageUtils.getStorage().getAbsolutePath(), "osmdroid");
-        Configuration.getInstance().setOsmdroidBasePath(osmdroidPath);
-        Configuration.getInstance().setOsmdroidTileCache(osmdroidPath);
-
-        ITileSource tileSource = new XYTileSource("osmdroid", 0, 17, 256, ".png", new String[0]);
-        map.setTileSource(tileSource);*/
-        /*super.onViewCreated(view, savedInstanceState);
-        map.setTileSource(TileSourceFactory.OpenTopo);
-        outputPath = "/data/data/<package>/files" + File.separator + "osmdroid" + File.separator  + "tiles" + File.separator;
-        outputName = outputPath + boxE6.name + ".db";
-
-        try {
-            writer=new SqliteArchiveTileWriter(outputName);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }*/
-        /*CacheManager c =new CacheManager(map);
-        BoundingBox boundingBox = new BoundingBox(45.5265,9.2231, 45.5166, 9.2093);
-        int zoomMin =12;
-        int zoomMax =19;
-        try{
-        c.downloadAreaAsync(getContext(), boundingBox, zoomMin, zoomMax, new CacheManager.CacheManagerCallback() {
-            @Override
-            public void onTaskComplete() {
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "Download complete!", Toast.LENGTH_LONG).show();
-                }
-            }
-
-            @Override
-            public void updateProgress(int progress, int currentZoomLevel, int zoomMin, int zoomMax) {
-
-            }
-
-            @Override
-            public void downloadStarted() {
-
-            }
-
-            @Override
-            public void setPossibleTilesInArea(int total) {
-
-            }
-
-            @Override
-            public void onTaskFailed(int errors) {
-                if (getActivity() != null) {
-                    Toast.makeText(getActivity(), "Download complete with " + errors + " errors", Toast.LENGTH_LONG).show();
-                }
-            }
-        });
-        } catch (WindowManager.BadTokenException e) {
-            e.printStackTrace();
-        }*/
     }
 
     private void getLocation(){
@@ -833,6 +792,30 @@ public class FragmentOSM extends Fragment {
         });
         Log.d("gpsenabled", "funge153");
         AlertDialog dialog=builder.create();
+        dialog.show();
+    }
+
+    private void showAlertMessageConnectionDisabled() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        builder.setMessage("Device location or Wi-Fi is turned off. Turn on the device location and Wi-Fi. Do you want to turn them on?");
+        builder.setCancelable(false);
+        Log.d("gpsenabled", "funge150");
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                startActivity(new Intent(Settings.ACTION_WIFI_SETTINGS));
+                Log.d("gpsenabled", "funge151");
+
+            }
+        });
+        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.cancel();
+            }
+        });
+        Log.d("gpsenabled", "funge153");
+        AlertDialog dialog = builder.create();
         dialog.show();
     }
 
@@ -990,7 +973,7 @@ public class FragmentOSM extends Fragment {
             @Override
             public void onLocationChanged(Location location) {
                 //PARTE DEL RICALCOLO DEL PERCORSO SE SI SBAGLIA STRADA
-                if(posizioneAttuale == true) {
+                if(posizioneAttuale == true ) {
 
                     //serve per capire se sono fuori dall'uni
                     GeoPoint currentLocation = new GeoPoint(location.getLatitude(), location.getLongitude());
@@ -1003,7 +986,7 @@ public class FragmentOSM extends Fragment {
 
                     /*if (boxUni2.contains(currentLocation)) {*/
                     if(!map.getOverlayManager().contains(gpsManager.getMyLocationNewOverlay())){
-                        gpsManager.enableMyLocation();
+                        gpsManager.followMe();
                     }
                     //mylocover abilita la posizione e il focus su di essa e quindi senza enableFollow non potrei andarmene
                     if (waypoints2 != null && roadOverlay != null) {
@@ -1024,7 +1007,6 @@ public class FragmentOSM extends Fragment {
                         if (minDistance >= 50) {
                             waypoints2 = new ArrayList<GeoPoint>();
                             waypoints2.add(currentLocation);
-                            //forse devo chiamare il viewModel
                             /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
                             ex.execute();*/
                             try {
@@ -1130,6 +1112,7 @@ public class FragmentOSM extends Fragment {
         }
     }
 
+    //Permessi per la memoria esterna
     /*public void getPermissionExternalStorage(){
         Log.d("entratoPermission", "ciao1");
         if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.WRITE_EXTERNAL_STORAGE)
@@ -1165,7 +1148,9 @@ public class FragmentOSM extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
-
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        getActivity().registerReceiver(networkChangeReceiver, intentFilter);
         gpsManager.enableMyLocation();
         map.onResume();
     }
@@ -1175,7 +1160,6 @@ public class FragmentOSM extends Fragment {
         super.onPause();
         gpsManager.disableMyLocation();
         map.onPause();
-
     }
 
     @Override
@@ -1191,6 +1175,5 @@ public class FragmentOSM extends Fragment {
         super.onStop();
         gpsManager.disableMyLocation();
     }
-
 
 }

@@ -163,24 +163,30 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         floorCount = 0;
 
-        //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
-        String edificio = sharedPreferences.getString("edificio", null);
-        String destinazione = sharedPreferences.getString("destinazione",null);
 
-        /*if(edificio == null){
+        String destinazione = sharedPreferences.getString("destinazione",null);
+        String partenza = sharedPreferences.getString("partenza", null);
+        if(partenza != null){
+            startPoint.setText(partenza);
+        }
+/*
+        if(destinazione == null){
             mapBitmap = BitmapFactory.decodeResource(getResources(),
                     R.drawable.u14);
-            edificio = "u14";
+            destinazione = "u14";
         }else{
             endPoint.setText(destinazione);  // Imposta il valore di endPoint prima di chiamare getMapFloor()
-            getMapFloor(edificio,destinazione);
-        }*/
+            getMapFloor(controller.getAppartenenza(destinazione),destinazione);
+        }
 
-        getMapFloor(edificio, destinazione);
-/*
-        changeFloor(edificio);
+        changeFloor(controller.getAppartenenza(destinazione));
 
-        next_back_Btn(edificio);
+        next_back_Btn(controller.getAppartenenza(destinazione));*/
+
+        Log.d("nomeEdifico",""+destinazione);
+        Log.d("nomeEdifico",""+controller.getAppartenenza(destinazione));
+
+        getMapFloor(controller.getAppartenenza(destinazione), destinazione);
 
         indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
@@ -199,10 +205,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             Log.e("MainActivity", "Failed to load map image. " +
                     "Ensure that the image is present in the res/drawable folder " +
                     "and its name matches the one in the code.");
+            return view;
         }
 
 
-        mapDrawer = new MapDrawer(mapBitmap);
+       /* mapDrawer = new MapDrawer(mapBitmap);
         indicatorDrawer = new MapDrawer(indicatorBitmap);
 
         indoorNav = new IndoorNavigation(mapDrawer, getContext(), indicatorDrawer);
@@ -297,15 +304,15 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         });
 /*
         //onCreate per bussola
-        sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
+       /* sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         //---------- fine bussola
         //onCreate per contapassi
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        steps[0] = 0;
-*/
+        steps[0] = 0;*/
+
         /*
         user[0] = true;
         userBtn.setOnClickListener(new View.OnClickListener() {
@@ -753,8 +760,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     //Vado a implementare la logica per cui tramite le relazioni vado a prendere la mappa corretta
     //da mostrare
     public void getMapFloor(String NameEdificioDef, String destinazione){
-
-
         viewModel.getEdificioObj(NameEdificioDef).observe(getActivity(), new Observer<Edificio>() {
             @Override
             public void onChanged(Edificio edificio) {

@@ -89,6 +89,18 @@ public class GpsManager {
         mapView.invalidate();
     }
 
+    public void followMe(){
+        if(myLocationNewOverlay==null){
+            enableMyLocationOverlay();
+        }
+        mapView.getOverlayManager().remove(myLocationNewOverlay);
+        if(myLocationNewOverlay != null){
+            myLocationNewOverlay.disableFollowLocation();
+        }
+        mapView.getOverlayManager().add(myLocationNewOverlay);
+        mapView.invalidate();
+    }
+
     public void disableFollowLocation(){
         if(myLocationNewOverlay==null){
             enableMyLocationOverlay();

@@ -45,6 +45,8 @@ public class FragmentNovità extends Fragment {
     private ImageButton bike;
     private ImageButton walk;
     private ImageButton car;
+
+    //Fare per ogni problema un listener per modificare il valore nelle sharedPreferences
     private CheckedTextView Ansia;
     private CheckedTextView carrozzina;
     private CheckedTextView Claustrofobia;
