@@ -163,7 +163,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         floorCount = 0;
 
-
+        //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
         String destinazione = sharedPreferences.getString("destinazione",null);
         String partenza = sharedPreferences.getString("partenza", null);
         if(partenza != null){
@@ -188,7 +188,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         getMapFloor(controller.getAppartenenza(destinazione), destinazione);
 
-        indicator = getResources().getDrawable(R.drawable.indicator);
+       /* indicator = getResources().getDrawable(R.drawable.indicator);
         indicatorBitmap = BitmapFactory.decodeResource(getResources(),
                 R.drawable.indicator);
 
@@ -206,7 +206,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     "Ensure that the image is present in the res/drawable folder " +
                     "and its name matches the one in the code.");
             return view;
-        }
+        }*/
 
 
        /* mapDrawer = new MapDrawer(mapBitmap);
