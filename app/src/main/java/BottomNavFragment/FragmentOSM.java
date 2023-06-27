@@ -187,7 +187,7 @@ public class FragmentOSM extends Fragment {
         spinnerDestinazione.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
         spinnerPartenza.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
         //per resettare le scelte
-        logoReset=view.findViewById(R.id.imageView);
+        //logoReset=view.findViewById(R.id.imageView);
 
         //i button chiamati in questo modo orribile sono per i 2 layer aggiunti
         focusPoint=(ImageButton) view.findViewById(R.id.focus);
@@ -341,7 +341,7 @@ public class FragmentOSM extends Fragment {
         //******//GPS//
         gpsManager.gpsStart();
 
-        logoReset.setOnClickListener(new View.OnClickListener() {
+/*        logoReset.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 spinnerPartenza.setText("");
@@ -354,7 +354,7 @@ public class FragmentOSM extends Fragment {
                 map.getOverlayManager().remove(overlay);
 
             }
-        });
+        });*/
 
         // Imposta il listener sul menu a tendina della partenza
         spinnerPartenza.setOnItemClickListener(new AdapterView.OnItemClickListener() {

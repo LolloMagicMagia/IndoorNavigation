@@ -135,7 +135,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private SharedPreferences sharedPreferences;
     private int floorCount;
 
-    ViewModel viewModel;
+    private ViewModel viewModel;
 
 
     /**
