@@ -1,5 +1,7 @@
 package com.example.osmdroidex2;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,6 +51,9 @@ public class Graph {
      */
     public void addEdge(String source, String destination, int weight) {
         nodes.get(source).addEdge(new Edge(nodes.get(destination), weight));
+        Log.d("cazziInCulo", "1 "+nodes.get(destination));
+        Log.d("cazziInCulo", "2 "+new Edge(nodes.get(source), weight));
+        Log.d("cazziInCulo2", "3 "+destination);
         nodes.get(destination).addEdge(new Edge(nodes.get(source), weight));
     }
 
