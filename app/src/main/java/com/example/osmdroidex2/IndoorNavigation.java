@@ -125,8 +125,8 @@ public class IndoorNavigation {
         String id = "1";
         while (graph.getNode(id) != null) {
             Node node = graph.getNode(id);
-            if (Math.abs(pointX - node.getX()) <= 0.05) {
-                if (Math.abs(pointY - node.getY()) <= 0.05) {
+            if (Math.abs(pointX - node.getX()) <= 0.2) {
+                if (Math.abs(pointY - node.getY()) <= 0.2) {
                     return node;
                 }
             }

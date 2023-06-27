@@ -45,13 +45,13 @@ public class MapDrawer {
 
         linePaint = new Paint();
         linePaint.setColor(Color.parseColor("#8C4444"));
-        linePaint.setStrokeWidth(25);
+        linePaint.setStrokeWidth(10);
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
 
         grayLinePaint = new Paint();
         grayLinePaint.setColor(Color.rgb(128, 128, 128));
-        grayLinePaint.setStrokeWidth(25);
+        grayLinePaint.setStrokeWidth(10);
         grayLinePaint.setStyle(Paint.Style.STROKE);
         grayLinePaint.setStrokeJoin(Paint.Join.ROUND);
 
