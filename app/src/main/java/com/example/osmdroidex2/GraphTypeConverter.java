@@ -61,6 +61,10 @@ public class GraphTypeConverter {
 
     @TypeConverter
     public static Graph stringToGraph(String json) {
+
+        if(json == null){
+            return null;
+        }
         Log.d("cazziInCulo", "6"+ json);
         try {
             Graph graph = new Graph();

@@ -778,16 +778,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 }else{
                     if(destinazione==null){
                         bit = controller.getMap(NameEdificio, 0);
-
-                        graph = new Graph();
-
-                        graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
-                        graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
-                        graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
-
-                        graph.addEdge("1", "1.09", 1);
-                        graph.addEdge("1.09", "1.10", 1);
-
+                        graph = edificio.getGraph0();
                     }
                     else{
                         if(controller.getFloor(destinazione) != null){
@@ -797,43 +788,16 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                             String appartenenzaEdificio = controller.getAppartenenza(destinazione);
                             bit = controller.getMap(appartenenzaEdificio, i);
 
-                            graph = new Graph();
-
-                            graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
-                            graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
-                            graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
-
-                            graph.addEdge("1", "1.09", 1);
-                            graph.addEdge("1.09", "1.10", 1);
+                            graph = edificio.getGraph0();
 
                         }else{
                             bit = controller.getMap(NameEdificio, 0);
 
-                            graph = new Graph();
-
-                            graph.addNode("1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
-                            graph.addNode("1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
-                            graph.addNode("1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
-
-                            graph.addEdge("1", "1.09", 1);
-                            graph.addEdge("1.09", "1.10", 1);
+                            graph = edificio.getGraph0();
 
                         }
                     }
                 }
-
-                Log.d("GraphNegro", "ciao");
-
-
-
-                if(GraphTypeConverter.graphToString(graph) == null){
-                    Toast.makeText(getContext(), "null", Toast.LENGTH_SHORT).show();
-                } else if (GraphTypeConverter.stringToGraph(GraphTypeConverter.graphToString(graph)).equals(graph)) {
-                    Toast.makeText(getContext(), "UGUALE BROSKI", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(getContext(), "DIVERSO BROSKI", Toast.LENGTH_SHORT).show();
-                }
-
 
                 mapBitmap = bit;
 

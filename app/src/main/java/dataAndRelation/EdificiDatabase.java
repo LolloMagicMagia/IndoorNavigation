@@ -91,19 +91,16 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u61.addEdge("1", "1.09", 1);
             graph_u61.addEdge("1.09", "1.10", 1);
 
+            Log.d("CazziInCulo2", "" + (GraphTypeConverter.stringToGraph(GraphTypeConverter.graphToString(graph_u60)) == graph_u60));
             GeoPoint left_downU6= new GeoPoint(45.51773, 9.2126);
             GeoPoint left_topU6= new GeoPoint(45.51929, 9.21347);
             GeoPoint right_topU6 = new GeoPoint(45.51906, 9.21426);
             GeoPoint right_downU6 = new GeoPoint(45.51752, 9.21341);
 
 
-            /*mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,
-                    "u6",new GeoPoint(45.51847, 9.21297),6,
-                    graph_u60,graph_u61));*/
-
             mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,
                     "u6",new GeoPoint(45.51847, 9.21297),6,
-                    null, null));
+                    graph_u60, graph_u61));
 
             mEdificioDao.insertEdificio(new Edificio(null,null,null,null,
                     "u7", new GeoPoint(45.51731, 9.21291), 4,null,null));
