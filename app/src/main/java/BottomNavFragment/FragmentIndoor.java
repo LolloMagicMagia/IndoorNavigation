@@ -800,7 +800,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                                 //non è un aula
                             } else {
                                 Log.d("cazzicizciz", "6");
-                                endPoint.setText(NameEdificio);
                                 bit = controller.getMap(NameEdificio, 0);
                             }
                         }
