@@ -53,7 +53,7 @@ public class Graph {
         nodes.get(source).addEdge(new Edge(nodes.get(destination), weight));
         Log.d("cazziInCulo", "1 "+nodes.get(destination));
         Log.d("cazziInCulo", "2 "+new Edge(nodes.get(source), weight));
-        Log.d("cazziInCulo2", "3 "+destination);
+        Log.d("cazziInCulo", "3 "+destination);
         nodes.get(destination).addEdge(new Edge(nodes.get(source), weight));
     }
 

@@ -14,7 +14,6 @@ public class GraphTypeConverter {
     public static String graphToString(Graph graph) {
 
         if(graph == null){
-            Log.d("cazziInCulo", "9");
             return null;
         }
 
@@ -47,10 +46,8 @@ public class GraphTypeConverter {
 
             graphJson.put("nodes", nodesJson);
 
-            Log.d("cazziInCulo", "4"+ graphJson.toString());
             return graphJson.toString();
         } catch (JSONException e) {
-            Log.d("cazziInCulo", "5");
             e.printStackTrace();
             return null;
         }
@@ -65,7 +62,7 @@ public class GraphTypeConverter {
         if(json == null){
             return null;
         }
-        Log.d("cazziInCulo", "6"+ json);
+        Log.d("cazziInCulo",""+ json);
         try {
             Graph graph = new Graph();
             JSONObject graphJson = new JSONObject(json);
@@ -82,21 +79,15 @@ public class GraphTypeConverter {
                 String crowdness = nodeJson.getString("crowdness");
 
                 graph.addNode(id, x, y, roomType, availability, crowdness);
-            }
-
-            // Convert JSON to edges
-            for (int i = 0; i < nodesJson.length(); i++) {
-                JSONObject nodeJson = nodesJson.getJSONObject(i);
-                String id = nodeJson.getString("id");
 
                 JSONArray edgesJson = nodeJson.getJSONArray("edges");
+
+                // Convert JSON to edges
                 for (int j = 0; j < edgesJson.length(); j++) {
                     JSONObject edgeJson = edgesJson.getJSONObject(j);
                     String destinationId = edgeJson.getString("destination");
                     int weight = edgeJson.getInt("weight");
-                    Log.d("cazziInCulo", "7"+ id);
-                    Log.d("cazziInCulo", "8"+ destinationId);
-                    Log.d("cazziInCulo", "9"+ weight);
+
                     graph.addEdge(id, destinationId, weight);
                 }
             }

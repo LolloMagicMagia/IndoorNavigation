@@ -51,8 +51,6 @@ public class ViewModel extends AndroidViewModel {
         return roadRet;
     }
 
-    public Edificio getEdificio(String edificio) throws ExecutionException, InterruptedException {
-        return mRepository.getEdificio(edificio);
-    }
+
 
 }

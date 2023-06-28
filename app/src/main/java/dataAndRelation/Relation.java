@@ -136,6 +136,7 @@ public class Relation {
 
     private void populate(){
         for(Edificio ed: mEdificios){
+            Log.d("ccacacac",""+ed.getNomeEdificio());
             if(ed.getNomeEdificio().equals("u14")){
                 u14D=ed;
                 mappaU14.add(u14D.getLeft_below());
@@ -153,6 +154,7 @@ public class Relation {
                 mappaU6.add(u6D.getLeft_up());
                 mappaU6.add(u6D.getRight_up());
                 mappaU6.add(u6D.getRight_down());
+                Log.d("ccacacac",""+u6D.getPosizione());
                 addGeoPoint("u6", u6D.getPosizione());
                 floor.put("u6",6);
                 contenuto.put("u6","u6");
@@ -167,7 +169,7 @@ public class Relation {
         for(Aula a:mAulas){
             Log.d("database",""+a.getNomeAula()+" "+  a.getNomeEdificio());
             contenuto.put(a.getNomeAula(),a.getNomeEdificio());
-            contenuto.put(a.getNomeAula(),a.getNomeEdificio());
+           /* contenuto.put(a.getNomeAula(),a.getNomeEdificio());*/
             addGeoPoint(a.getNomeAula(),a.getPosizione());
             addAule(a.getNomeAula(),a.getPiano());
         }
