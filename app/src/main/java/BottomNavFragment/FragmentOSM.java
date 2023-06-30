@@ -13,6 +13,8 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Environment;
 import android.text.InputFilter;
+import android.text.TextUtils;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,6 +73,7 @@ import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -151,21 +154,14 @@ public class FragmentOSM extends Fragment {
     private ViewModel mViewModel;
     private NetworkViewModel networkViewModel;
 
+    boolean primavolta = false;
+    AutoCompleteTextView spinnerDestinazione;
+    AutoCompleteTextView spinnerPartenza;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mViewModel = new ViewModelProvider(this).get(ViewModel.class);
-
-        //con il live data non crasha la prima volta, perchè va a modificare quando cambia, mentre in questo caso il database può essere lento
-        //e quindi non riuscire a prendere il dato in tempo
-        /*try {
-            Edificio e = mViewModel.getEdificio("u14");
-            Log.d("edificioMoltoBello", e.getNomeEdificio());
-        } catch (ExecutionException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
-            throw new RuntimeException(e);
-        }*/
         //devo metterlo dove chiedo l'edificio, listener ogni volta che il dato cambia
         mViewModel.getAllEdificios().observe(getActivity(), new Observer<List<Edificio>>() {
             @Override
@@ -177,6 +173,24 @@ public class FragmentOSM extends Fragment {
                         //LiveData
                         controller = Controller.newChange(getContext(),edificios,aulas);
                         posizioneEdifici =controller.getEdificio();
+                        ///Initialiaze serve per andare a creare il routing etc... prima che parti l'applicaizone
+                        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+                        String destinazione = sharedPreferences.getString("destinazione",null);
+                        String partenza = sharedPreferences.getString("partenza", null);
+                        Log.d("porcaTroia","ciao"+ partenza);
+                        Log.d("porcaTroia","ciao"+ destinazione);
+                        /////////////////////////////////////////////////////
+                        try {
+                            Log.d("porcoDio","ciao");
+                            initialiaze(partenza, destinazione);
+                        } catch (ExecutionException e) {
+                            Log.d("porcoDio","cacacac1");
+                            throw new RuntimeException(e);
+                        } catch (InterruptedException e) {
+                            Log.d("porcoDio","cacacac2");
+                            throw new RuntimeException(e);
+                        }
+                        ///////////
                         map.invalidate();
                     }
                 });
@@ -188,13 +202,9 @@ public class FragmentOSM extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         View view = inflater.inflate(R.layout.fragment_osm,container,false);
 
-        ///////////////////////////////////////////////
-        /*SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
-        String destinazione = sharedPreferences.getString("destinazione",null);
-        String partenza = sharedPreferences.getString("partenza", null);*/
-/////////////////////////////////////////////////////
 
         Log.d("CicloDiVita","onCreateView");
 
@@ -204,8 +214,8 @@ public class FragmentOSM extends Fragment {
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
 
 
-        AutoCompleteTextView  spinnerPartenza = view.findViewById(R.id.spinner_partenza);
-        AutoCompleteTextView spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
+        spinnerPartenza = view.findViewById(R.id.spinner_partenza);
+        spinnerDestinazione = view.findViewById(R.id.spinner_destinazione);
 
         spinnerDestinazione.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
         spinnerPartenza.setFilters(new InputFilter[]{new InputFilter.LengthFilter(18)});
@@ -244,6 +254,22 @@ public class FragmentOSM extends Fragment {
         ArrayAdapter<String> adapterDestinazione = new ArrayAdapter<>(getContext(), android.R.layout.simple_dropdown_item_1line, opzioniDestinazione);
         adapterDestinazione.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerDestinazione.setAdapter(adapterDestinazione);
+
+
+        //Serve per inizializzare il testo anche se non lo rende effettivo
+        SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+        String destinazione = sharedPreferences.getString("destinazione",null);
+        String partenza = sharedPreferences.getString("partenza", null);
+        spinnerPartenza.setText(partenza);
+        spinnerDestinazione.setText(destinazione);
+
+
+        //visto che non funge bene il click e la scelta la implemento in maniera rozza
+        partenzaSelezionata = partenza;
+        destinazioneSelezionata = destinazione;
+
+        /////////////////////
+
 
         Context ctx = getContext();
         Configuration.getInstance().load(ctx, PreferenceManager.getDefaultSharedPreferences(ctx));
@@ -389,6 +415,7 @@ public class FragmentOSM extends Fragment {
                 // Quando viene selezionata un'opzione dalla lista della partenza, si salva il valore in una variabile
                 partenzaSelezionata = (String) parent.getItemAtPosition(position);
                 addRemoveMarker(false, aulaSelezionata);
+                addRemoveLayerLine(false,roadOverlay);
                 // Se entrambe le scelte sono state selezionate allora vado ad eseguire il codice
                 if (partenzaSelezionata != null && destinazioneSelezionata != null && map != null) {
                     Log.d("CicloDiVita","CLICK");
@@ -424,7 +451,7 @@ public class FragmentOSM extends Fragment {
                     }
                     if(isNetworkConnected()){
                         try {
-                            routeCalculation();
+                            routeCalculation(destinazioneSelezionata);
                         } catch (ExecutionException e) {
                             throw new RuntimeException(e);
                         } catch (InterruptedException e) {
@@ -472,7 +499,7 @@ public class FragmentOSM extends Fragment {
                         //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
                         //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
                         // a qualche edificio,
-                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true, destinazioneSelezionata);
 
                     } else {
                         if (overlay != null) {
@@ -495,6 +522,7 @@ public class FragmentOSM extends Fragment {
                 // Quando viene selezionata un'opzione dalla lista della destinazione, si salva il valore in una variabile
                 destinazioneSelezionata = (String) adapterView.getItemAtPosition(posizione);
                 addRemoveMarker(false, aulaSelezionata);
+                addRemoveLayerLine(false,roadOverlay);
                 // Eseguire l'operazione desiderata con il valore selezionato
                 if (partenzaSelezionata!=null && destinazioneSelezionata != null && map != null) {
                     Log.d("CicloDiVita","CLICK2");
@@ -529,7 +557,7 @@ public class FragmentOSM extends Fragment {
                     }
                     if(isNetworkConnected()){
                         try {
-                            routeCalculation();
+                            routeCalculation(destinazioneSelezionata);
                         } catch (ExecutionException e) {
                             throw new RuntimeException(e);
                         } catch (InterruptedException e) {
@@ -585,7 +613,7 @@ public class FragmentOSM extends Fragment {
                         //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
                         //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
                         // a qualche edificio,
-                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true);
+                        getFloorEdificio(controller.getFloor(destinazioneSelezionata), true, destinazioneSelezionata);
                     } else {
                         if (overlay != null) {
                             map.getOverlayManager().remove(overlay);
@@ -602,7 +630,7 @@ public class FragmentOSM extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 //per cambiare piano devo esserci sopra con la visuale e devo zoommare
-                getFloorEdificio(position, false);
+                getFloorEdificio(position, false, destinazioneSelezionata);
             }
         });
 
@@ -611,9 +639,7 @@ public class FragmentOSM extends Fragment {
             @Override
             public void onClick(View view) {
                 if(destinazioneSelezionata!=null){
-
                     gpsManager.disableFollowLocation();
-
                     mapController = map.getController();
                     mapController.animateTo(controller.getGeoPoint(destinazioneSelezionata));
                 }
@@ -706,9 +732,6 @@ public class FragmentOSM extends Fragment {
                 NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment);
                 navController.popBackStack(R.id.fragmentIndoor, true);
                 navController.navigate(R.id.fragmentIndoor);
-
-
-
             }
         });
 
@@ -880,22 +903,22 @@ public class FragmentOSM extends Fragment {
      * due comportamenti completamente diversi;
      * */
     //Con questo metodo vado a mostrare la bitMap relative al piano indicato
-    public void getFloorEdificio(int i, boolean call){
+    public void getFloorEdificio(int i, boolean call, String destinazioneSelezionata){
         if(call){
             Log.d("provaGetFloor", "call");
             //In questo caso non posso affidarmi alla camera del punto in cui sta guardando l'utente
             //ma devo guardare la destinazione e capire a che edificio sta indicando così da scegliere
             //la mappa corretta da mostrare(bitmap)
-            getFloorDestination(i);
+            getFloorDestination(i, destinazioneSelezionata);
         }else{
             //Sono sopra l'edificio e quindi posso prendere il punto direttamente a dove sto guardando
             //con il metodo onTouch e onTick
-            getFloorCam(i);
+            getFloorCam(i, destinazioneSelezionata);
         }
 
     }
 
-    public void getFloorCam(int i){
+    public void getFloorCam(int i, String destinazioneSelezionata){
         String edificio = edificioScoperto;
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificioScoperto);
         int position = i ;
@@ -933,7 +956,7 @@ public class FragmentOSM extends Fragment {
         }
     }
 
-    public void getFloorDestination(int i){
+    public void getFloorDestination(int i, String destinazioneSelezionata){
         String appartenenza = controller.getAppartenenza(destinazioneSelezionata);
         String edificio = appartenenza;
         ArrayList<GeoPoint> pointGroundOverley = controller.getPlanimetria(edificio);
@@ -1011,7 +1034,7 @@ public class FragmentOSM extends Fragment {
                             /*FragmentOSM.ExecuteTaskInBackGround ex = new FragmentOSM.ExecuteTaskInBackGround();
                             ex.execute();*/
                             try {
-                                routeCalculation();
+                                routeCalculation(destinazioneSelezionata);
                             } catch (ExecutionException e) {
                                 throw new RuntimeException(e);
                             } catch (InterruptedException e) {
@@ -1070,12 +1093,16 @@ public class FragmentOSM extends Fragment {
             return null;
         }
     }*/
-    public void routeCalculation() throws ExecutionException, InterruptedException {
+    public void routeCalculation(String destinazioneSelezionata) throws ExecutionException, InterruptedException {
         //non cancella ne il path ne il marker
         GeoPoint destinazione = controller.getGeoPoint(controller.getAppartenenza(destinazioneSelezionata));
+        Log.d("porcoDio","1"+destinazione);
         addRemoveLayerLine(false,roadOverlay);
+        Log.d("porcoDio","2"+roadOverlay);
         waypoints2.add(destinazione);
+        Log.d("porcoDio","2.5"+roadManager);
         roadOverlay = mViewModel.routeCalculation(roadManager, waypoints2, roadOverlay);
+        Log.d("porcoDio","3"+roadOverlay);
         Log.d("calculate ",""+roadOverlay.getDistance());
         addRemoveLayerLine(true,roadOverlay);
     }
@@ -1148,12 +1175,108 @@ public class FragmentOSM extends Fragment {
     }
 
 
+    public void initialiaze(String p, String d) throws ExecutionException, InterruptedException {
+        if(p==null && d==null){
+            if(aulaSelezionata!=null){
+                addRemoveMarker(false,aulaSelezionata);
+            }
+            if(overlay!=null){
+                map.getOverlayManager().remove(overlay);
+            }
+           if(roadOverlay!=null){
+               addRemoveLayerLine(false, roadOverlay);
+           }
+
+        }else if(p!=null && d!=null){
+            waypoints2 = new ArrayList<>();
+            waypoints2.add(controller.getGeoPoint(controller.getAppartenenza(p)));
+            ////
+            gpsManager.disableFollowLocation();
+            mapController.animateTo(controller.getGeoPoint(d));
+            mapController.setZoom(18);
+            addRemoveMarker(false,aulaSelezionata);
+            aulaSelezionata=null;
+            GeoPoint point = controller.getGeoPoint(d);
+            //creo il marker per poter segnalare il posto
+            aulaSelezionata=new Marker(map);
+            aulaSelezionata.setPosition(point);
+            aulaSelezionata.setTitle("Nome del luogo");
+            aulaSelezionata.setSubDescription("Piano 1");
+            aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
+            addRemoveMarker(true,aulaSelezionata);
+            if (controller.getFloor(d) != null) {
+                //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                // a qualche edificio,
+                getFloorEdificio(controller.getFloor(d), true,d);
+
+            } else {
+                if (overlay != null) {
+                    map.getOverlayManager().remove(overlay);
+                }
+                map.invalidate();
+            }
+            ///
+            Log.d("porcoDio","ciao3");
+            routeCalculation(d);
+
+        }else if(d!=null){
+            ////
+            Log.d("porcoDio",""+d );
+            Log.d("porcoDio",""+controller.getGeoPoint(d));
+            Log.d("porcoDio",""+mapController);
+            gpsManager.disableFollowLocation();
+            mapController.animateTo(controller.getGeoPoint(d));
+            mapController.setZoom(18);
+            addRemoveMarker(false,aulaSelezionata);
+            aulaSelezionata=null;
+            GeoPoint point = controller.getGeoPoint(d);
+            //creo il marker per poter segnalare il posto
+            aulaSelezionata=new Marker(map);
+            aulaSelezionata.setPosition(point);
+            aulaSelezionata.setTitle("Nome del luogo");
+            aulaSelezionata.setSubDescription("Piano 1");
+            aulaSelezionata.setIcon(getResources().getDrawable(R.drawable.baseline_heart_broken_24));
+            addRemoveMarker(true,aulaSelezionata);
+
+            if (controller.getFloor(d) != null) {
+                //Potrei non essere sopra l'edificio e quindi non sapere a che edificio
+                //mi stia riferendo, l'unica cosa che posso fare è andare a vedere se è associato
+                // a qualche edificio,
+                getFloorEdificio(controller.getFloor(d), true, d);
+
+            } else {
+                if (overlay != null) {
+                    map.getOverlayManager().remove(overlay);
+                }
+                map.invalidate();
+            }
+            ///
+        }
+    }
+
     @Override
     public void onResume() {
         super.onResume();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         getActivity().registerReceiver(networkChangeReceiver, intentFilter);
+        //la prima volta deve fare l'initialiaze quando gli arrivano tutti gli edifici, mentre la seconda volta dovrà ancora farlo
+        //ma quando fa il resume
+        if(primavolta) {
+            SharedPreferences sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
+            String destinazione = sharedPreferences.getString("destinazione", null);
+            String partenza = sharedPreferences.getString("partenza", null);
+            /////////////////////////////////////////////////////
+            try {
+                initialiaze(partenza, destinazione);
+            } catch (ExecutionException e) {
+                throw new RuntimeException(e);
+            } catch (InterruptedException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        primavolta = true;
         gpsManager.enableMyLocation();
         map.onResume();
         Log.d("CicloDiVita","RESUME");
@@ -1173,21 +1296,23 @@ public class FragmentOSM extends Fragment {
             editor.putString("edificio", null);
         }
 
-        if(destinazioneSelezionata != null){
+        if(TextUtils.isEmpty(spinnerDestinazione.getText())){
             //questo serve per mettere il punto di arrivo
-            editor.putString("destinazione", destinazioneSelezionata);
-        }else{
             editor.putString("destinazione", null);
+        }else{
+            editor.putString("destinazione", destinazioneSelezionata);
         }
 
-        if(partenzaSelezionata != null){
-            editor.putString("partenza", partenzaSelezionata);
-        }else{
+        if(TextUtils.isEmpty(spinnerPartenza.getText())){
             editor.putString("partenza", null);
+        }else{
+            editor.putString("partenza", partenzaSelezionata);
         }
 
         editor.apply();
-        Log.d("CicloDiVita","PAUSA");
+        Log.d("CicloDiVita","onPause");
+        Log.d("CicloDiVita",""+partenzaSelezionata);
+        Log.d("CicloDiVita",""+destinazioneSelezionata);
 
     }
 
@@ -1206,6 +1331,4 @@ public class FragmentOSM extends Fragment {
         gpsManager.disableMyLocation();
         Log.d("CicloDiVita","STOP");
     }
-
-
 }

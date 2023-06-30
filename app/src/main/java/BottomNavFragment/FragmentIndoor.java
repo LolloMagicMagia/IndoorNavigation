@@ -784,7 +784,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
                 String NameEdificio = NameEdificioDef;
 
-                /*if(NameEdificio == null){
+                if(NameEdificio == null){
                     bit = BitmapFactory.decodeResource(getResources(),
                             R.drawable.u14);
                     String NameEdificioDef = "u14";
@@ -797,6 +797,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     if(NameEdificio != null && partenza==null && destinazione==null){
                         Log.d("cazzicizciz", "2");
                         bit = controller.getMap(NameEdificio, 0);
+                        graph = edificio.getGraph0();
                         startPoint.setText("");
                         endPoint.setText("");
                      //vuoldire che ho almeno cercato una partenza o una destinazione
@@ -809,17 +810,22 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                                 endPoint.setText(destinazione);
                                 int i = controller.getFloor(destinazione);
                                 bit = controller.getMap(NameEdificio, i);
+                                ///Grafo a caso per vedere se funziona
+
                                 //se la partenza non appartiene allo stesso edificio allora l'edificio della destinazione
-                                //dovrà avere come patenza l'edificio stesso che in questo caso è l'entry point
+                                //dovrà avere come partenza l'edificio stesso che in questo caso è l'entry point
                                 if(NameEdificio.equals(controller.getAppartenenza(partenza)) != NameEdificio.equals(controller.getAppartenenza(destinazione)) ){
                                     Log.d("cazzicizciz", "11");
                                     startPoint.setText(NameEdificio);
                                     bit = controller.getMap(NameEdificio, 0);
+                                    graph = edificio.getGraph0();
                                 }
                                 //non è un aula
                             } else {
                                 Log.d("cazzicizciz", "6");
+                                startPoint.setText(NameEdificio);
                                 bit = controller.getMap(NameEdificio, 0);
+                                graph = edificio.getGraph0();
                             }
                         }
                         //Se la partenza appartiene a quell'edificio allora vedo se posso scriverla come partenza
@@ -830,26 +836,28 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                                 startPoint.setText(partenza);
                                 int i = controller.getFloor(partenza);
                                 bit = controller.getMap(NameEdificio, i);
+
                                 //se la destinazione non appartiene allo stesso edificio allora l'edificio della partenza
                                 //dovrà avere come destinazione l'edificio stesso che in questo caso è l'exit point
                                 if(NameEdificio.equals(controller.getAppartenenza(partenza)) != NameEdificio.equals(controller.getAppartenenza(destinazione)) ){
                                     Log.d("cazzicizciz", "10");
                                     endPoint.setText(NameEdificio);
                                     bit = controller.getMap(NameEdificio, 0);
-
+                                    graph = edificio.getGraph0();
                                 }
                                 //non è un aula
                             } else {
                                 Log.d("cazzicizciz", "4");
                                 startPoint.setText(NameEdificio);
                                 bit = controller.getMap(NameEdificio, 0);
+                                graph = edificio.getGraph0();
                             }
                         }
                     }
-                }*/
+                }
 
 
-                if(NameEdificio == null){
+                /*if(NameEdificio == null){
                     bit = BitmapFactory.decodeResource(getResources(),
                             R.drawable.u14);
                     String NameEdificioDef = "u14";
@@ -878,7 +886,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
                         }
                     }
-                }
+                }*/
 
                 mapBitmap = bit;
 
