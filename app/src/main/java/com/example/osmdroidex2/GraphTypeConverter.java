@@ -79,7 +79,11 @@ public class GraphTypeConverter {
                 String crowdness = nodeJson.getString("crowdness");
 
                 graph.addNode(id, x, y, roomType, availability, crowdness);
+            }
 
+            for (int i = 0; i < nodesJson.length(); i++) {
+                JSONObject nodeJson = nodesJson.getJSONObject(i);
+                String id = nodeJson.getString("id");
                 JSONArray edgesJson = nodeJson.getJSONArray("edges");
 
                 // Convert JSON to edges
@@ -91,6 +95,8 @@ public class GraphTypeConverter {
                     graph.addEdge(id, destinationId, weight);
                 }
             }
+
+
 
             return graph;
         } catch (JSONException e) {

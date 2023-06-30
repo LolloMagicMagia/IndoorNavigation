@@ -51,9 +51,6 @@ public class Graph {
      */
     public void addEdge(String source, String destination, int weight) {
         nodes.get(source).addEdge(new Edge(nodes.get(destination), weight));
-        Log.d("cazziInCulo", "1 "+nodes.get(destination));
-        Log.d("cazziInCulo", "2 "+new Edge(nodes.get(source), weight));
-        Log.d("cazziInCulo", "3 "+destination);
         nodes.get(destination).addEdge(new Edge(nodes.get(source), weight));
     }
 

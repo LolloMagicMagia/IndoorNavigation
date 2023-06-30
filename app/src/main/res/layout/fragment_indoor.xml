@@ -131,17 +131,17 @@
         </androidx.cardview.widget.CardView>
 
         <com.github.chrisbanes.photoview.PhotoView
+            android:id="@+id/map_image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="90dp"
-            android:id="@+id/map_image"
-            android:layout_width="580dp"
-            android:layout_height="580dp"
             android:layout_weight="1" />
 
         <com.github.chrisbanes.photoview.PhotoView
             android:id="@+id/indicator_image"
-            android:layout_width="580dp"
-            android:layout_height="580dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_marginTop="90dp"
             android:layout_weight="1"

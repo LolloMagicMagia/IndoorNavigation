@@ -5,6 +5,10 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.drawable.Drawable;
+import android.util.Log;
+
+import androidx.core.content.ContextCompat;
 
 import com.github.chrisbanes.photoview.PhotoView;
 
@@ -29,6 +33,8 @@ public class MapDrawer {
     // Un'istanza di Paint per configurare lo stile delle linee tracciate
     private Paint linePaint;
 
+    private Paint linePaintFill;
+
     private Paint grayLinePaint;
 
     /**
@@ -45,13 +51,13 @@ public class MapDrawer {
 
         linePaint = new Paint();
         linePaint.setColor(Color.parseColor("#8C4444"));
-        linePaint.setStrokeWidth(10);
+        linePaint.setStrokeWidth(25);
         linePaint.setStyle(Paint.Style.STROKE);
         linePaint.setStrokeJoin(Paint.Join.ROUND);
 
         grayLinePaint = new Paint();
         grayLinePaint.setColor(Color.rgb(128, 128, 128));
-        grayLinePaint.setStrokeWidth(10);
+        grayLinePaint.setStrokeWidth(25);
         grayLinePaint.setStyle(Paint.Style.STROKE);
         grayLinePaint.setStrokeJoin(Paint.Join.ROUND);
 
@@ -73,7 +79,7 @@ public class MapDrawer {
      *
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
-    public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType ) {
+    /*public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType ) {
         if (nodes == null || nodes.size() < 2) {
             return;
         }
@@ -94,10 +100,57 @@ public class MapDrawer {
         }
 
         //zoomOnPath(mapView, nodes);
+    }*/
+
+    public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType, Bitmap icon) {
+
+        if (nodes == null || nodes.size() < 2) {
+            return;
+        }
+
+        Path path = new Path();
+        Node firstNode = nodes.get(0);
+        path.moveTo(firstNode.getX() * mapBitmap.getWidth(), firstNode.getY() * mapBitmap.getHeight());
+
+        for (int i = 1; i < nodes.size(); i++) {
+            Node currentNode = nodes.get(i);
+            path.lineTo(currentNode.getX() * mapBitmap.getWidth(), currentNode.getY() * mapBitmap.getHeight());
+        }
+
+        Paint fillPaint = new Paint();
+        fillPaint.setColor(Color.parseColor("#8C4444"));
+
+        // Disegna un cerchio vuoto alla fine del percorso
+        Node endNode = nodes.get(nodes.size() - 1);
+        float endX = endNode.getX() * mapBitmap.getWidth();
+        float endY = endNode.getY() * mapBitmap.getHeight();
+        float circleRadius = 40f; // Modifica il raggio del cerchio come desiderato
+
+        Paint fillPaintW = new Paint();
+        fillPaintW.setColor(Color.BLUE);
+
+        mapCanvas.drawCircle(endX, endY, circleRadius, linePaint);
+        mapCanvas.drawCircle(endX, endY, circleRadius - 10f, fillPaintW);
+
+        if (lineType) {
+            mapCanvas.drawPath(path, linePaint);
+        } else {
+            mapCanvas.drawPath(path, grayLinePaint);
+        }
+
+        // Disegna un cerchio pieno all'inizio del percorso
+        Node startNode = nodes.get(0);
+        float startX = startNode.getX() * mapBitmap.getWidth();
+        float startY = startNode.getY() * mapBitmap.getHeight();
+
+        mapCanvas.drawCircle(startX, startY, circleRadius, linePaint);
+        mapCanvas.drawCircle(startX, startY, circleRadius - 5f, fillPaint);
+
+        //zoomOnPath(mapView, nodes);
     }
 
-    public void drawStep(List<Node> nodes, PhotoView mapView, List<Node> step) {
-        drawPath(nodes, mapView, false);
+    public void drawStep(List<Node> nodes, PhotoView mapView, List<Node> step, Bitmap icon) {
+        drawPath(nodes, mapView, false, icon);
         if (step == null || step.size() < 2) {
             return;
         }

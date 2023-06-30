@@ -1,6 +1,7 @@
 package com.example.osmdroidex2;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
@@ -58,7 +59,7 @@ public class IndoorNavigation {
 
     }*/
 
-    public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop){
+    public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop, Bitmap icon){
 
         if(stop) {
             Toast.makeText(context  , "Trip Canceled", Toast.LENGTH_SHORT).show();
@@ -89,7 +90,13 @@ public class IndoorNavigation {
             edge.add(node);
             edge.add(node2);
 
-            mapDrawer.drawStep(path, mapView, edge);
+            mapDrawer.drawStep(path, mapView, edge, icon);
+
+            indicatorImage.setMaximumScale(7.0f);
+
+            indicatorImage.setScale(1.0f, node.getX() * indicatorImage.getWidth(), node.getY() * indicatorImage.getHeight(), true);
+
+            indicatorImage.setScale(7.0f, (node.getX() * indicatorImage.getWidth() + node2.getX() * indicatorImage.getWidth()) / 2, (node.getY() * indicatorImage.getHeight() + node2.getY() * indicatorImage.getHeight()) / 2, true);
 
             return node2;
         }

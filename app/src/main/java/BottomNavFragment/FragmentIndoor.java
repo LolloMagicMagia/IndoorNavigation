@@ -5,6 +5,7 @@ import static android.content.Context.SENSOR_SERVICE;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
@@ -18,6 +19,7 @@ import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -27,6 +29,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
@@ -139,6 +142,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private ViewModel viewModel;
 
+    private Bitmap icon;
+
 
     /**
      * Metodo onCreate per la creazione dell'activity.
@@ -164,6 +169,15 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         controller = Controller.getInstance(null,null,null);
 
         floorCount = 0;
+
+        Resources res = getResources();
+        Drawable drawable = res.getDrawable(R.drawable.arrival_icon);
+
+        //Drawable drawable = ContextCompat.getDrawable(getContext(), R.drawable.arrival_icon);
+        icon  = Bitmap.createBitmap(drawable.getIntrinsicWidth(), drawable.getIntrinsicHeight(), Bitmap.Config.ARGB_8888);
+
+
+        Log.d("IconNull", "" + icon);
 
         //Prendo l'edificio da cui parto e la destinazione(aula) se dal fragment di prima l'ho scelta
         String destinazione = sharedPreferences.getString("destinazione",null);
@@ -234,11 +248,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             public void onClick(View v) {
                 if (btn_start.getText() == "CANCEL") {
                     path = null;
-                    indoorNav.stepNavigation(null, mapImage, steppy, indicatorImage, start, true);
+                    indoorNav.stepNavigation(null, mapImage, steppy, indicatorImage, start, true, icon);
                     btn_start.setText("START");
                     showpath = false;
                 }
-                indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
+                indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
                 steppy ++;
                 if (start[0]) {
                     start[0] = false;
@@ -289,7 +303,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
                 clearPath(true);
-                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
+                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
                 steppy ++;
                 if (nodeSphere == null) {
                     btn_start.setVisibility(View.VISIBLE);
@@ -330,6 +344,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         return view;
     }
+
+
+
 
     private void initializeViews(View view) {
         //userBtn = view.findViewById(R.id.btn_user);
@@ -528,7 +545,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
     private void disegnaPercorso(List<Node> nodes) {
-        mapDrawer.drawPath(nodes, mapImage, true);
+        mapDrawer.drawPath(nodes, mapImage, true, icon);
         mapImage.invalidate();
     }
 
@@ -552,6 +569,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         indicatorImage.setOnViewTapListener(new OnViewTapListener() {
             @Override
             public void onViewTap(View view, float x, float y) {
+
+                indicatorImage.setScale(2.0f, x, y, true);
                 //879 1091
                 float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap) / mapBitmap.getWidth();
                 float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap) / mapBitmap.getHeight();
@@ -731,7 +750,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         double dy = Math.abs(position[1]-nodeSphere.getY());
                         if (dx < 50 && dy < 50) {
                             clearPath(true);
-                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false);
+                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
                             steppy ++;
                             if (nodeSphere == null) {
                                 btn_start.setVisibility(View.VISIBLE);
@@ -765,7 +784,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
                 String NameEdificio = NameEdificioDef;
 
-                if(NameEdificio == null){
+                /*if(NameEdificio == null){
                     bit = BitmapFactory.decodeResource(getResources(),
                             R.drawable.u14);
                     String NameEdificioDef = "u14";
@@ -827,10 +846,10 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                             }
                         }
                     }
-                }
+                }*/
 
 
-                /*if(NameEdificio == null){
+                if(NameEdificio == null){
                     bit = BitmapFactory.decodeResource(getResources(),
                             R.drawable.u14);
                     String NameEdificioDef = "u14";
@@ -840,8 +859,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     if(destinazione==null){
                         bit = controller.getMap(NameEdificio, 0);
                         endPoint.setText("");
-                        /*graph = edificio.getGraph0();*/
-                   /* }
+                        graph = edificio.getGraph0();
+                    }
                    else{
                         if(controller.getFloor(destinazione) != null){
                             endPoint.setText(destinazione);
@@ -850,21 +869,18 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                             String appartenenzaEdificio = controller.getAppartenenza(destinazione);
                             bit = controller.getMap(appartenenzaEdificio, i);
 
-                            /*graph = edificio.getGraph0();*/
+                            graph = edificio.getGraph0();
 
-                      /*  }else{
+                        }else{
                             bit = controller.getMap(NameEdificio, 0);
 
-                           /* graph = edificio.getGraph0();*/
+                            graph = edificio.getGraph0();
 
-                 /*       }
+                        }
                     }
-                }*/
-
-
+                }
 
                 mapBitmap = bit;
-
 
                 changeFloor(NameEdificio);
 
@@ -909,6 +925,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
                 checkOptions();
                 checkPoint(graph, touchTransformer, indicatorImage);
+
+                indicatorImage.setMaximumScale(7.0f);
+                mapImage.setMaximumScale(7.0f);
 
             }
         });
@@ -955,36 +974,3 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     }
 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

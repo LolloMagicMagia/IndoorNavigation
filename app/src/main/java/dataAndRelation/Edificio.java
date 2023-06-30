@@ -29,16 +29,16 @@ public class Edificio {
     int numeroFloor;
 
     // Conversione di graph0 in formato stringa
-    /*Graph graph0;
+    Graph graph0;
 
     // Conversione di graph1 in formato stringa
-    Graph graph1;*/
+    Graph graph1;
 
     //Aule 1 e 2 con tutte le informazioni a riguardo
     /*@Relation(parentColumn = "nomeEdificio", entityColumn = "nomeEdificio")
     public List<Aula> aule;*/
 
-    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor/*,Graph graph0, Graph graph1*/){
+    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor, Graph graph0, Graph graph1){
         this.nomeEdificio=nomeEdificio;
         this.left_below=left_below;
         this.left_up=left_up;
@@ -47,8 +47,8 @@ public class Edificio {
         this.posizione=posizione;
         this.numeroFloor=numeroFloor;
 
-       /* this.graph1 = graph1;
-        this.graph0 = graph0;*/
+        this.graph1 = graph1;
+        this.graph0 = graph0;
     }
 
 
@@ -108,8 +108,8 @@ public class Edificio {
         this.right_down = right_down;
     }
 
-   /* public Graph getGraph0(){
+    public Graph getGraph0(){
         return graph0;
-    }*/
+    }
 
 }
