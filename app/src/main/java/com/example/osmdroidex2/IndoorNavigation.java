@@ -1,5 +1,7 @@
 package com.example.osmdroidex2;
 
+import static java.lang.Math.floor;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.widget.Toast;
@@ -130,27 +132,39 @@ public class IndoorNavigation {
 
     public Node checkNode(Graph graph, float pointX, float pointY) {
         String id = "1";
-        while (graph.getNode("T"+id) != null) {
-            Node node = graph.getNode("T"+id);
-            if (Math.abs(pointX - node.getX()) <= 0.2) {
-                if (Math.abs(pointY - node.getY()) <= 0.2) {
-                    return node;
+        int counter = 0;
+        while ((graph.getNode("T"+id) != null || Double.parseDouble(id) >= 1 || Double.parseDouble(id) <= 10) && counter < 1000) {
+            if (graph.getNode("T"+id) != null) {
+                Node node = graph.getNode("T"+id);
+                if (Math.abs(pointX - node.getX()) <= 0.05) {
+                    if (Math.abs(pointY - node.getY()) <= 0.05) {
+                        return node;
+                    }
                 }
             }
             double a = Double.parseDouble(id);
             a = a + 0.01;
-            id = String.valueOf(a);
+            id = String.format("%.2f", a);
+            id = id.replace(",", ".");
+            counter ++;
+            //Toast.makeText(context, ""+id, Toast.LENGTH_SHORT).show();
         }
-        while (graph.getNode("1"+id) != null) {
-            Node node = graph.getNode("1"+id);
-            if (Math.abs(pointX - node.getX()) <= 0.2) {
-                if (Math.abs(pointY - node.getY()) <= 0.2) {
-                    return node;
+        id = "1";
+        while ((graph.getNode("1"+id) != null || Double.parseDouble(id) >= 1 || Double.parseDouble(id) <= 10) && counter < 1000) {
+            if (graph.getNode("1"+id) != null) {
+                Node node = graph.getNode("1"+id);
+                if (Math.abs(pointX - node.getX()) <= 0.05) {
+                    if (Math.abs(pointY - node.getY()) <= 0.05) {
+                        return node;
+                    }
                 }
             }
             double a = Double.parseDouble(id);
             a = a + 0.01;
-            id = String.valueOf(a);
+            id = String.format("%.2f", a);
+            id = id.replace(",", ".");
+            counter ++;
+            Toast.makeText(context, ""+id, Toast.LENGTH_SHORT).show();
         }
         return null;
     }

@@ -74,14 +74,15 @@ public abstract class EdificiDatabase extends RoomDatabase {
 
            Graph graph_u60 = new Graph();
 
+
             graph_u60.addNode("T1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
             graph_u60.addNode("T1.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
-            graph_u60.addNode("T1.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
+            graph_u60.addNode("T1.13", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
             graph_u60.addNode("T1.16", (float) 1051 / 4096, (float) 881 / 1552,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.17", (float) 1051 / 4096, (float) 1133 / 1552,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.18", (float) 1051 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.19", (float) 1051 / 4096, (float) 1455 / 1552,  "stairs", "available", "notCrow");
-            graph_u60.addNode("T1.20", (float) 886 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
+            graph_u60.addNode("T1.2", (float) 886 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.21", (float) 886 / 4096, (float) 1431 / 1552,  "classroom", "available", "notCrow");
             graph_u60.addNode("T1.22", (float) 824 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.23", (float) 824 / 4096, (float) 1431 / 1552,  "classroom", "available", "notCrow");
@@ -94,7 +95,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
             //4096 1552
 
             //////
-            graph_u60.addNode("T1.40", (float) 0.256592, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u60.addNode("T1.4", (float) 0.256592, (float) 0.16817,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.41", (float) 0.256592, (float) 0.05541,  "stairs", "available", "notCrow");
             graph_u60.addNode("T1.42", (float) 0.256592, (float) 0.255799,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.43", (float) 0.256592, (float) 0.417526,  "hallway", "available", "notCrow");
@@ -106,13 +107,13 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u60.addNode("T1.48", (float) 0.1191406, (float) 0.16817,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.49", (float) 0.0744628, (float) 0.16817,  "hallway", "available", "notCrow");
 
-            graph_u60.addNode("T1.50", (float) 0.0744628, (float) 0.1469072,  "hallway", "available", "notCrow");
+            graph_u60.addNode("T1.5", (float) 0.0744628, (float) 0.1469072,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.51", (float) 39/4096, (float) 0.1469072,  "hallway", "available", "notCrow");
             graph_u60.addNode("T1.52", (float) 39/4096, (float) 0.60526316,  "stairs", "available", "notCrow");
 
-            graph_u60.addEdge("T1.40", "T1.41", 1);
-            graph_u60.addEdge("T1.40", "T1.42", 1);
-            graph_u60.addEdge("T1.40", "T1.44", 1);
+            graph_u60.addEdge("T1.4", "T1.41", 1);
+            graph_u60.addEdge("T1.4", "T1.42", 1);
+            graph_u60.addEdge("T1.4", "T1.44", 1);
             graph_u60.addEdge("T1.42", "T1.43", 1);
             graph_u60.addEdge("T1.44", "T1.45", 1);
             graph_u60.addEdge("T1.45", "T1.46", 1);
@@ -120,22 +121,18 @@ public abstract class EdificiDatabase extends RoomDatabase {
 
             graph_u60.addEdge("T1.47", "T1.48", 1);
             graph_u60.addEdge("T1.48", "T1.49", 1);
-            graph_u60.addEdge("T1.49", "T1.50", 1);
+            graph_u60.addEdge("T1.49", "T1.5", 1);
             graph_u60.addEdge("T1.51", "T1.52", 1);
             //////
-
-
-
-
-
             graph_u60.addEdge("T1", "T1.09", 1);
-            graph_u60.addEdge("T1.09", "T1.10", 1);
+            graph_u60.addEdge("T1.09", "T1.13", 1);
+            graph_u60.addEdge("T1.13", "T1.4", 1);
             graph_u60.addEdge("T1.18", "T1.19", 1);
             graph_u60.addEdge("T1.18", "T1.17", 1);
-            graph_u60.addEdge("T1.18", "T1.20", 1);
+            graph_u60.addEdge("T1.18", "T1.2", 1);
             graph_u60.addEdge("T1.17", "T1.16", 1);
-            graph_u60.addEdge("T1.20", "T1.21", 1);
-            graph_u60.addEdge("T1.20", "T1.22", 1);
+            graph_u60.addEdge("T1.2", "T1.21", 1);
+            graph_u60.addEdge("T1.2", "T1.22", 1);
             graph_u60.addEdge("T1.22", "T1.23", 1);
             graph_u60.addEdge("T1.22", "T1.24", 1);
             graph_u60.addEdge("T1.24", "T1.26", 1);
@@ -151,12 +148,12 @@ public abstract class EdificiDatabase extends RoomDatabase {
 
             graph_u61.addNode("11", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
             graph_u61.addNode("11.09", (float) 0.473, (float) 0.502,  "atrium", "available", "notCrow");
-            graph_u61.addNode("11.10", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
+            graph_u61.addNode("11.13", (float) 0.473, (float) 0.802,  "atrium", "available", "notCrow");
             graph_u61.addNode("11.16", (float) 1051 / 4096, (float) 881 / 1552,  "hallway", "available", "notCrow");
             graph_u61.addNode("11.17", (float) 1051 / 4096, (float) 1133 / 1552,  "hallway", "available", "notCrow");
             graph_u61.addNode("11.18", (float) 1051 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u61.addNode("11.19", (float) 1051 / 4096, (float) 1455 / 1552,  "stairs", "available", "notCrow");
-            graph_u61.addNode("11.20", (float) 886 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.2", (float) 886 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u61.addNode("11.21", (float) 886 / 4096, (float) 1431 / 1552,  "classroom", "available", "notCrow");
             graph_u61.addNode("11.22", (float) 824 / 4096, (float) 1233 / 1552,  "hallway", "available", "notCrow");
             graph_u61.addNode("11.23", (float) 824 / 4096, (float) 1431 / 1552,  "classroom", "available", "notCrow");
@@ -168,44 +165,44 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u61.addNode("11.29", (float) 48 / 4096, (float) 1505 / 1552,  "stairs", "available", "notCrow");
             //4096 1552
 
-            graph_u60.addNode("11.40", (float) 0.256592, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.41", (float) 0.256592, (float) 0.05541,  "stairs", "available", "notCrow");
-            graph_u60.addNode("11.42", (float) 0.256592, (float) 0.255799,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.43", (float) 0.256592, (float) 0.417526,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.4", (float) 0.256592, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.41", (float) 0.256592, (float) 0.05541,  "stairs", "available", "notCrow");
+            graph_u61.addNode("11.42", (float) 0.256592, (float) 0.255799,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.43", (float) 0.256592, (float) 0.417526,  "hallway", "available", "notCrow");
 
-            graph_u60.addNode("11.44", (float) 0.217285, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.45", (float) 0.201416, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.46", (float) 0.155273, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.47", (float) 0.1455078, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.48", (float) 0.1191406, (float) 0.16817,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.49", (float) 0.0744628, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.44", (float) 0.217285, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.45", (float) 0.201416, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.46", (float) 0.155273, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.47", (float) 0.1455078, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.48", (float) 0.1191406, (float) 0.16817,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.49", (float) 0.0744628, (float) 0.16817,  "hallway", "available", "notCrow");
 
-            graph_u60.addNode("11.50", (float) 0.0744628, (float) 0.1469072,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.51", (float) 39/4096, (float) 0.1469072,  "hallway", "available", "notCrow");
-            graph_u60.addNode("11.52", (float) 39/4096, (float) 0.60526316,  "stairs", "available", "notCrow");
+            graph_u61.addNode("11.5", (float) 0.0744628, (float) 0.1469072,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.51", (float) 39/4096, (float) 0.1469072,  "hallway", "available", "notCrow");
+            graph_u61.addNode("11.52", (float) 39/4096, (float) 0.60526316,  "stairs", "available", "notCrow");
 
-            graph_u60.addEdge("11.40", "11.41", 1);
-            graph_u60.addEdge("11.40", "11.42", 1);
-            graph_u60.addEdge("11.40", "11.44", 1);
-            graph_u60.addEdge("11.42", "11.43", 1);
-            graph_u60.addEdge("11.44", "11.45", 1);
-            graph_u60.addEdge("11.45", "11.46", 1);
-            graph_u60.addEdge("11.46", "11.47", 1);
+            graph_u61.addEdge("11.4", "11.41", 1);
+            graph_u61.addEdge("11.4", "11.42", 1);
+            graph_u61.addEdge("11.4", "11.44", 1);
+            graph_u61.addEdge("11.42", "11.43", 1);
+            graph_u61.addEdge("11.44", "11.45", 1);
+            graph_u61.addEdge("11.45", "11.46", 1);
+            graph_u61.addEdge("11.46", "11.47", 1);
 
-            graph_u60.addEdge("11.47", "11.48", 1);
-            graph_u60.addEdge("11.48", "11.49", 1);
-            graph_u60.addEdge("11.49", "11.50", 1);
-            graph_u60.addEdge("11.51", "11.52", 1);
+            graph_u61.addEdge("11.47", "11.48", 1);
+            graph_u61.addEdge("11.48", "11.49", 1);
+            graph_u61.addEdge("11.49", "11.5", 1);
+            graph_u61.addEdge("11.51", "11.52", 1);
 
 
             graph_u61.addEdge("11", "11.09", 1);
-            graph_u61.addEdge("11.09", "11.10", 1);
+            graph_u61.addEdge("11.09", "11.13", 1);
             graph_u61.addEdge("11.18", "11.19", 1);
             graph_u61.addEdge("11.18", "11.17", 1);
-            graph_u61.addEdge("11.18", "11.20", 1);
+            graph_u61.addEdge("11.18", "11.2", 1);
             graph_u61.addEdge("11.17", "11.16", 1);
-            graph_u61.addEdge("11.20", "11.21", 1);
-            graph_u61.addEdge("11.20", "11.22", 1);
+            graph_u61.addEdge("11.2", "11.21", 1);
+            graph_u61.addEdge("11.2", "11.22", 1);
             graph_u61.addEdge("11.22", "11.23", 1);
             graph_u61.addEdge("11.22", "11.24", 1);
             graph_u61.addEdge("11.24", "11.26", 1);

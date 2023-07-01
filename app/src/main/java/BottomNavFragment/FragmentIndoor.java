@@ -570,10 +570,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onViewTap(View view, float x, float y) {
 
-                indicatorImage.setScale(2.0f, x, y, true);
+                //indicatorImage.setScale(2.0f, x, y, true);
                 //879 1091
                 float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap) / mapBitmap.getWidth();
                 float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap) / mapBitmap.getHeight();
+                Toast.makeText(getContext(), ""+pointX+" "+pointY, Toast.LENGTH_SHORT).show();
 
                 /*if (!user[0]) {
                     disegnaIndicatore(pointX, pointY);
