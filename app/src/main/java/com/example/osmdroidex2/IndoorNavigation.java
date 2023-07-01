@@ -130,15 +130,26 @@ public class IndoorNavigation {
 
     public Node checkNode(Graph graph, float pointX, float pointY) {
         String id = "1";
-        while (graph.getNode(id) != null) {
-            Node node = graph.getNode(id);
+        while (graph.getNode("T"+id) != null) {
+            Node node = graph.getNode("T"+id);
             if (Math.abs(pointX - node.getX()) <= 0.2) {
                 if (Math.abs(pointY - node.getY()) <= 0.2) {
                     return node;
                 }
             }
-            int a = Integer.parseInt(id);
-            a++;
+            double a = Double.parseDouble(id);
+            a = a + 0.01;
+            id = String.valueOf(a);
+        }
+        while (graph.getNode("1"+id) != null) {
+            Node node = graph.getNode("1"+id);
+            if (Math.abs(pointX - node.getX()) <= 0.2) {
+                if (Math.abs(pointY - node.getY()) <= 0.2) {
+                    return node;
+                }
+            }
+            double a = Double.parseDouble(id);
+            a = a + 0.01;
             id = String.valueOf(a);
         }
         return null;
