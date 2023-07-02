@@ -354,7 +354,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         animationRunnable = new Runnable() {
             @Override
             public void run() {
-                float stepSize = 20f;
+                float stepSize = 40f;
                 if (Math.abs(position[0] - xDestinazione) <= stepSize &&
                         Math.abs(position[1] - yDestinazione) <= stepSize) {
                     if (xDestinazione == path.get(path.size()-1).getX() * mapBitmap.getWidth() &&

@@ -126,7 +126,8 @@ public abstract class EdificiDatabase extends RoomDatabase {
             //////
             graph_u60.addEdge("T1", "T1.09", 1);
             graph_u60.addEdge("T1.09", "T1.13", 1);
-            graph_u60.addEdge("T1.13", "T1.4", 1);
+            graph_u60.addEdge("T1.13", "T1.18", 1);
+            graph_u60.addEdge("T1.18", "T1.4", 1);
             graph_u60.addEdge("T1.18", "T1.19", 1);
             graph_u60.addEdge("T1.18", "T1.17", 1);
             graph_u60.addEdge("T1.18", "T1.2", 1);
