@@ -1,9 +1,8 @@
 package com.example.osmdroidex2;
 
-import static java.lang.Math.floor;
-
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.os.Handler;
 import android.widget.Toast;
 
 import com.github.chrisbanes.photoview.PhotoView;
@@ -61,7 +60,7 @@ public class IndoorNavigation {
 
     }*/
 
-    public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop, Bitmap icon){
+    public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop, Bitmap icon, Handler handler, Runnable animationRunnable){
 
         if(stop) {
             Toast.makeText(context  , "Trip Canceled", Toast.LENGTH_SHORT).show();
@@ -76,7 +75,7 @@ public class IndoorNavigation {
             return null;
 
         } else if(count + 1   >= path.size()){
-
+            handler.removeCallbacks(animationRunnable);
             Toast.makeText(context  , "you arrived!!", Toast.LENGTH_SHORT).show();
             start[0] = false;
             clearPath(mapView, indicatorImage);
@@ -98,7 +97,7 @@ public class IndoorNavigation {
 
             indicatorImage.setScale(1.0f, node.getX() * indicatorImage.getWidth(), node.getY() * indicatorImage.getHeight(), true);
 
-            indicatorImage.setScale(7.0f, (node.getX() * indicatorImage.getWidth() + node2.getX() * indicatorImage.getWidth()) / 2, (node.getY() * indicatorImage.getHeight() + node2.getY() * indicatorImage.getHeight()) / 2, true);
+            indicatorImage.setScale(6.0f, (node.getX() * indicatorImage.getWidth() + node2.getX() * indicatorImage.getWidth()) / 2, (node.getY() * indicatorImage.getHeight() + node2.getY() * indicatorImage.getHeight()) / 2, true);
 
             return node2;
         }

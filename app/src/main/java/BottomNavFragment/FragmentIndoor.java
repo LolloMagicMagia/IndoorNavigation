@@ -25,7 +25,6 @@ import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
@@ -246,11 +245,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             public void onClick(View v) {
                 if (btn_start.getText() == "CANCEL") {
                     path = null;
-                    indoorNav.stepNavigation(null, mapImage, steppy, indicatorImage, start, true, icon);
+                    indoorNav.stepNavigation(null, mapImage, steppy, indicatorImage, start, true, icon, handler, animationRunnable);
                     btn_start.setText("START");
                     showpath = false;
                 }
-                indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
+                indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon, handler, animationRunnable);
                 steppy ++;
                 if (start[0]) {
                     start[0] = false;
@@ -287,7 +286,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     disegnaIndicatore(position[0], position[1]);
                     int[] i = new int[1];
                     animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i);
-                    //animazione(path.get(2).getX() * mapBitmap.getWidth(), path.get(2).getY() * mapBitmap.getHeight(), i);
                 }
             }
         });
@@ -307,7 +305,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
                 clearPath(true);
-                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
+                nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon, handler, animationRunnable);
                 steppy ++;
                 if (nodeSphere == null) {
                     btn_start.setVisibility(View.VISIBLE);
@@ -350,35 +348,41 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     }
 
     private void animazione(float xDestinazione, float yDestinazione, int[] i) {
-        handler = new Handler();
-        animationRunnable = new Runnable() {
-            @Override
-            public void run() {
-                float stepSize = 40f;
-                if (Math.abs(position[0] - xDestinazione) <= stepSize &&
-                        Math.abs(position[1] - yDestinazione) <= stepSize) {
-                    if (xDestinazione == path.get(path.size()-1).getX() * mapBitmap.getWidth() &&
-                             yDestinazione == path.get(path.size()-1).getY() * mapBitmap.getHeight()) {
-                        // Il cerchio ha raggiunto la destinazione, interrompi l'animazione
-                        handler.removeCallbacks(animationRunnable);
-                        return ;
+        try {
+            handler = new Handler();
+            animationRunnable = new Runnable() {
+                @Override
+                public void run() {
+                    float stepSize = 60f;
+                    if (Math.abs(position[0] - xDestinazione) <= stepSize &&
+                            Math.abs(position[1] - yDestinazione) <= stepSize) {
+                        if (xDestinazione == path.get(path.size() - 1).getX() * mapBitmap.getWidth() &&
+                                yDestinazione == path.get(path.size() - 1).getY() * mapBitmap.getHeight()) {
+                            // Il cerchio ha raggiunto la destinazione, interrompi l'animazione
+                            i[0] = 1;
+                            handler.removeCallbacks(animationRunnable);
+                            position[0] = path.get(0).getX() * mapBitmap.getWidth();
+                            position[1] = path.get(0).getY() * mapBitmap.getHeight();
+                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
+                        } else {
+                            // vai al prossimo nodo
+                            i[0]++;
+                            handler.removeCallbacks(animationRunnable);
+                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
+                        }
+                        return;
                     }
-                    else {
-                        // vai al prossimo nodo
-                        i[0]++;
-                        handler.removeCallbacks(animationRunnable);
-                        animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
-                    }
-                    return;
-                }
-                position[0] = (float) (position[0] + (calculateStepSize(position[0], xDestinazione, stepSize, true)));
-                position[1] = (float) (position[1] + (calculateStepSize(position[1], yDestinazione, stepSize, false)));
+                    position[0] = (float) (position[0] + (calculateStepSize(position[0], xDestinazione, stepSize, true)));
+                    position[1] = (float) (position[1] + (calculateStepSize(position[1], yDestinazione, stepSize, false)));
 
-                disegnaIndicatore(position[0], position[1]);
-                handler.postDelayed(this, 100); // 16ms corrisponde a circa 60 frame al secondo
-            }
-        };
-        handler.post(animationRunnable);
+                    disegnaIndicatore(position[0], position[1]);
+                    handler.postDelayed(this, 200); // 16ms corrisponde a circa 60 frame al secondo
+                }
+            };
+            handler.post(animationRunnable);
+        } catch(Exception e) {
+
+        }
     }
 
     private float calculateStepSize(float v, float vDestinazione, float stepSize, boolean b) {
@@ -795,7 +799,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         double dy = Math.abs(position[1]-nodeSphere.getY());
                         if (dx < 50 && dy < 50) {
                             clearPath(true);
-                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon);
+                            nodeSphere = indoorNav.stepNavigation(path, mapImage, steppy, indicatorImage, start, false, icon, handler, animationRunnable);
                             steppy ++;
                             if (nodeSphere == null) {
                                 btn_start.setVisibility(View.VISIBLE);
