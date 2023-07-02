@@ -360,6 +360,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     if (xDestinazione == path.get(path.size()-1).getX() * mapBitmap.getWidth() &&
                              yDestinazione == path.get(path.size()-1).getY() * mapBitmap.getHeight()) {
                         // Il cerchio ha raggiunto la destinazione, interrompi l'animazione
+                        handler.removeCallbacks(animationRunnable);
                         return ;
                     }
                     else {
@@ -615,7 +616,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 //879 1091
                 float pointX = touchTransformer.transformX(x, indicatorImage, indicatorBitmap) / mapBitmap.getWidth();
                 float pointY = touchTransformer.transformY(y, indicatorImage, indicatorBitmap) / mapBitmap.getHeight();
-                Toast.makeText(getContext(), ""+pointX+" "+pointY, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(getContext(), ""+pointX+" "+pointY, Toast.LENGTH_SHORT).show();
 
                 /*if (!user[0]) {
                     disegnaIndicatore(pointX, pointY);
@@ -645,6 +646,20 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
                     Switch sw_crowded = dialog.findViewById(R.id.sw_crowded);
                     Switch sw_available = dialog.findViewById(R.id.sw_available);
+                    if (node.getAvailability().equals("available")) {
+                        sw_available.setChecked(true);
+                    }
+                    if (node.getAvailability().equals("unavailable")) {
+                        sw_available.setChecked(false);
+                    }
+                    if (node.getCrowdness().equals("crowded")) {
+                        sw_crowded.setChecked(true);
+                    }
+                    if (node.getCrowdness().equals("notCrow")) {
+                        sw_crowded.setChecked(false);
+                    }
+
+                    //Toast.makeText(getContext(), ""+node.getAvailability(), Toast.LENGTH_SHORT).show();
 
                     btn_starting.setOnClickListener(new View.OnClickListener() {
                         @Override
@@ -661,18 +676,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                             dialog.dismiss();
                         }
                     });
-                    if (node.getAvailability() == "available") {
-                        sw_available.setChecked(true);
-                    }
-                    if (node.getAvailability() == "unavailable") {
-                        sw_available.setChecked(false);
-                    }
-                    if (node.getCrowdness() == "crowded") {
-                        sw_crowded.setChecked(true);
-                    }
-                    if (node.getCrowdness() == "notCrow") {
-                        sw_crowded.setChecked(false);
-                    }
                     sw_available.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
