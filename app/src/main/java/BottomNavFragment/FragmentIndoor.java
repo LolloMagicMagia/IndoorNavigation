@@ -1,7 +1,5 @@
 package BottomNavFragment;
 
-import static android.content.Context.SENSOR_SERVICE;
-
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -17,9 +15,9 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -29,13 +27,11 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.osmdroidex2.Graph;
-import com.example.osmdroidex2.GraphTypeConverter;
 import com.example.osmdroidex2.IndoorNavigation;
 import com.example.osmdroidex2.MapDrawer;
 import com.example.osmdroidex2.Node;
@@ -54,6 +50,8 @@ import dataAndRelation.Edificio;
 import dataAndRelation.ViewModel;
 
 public class FragmentIndoor extends Fragment implements SensorEventListener {
+    private Handler handler;
+    private Runnable animationRunnable;
     private int stepCount = 0;
     private boolean showpath = false;
     private int steppy = 0;
@@ -275,8 +273,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 clearPath();
                 path = graph.findShortestPath(startPoint.getText().toString(), endPoint.getText().toString(), stairs, available, crowd);
                 try {
+                    path.get(0);
                     path.get(1);
-                    path.get(2);
                 } catch (Exception e) {
                     path = null;
                 }
@@ -284,6 +282,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     disegnaPercorso(path);
                     showpath = true;
                     steppy = 0;
+                    position[0] = path.get(0).getX() * mapBitmap.getWidth();
+                    position[1] = path.get(0).getY() * mapBitmap.getHeight();
+                    disegnaIndicatore(position[0], position[1]);
+                    int[] i = new int[1];
+                    animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i);
                 }
             }
         });
@@ -345,7 +348,42 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         return view;
     }
 
+    private void animazione(float xDestinazione, float yDestinazione, int[] i) {
+        handler = new Handler();
+        animationRunnable = new Runnable() {
+            @Override
+            public void run() {
+                float stepSize = 15f;
+                if (Math.abs(position[0] - xDestinazione) <= stepSize &&
+                        Math.abs(position[1] - yDestinazione) <= stepSize) {
+                    if (xDestinazione == path.get(path.size()-1).getX() * mapBitmap.getWidth() &&
+                             yDestinazione == path.get(path.size()-1).getY() * mapBitmap.getHeight()) {
+                        // Il cerchio ha raggiunto la destinazione, interrompi l'animazione
+                        return ;
+                    }
+                    else {
+                        // vai al prossimo nodo
+                        /*i[0]++;
+                        animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i); */
+                    }
+                }
+                position[0] = position[0] + calculateStepSize(position[0], xDestinazione, stepSize, true);
+                position[1] = position[1] + calculateStepSize(position[1], yDestinazione, stepSize, false);
 
+                disegnaIndicatore(position[0], position[1]);
+                handler.postDelayed(this, 16); // 16ms corrisponde a circa 60 frame al secondo
+            }
+        };
+        handler.post(animationRunnable);
+    }
+
+    private float calculateStepSize(float v, float vDestinazione, float stepSize, boolean b) {
+        if (v < vDestinazione) {
+            return Math.min(stepSize, vDestinazione - v);
+        } else {
+            return Math.max(-stepSize / 10, vDestinazione - v);
+        }
+    }
 
 
     private void initializeViews(View view) {
