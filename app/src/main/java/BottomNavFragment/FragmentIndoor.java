@@ -287,6 +287,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     disegnaIndicatore(position[0], position[1]);
                     int[] i = new int[1];
                     animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i);
+                    //animazione(path.get(2).getX() * mapBitmap.getWidth(), path.get(2).getY() * mapBitmap.getHeight(), i);
                 }
             }
         });
@@ -353,7 +354,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         animationRunnable = new Runnable() {
             @Override
             public void run() {
-                float stepSize = 15f;
+                float stepSize = 20f;
                 if (Math.abs(position[0] - xDestinazione) <= stepSize &&
                         Math.abs(position[1] - yDestinazione) <= stepSize) {
                     if (xDestinazione == path.get(path.size()-1).getX() * mapBitmap.getWidth() &&
@@ -363,15 +364,17 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     }
                     else {
                         // vai al prossimo nodo
-                        /*i[0]++;
-                        animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i); */
+                        i[0]++;
+                        handler.removeCallbacks(animationRunnable);
+                        animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
                     }
+                    return;
                 }
-                position[0] = position[0] + calculateStepSize(position[0], xDestinazione, stepSize, true);
-                position[1] = position[1] + calculateStepSize(position[1], yDestinazione, stepSize, false);
+                position[0] = (float) (position[0] + (calculateStepSize(position[0], xDestinazione, stepSize, true)));
+                position[1] = (float) (position[1] + (calculateStepSize(position[1], yDestinazione, stepSize, false)));
 
                 disegnaIndicatore(position[0], position[1]);
-                handler.postDelayed(this, 16); // 16ms corrisponde a circa 60 frame al secondo
+                handler.postDelayed(this, 100); // 16ms corrisponde a circa 60 frame al secondo
             }
         };
         handler.post(animationRunnable);
@@ -381,7 +384,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         if (v < vDestinazione) {
             return Math.min(stepSize, vDestinazione - v);
         } else {
-            return Math.max(-stepSize / 10, vDestinazione - v);
+            return Math.max(-stepSize, vDestinazione - v);
         }
     }
 
