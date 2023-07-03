@@ -99,7 +99,7 @@ public class IndoorNavigation {
 
             indicatorImage.setScale(1.0f, node.getX() * indicatorImage.getWidth(), node.getY() * indicatorImage.getHeight(), true);
 
-            indicatorImage.setScale(6.0f, (node.getX() * indicatorImage.getWidth() + node2.getX() * indicatorImage.getWidth()) / 2, (node.getY() * indicatorImage.getHeight() + node2.getY() * indicatorImage.getHeight()) / 2, true);
+            indicatorImage.setScale(4.0f, (node.getX() * indicatorImage.getWidth() + node2.getX() * indicatorImage.getWidth()) / 2, (node.getY() * indicatorImage.getHeight() + node2.getY() * indicatorImage.getHeight()) / 2, true);
 
             return node2;
         }

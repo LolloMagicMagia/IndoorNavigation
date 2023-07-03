@@ -232,8 +232,8 @@ public class MapDrawer {
 
         //Toast.makeText(getContext(), "metri: " + meters / oneMeter, Toast.LENGTH_SHORT).show();
 
-        Log.d("Meters", "metri: " + (float)(10 + 2 * (meters / (oneMeter * mapBitmap.getWidth()))));
-        return (float)(10  + 2 * (meters / (oneMeter * mapBitmap.getWidth())));
+        Log.d("Meters", "metri: " + meters / (oneMeter * mapBitmap.getWidth()));
+        return (float)(meters / (oneMeter * mapBitmap.getWidth()));
 
     }
 

@@ -1,5 +1,7 @@
 package BottomNavFragment;
 
+import static android.content.Context.SENSOR_SERVICE;
+
 import android.app.Dialog;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -352,16 +354,16 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 }
             }
         });
-/*
+
         //onCreate per bussola
-       /* sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
+        sensorManager = (SensorManager) getActivity().getSystemService(SENSOR_SERVICE);
         accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
         //---------- fine bussola
         //onCreate per contapassi
         stepSensor = sensorManager.getDefaultSensor(Sensor.TYPE_STEP_DETECTOR);
         orientationSensor = sensorManager.getDefaultSensor(Sensor.TYPE_ORIENTATION);
-        steps[0] = 0;*/
+        steps[0] = 0;
 
         /*
         user[0] = true;
@@ -389,7 +391,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             animationRunnable = new Runnable() {
                 @Override
                 public void run() {
-                    float stepSize = 60f;
+                    float stepSize = 30f;
                     if (Math.abs(position[0] - xDestinazione) <= stepSize &&
                             Math.abs(position[1] - yDestinazione) <= stepSize) {
                         if (xDestinazione == path.get(path.size() - 1).getX() * mapBitmap.getWidth() &&
@@ -412,7 +414,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     position[1] = (float) (position[1] + (calculateStepSize(position[1], yDestinazione, stepSize, false)));
 
                     disegnaIndicatore(position[0], position[1]);
-                    handler.postDelayed(this, 200); // 16ms corrisponde a circa 60 frame al secondo
+                    handler.postDelayed(this, 16); // 16ms corrisponde a circa 60 frame al secondo
                 }
             };
             handler.post(animationRunnable);
@@ -798,10 +800,10 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     @Override
     public void onResume() {
         super.onResume();
-/*        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
+        sensorManager.registerListener(this, stepSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, orientationSensor, SensorManager.SENSOR_DELAY_NORMAL);
         sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
-        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);*/
+        sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
     }
 
     @Override
