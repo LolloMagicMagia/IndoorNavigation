@@ -52,6 +52,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     private Handler handler;
     private Runnable animationRunnable;
     private int stepCount = 0;
+    String edificios;
     private boolean showpath = false;
     private int steppy = 0;
     //private boolean first = true;
@@ -887,7 +888,17 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
     //Vado a implementare la logica per cui tramite le relazioni vado a prendere la mappa corretta
     //da mostrare
     public void getMapFloor(String NameEdificioDef, String destinazione, String partenza){
-        viewModel.getEdificioObj(NameEdificioDef).observe(getActivity(), new Observer<Edificio>() {
+        Log.d("PrendereLaMappa", ""+NameEdificioDef);
+        Log.d("PrendereLaMappa", ""+destinazione);
+        if(NameEdificioDef==null){
+            if(destinazione!=null){
+                edificios= controller.getAppartenenza(destinazione);
+            }
+        }else{
+            edificios=NameEdificioDef;
+        }
+        Log.d("PrendereLaMappa", ""+edificios);
+        viewModel.getEdificioObj(edificios).observe(getActivity(), new Observer<Edificio>() {
             @Override
             public void onChanged(Edificio edificio) {
                 Bitmap bit = null;
@@ -897,17 +908,42 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 String NameEdificio = NameEdificioDef;
 
                 if(NameEdificio == null){
-                    bit = BitmapFactory.decodeResource(getResources(),
-                            R.drawable.u14);
-                    String NameEdificioDef = "u14";
-                    graph = new Graph();
-                    initializeGraphNodes();
-                    Log.d("cazzicizciz", "1");
+                    if(destinazione!=null){
+                        if (controller.getFloor(destinazione) != null) {
+                            Log.d("PrendereLaMappa", "1");
+                            endPoint.setText(destinazione);
+                            int i = controller.getFloor(destinazione);
+                            bit = controller.getMap(NameEdificio, i);
+                            ///Grafo a caso per vedere se funziona
+
+                            //se la partenza non appartiene allo stesso edificio allora l'edificio della destinazione
+                            //dovrà avere come partenza l'edificio stesso che in questo caso è l'entry point
+                            if(NameEdificio.equals(controller.getAppartenenza(partenza)) != NameEdificio.equals(controller.getAppartenenza(destinazione)) ){
+                                Log.d("PrendereLaMappa", "2");
+                                startPoint.setText(NameEdificio);
+                                bit = controller.getMap(NameEdificio, 0);
+                                graph = edificio.getGraph0();
+                            }
+                            //non è un aula
+                        } else {
+                            Log.d("PrendereLaMappa", ""+destinazione);
+                            startPoint.setText(destinazione);
+                            bit = controller.getMap(destinazione, 0);
+                            Log.d("PrendereLaMappa", ""+bit);
+                            graph = edificio.getGraph0();
+                        }
+                    }else{
+                        Log.d("PrendereLaMappa", "4");
+                        bit = BitmapFactory.decodeResource(getResources(),
+                                R.drawable.u14);
+                        String NameEdificioDef = "u14";
+                        graph = new Graph();
+                        initializeGraphNodes();
+                    }
                 //ho zoommato almeno su un edificio
                 }else{
                     //se sono null vuoldire che ho zoommato solo su un edificio
                     if(NameEdificio != null && partenza==null && destinazione==null){
-                        Log.d("cazzicizciz", "2");
                         bit = controller.getMap(NameEdificio, 0);
                         graph = edificio.getGraph0();
                         startPoint.setText("");
@@ -918,7 +954,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         if (destinazione != null && NameEdificio.equals(controller.getAppartenenza(destinazione))) {
                             //è un aula
                             if (controller.getFloor(destinazione) != null) {
-                                Log.d("cazzicizciz", "5");
                                 endPoint.setText(destinazione);
                                 int i = controller.getFloor(destinazione);
                                 bit = controller.getMap(NameEdificio, i);
@@ -927,14 +962,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                                 //se la partenza non appartiene allo stesso edificio allora l'edificio della destinazione
                                 //dovrà avere come partenza l'edificio stesso che in questo caso è l'entry point
                                 if(NameEdificio.equals(controller.getAppartenenza(partenza)) != NameEdificio.equals(controller.getAppartenenza(destinazione)) ){
-                                    Log.d("cazzicizciz", "11");
                                     startPoint.setText(NameEdificio);
                                     bit = controller.getMap(NameEdificio, 0);
                                     graph = edificio.getGraph0();
                                 }
                                 //non è un aula
                             } else {
-                                Log.d("cazzicizciz", "6");
                                 startPoint.setText(NameEdificio);
                                 bit = controller.getMap(NameEdificio, 0);
                                 graph = edificio.getGraph0();
@@ -944,7 +977,6 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         if (partenza != null && NameEdificio.equals(controller.getAppartenenza(partenza))) {
                             //è un aula
                             if (controller.getFloor(partenza) != null) {
-                                Log.d("cazzicizciz", "3");
                                 startPoint.setText(partenza);
                                 int i = controller.getFloor(partenza);
                                 bit = controller.getMap(NameEdificio, i);
@@ -952,14 +984,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                                 //se la destinazione non appartiene allo stesso edificio allora l'edificio della partenza
                                 //dovrà avere come destinazione l'edificio stesso che in questo caso è l'exit point
                                 if(NameEdificio.equals(controller.getAppartenenza(partenza)) != NameEdificio.equals(controller.getAppartenenza(destinazione)) ){
-                                    Log.d("cazzicizciz", "10");
                                     endPoint.setText(NameEdificio);
                                     bit = controller.getMap(NameEdificio, 0);
                                     graph = edificio.getGraph0();
                                 }
                                 //non è un aula
                             } else {
-                                Log.d("cazzicizciz", "4");
                                 startPoint.setText(NameEdificio);
                                 bit = controller.getMap(NameEdificio, 0);
                                 graph = edificio.getGraph0();
