@@ -232,7 +232,7 @@ public class MapDrawer {
 
         //Toast.makeText(getContext(), "metri: " + meters / oneMeter, Toast.LENGTH_SHORT).show();
 
-        Log.d("Meters", "metri: " + 2 * (meters / (oneMeter * mapBitmap.getWidth())));
+        Log.d("Meters", "metri: " + meters / (oneMeter * mapBitmap.getWidth()));
 
     }
 
