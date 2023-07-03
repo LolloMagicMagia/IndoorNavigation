@@ -3,11 +3,14 @@ package com.example.osmdroidex2;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.PriorityQueue;
 import java.util.Set;
 
 
@@ -38,7 +41,10 @@ public class Graph {
      * @param y Coordinata y del nodo
      */
     public void addNode(String id, float x, float y, String roomType, String availability, String crowdness) {
-        nodes.put(id, new Node(id, x, y, roomType,
+
+        //y = - (y - 1);
+
+        nodes.put(id, new Node(id, x,  (float)1.0 - y, roomType,
                 availability, crowdness));
     }
 
@@ -50,6 +56,7 @@ public class Graph {
      * @param weight Peso dell'arco
      */
     public void addEdge(String source, String destination, int weight) {
+
         nodes.get(source).addEdge(new Edge(nodes.get(destination), weight));
         nodes.get(destination).addEdge(new Edge(nodes.get(source), weight));
     }
@@ -73,7 +80,7 @@ public class Graph {
      */
     public List<Node> findShortestPath(String start, String end, String roomType, String available, String crowd) {
 
-        Set<String> unvisited = new HashSet<>(nodes.keySet());          // praticamente è il l'heap
+        Set<String> unvisited = new HashSet<>(nodes.keySet());          // praticamente è lo heap
         Map<String, Integer> distances = new HashMap<>();
         Map<String, String> predecessors = new HashMap<>();
 
@@ -84,9 +91,12 @@ public class Graph {
 
         while (!unvisited.isEmpty()) {                                                       // finchè non è vuoto
             String current = findClosestNode(distances, unvisited, roomType, available, crowd);         // estraizone del nodo con peso minore ("il più vicino")
+
             try {
-                if (current.equals(end)) {
-                    break;
+                Log.d("awdawdawd", "" + current + " " + nodes.get(current).getRoomType());
+                Log.d("awdawdawd", "" + nodes.get(current).getRoomType().equals(end));
+                if (current.equals(end) || nodes.get(current).getRoomType().equals(end)) {
+                    return reconstructPath(predecessors, start, current);
                 }
             }catch(NullPointerException e) {
                 break;
@@ -143,6 +153,12 @@ public class Graph {
         } else {
             path.clear();
         }
+
+        for (Node node: path){
+            Log.d("PathPath", node.getId());
+        }
+
+
 
         return path;
     }

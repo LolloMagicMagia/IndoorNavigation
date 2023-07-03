@@ -113,6 +113,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private List<Node> path;
 
+    private List<Node> path2;
+
     private float currentRotation = 0f;
 
     private IndoorNavigation indoorNav;
@@ -141,6 +143,10 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
     private Bitmap icon;
 
+    private Edificio edificioObj;
+
+    private Boolean navigationState;
+
 
     /**
      * Metodo onCreate per la creazione dell'activity.
@@ -157,6 +163,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         View view = inflater.inflate(R.layout.fragment_indoor, container, false);
 
         viewModel = new ViewModelProvider(this).get(ViewModel.class);
+
+        navigationState = false;
 
         //Vado a prendere i valori precedenti
         sharedPreferences = getActivity().getSharedPreferences("MyPrefs", Context.MODE_PRIVATE);
@@ -270,7 +278,18 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onClick(View view) {
                 clearPath();
-                path = graph.findShortestPath(startPoint.getText().toString(), endPoint.getText().toString(), stairs, available, crowd);
+
+                String start = startPoint.getText().toString();
+                String end = endPoint.getText().toString();
+
+                if( start.substring(0, 1).equals(end.substring(0, 1)) ){
+                    graph = edificioObj.getGraph(start.charAt(0));
+                    path = edificioObj.getGraph(start.charAt(0)).findShortestPath(startPoint.getText().toString(), endPoint.getText().toString(), stairs, available, crowd);
+                    Log.d("awdad", "qui");
+                }else{
+                    path = edificioObj.getGraph(start.charAt(0)).findShortestPath(startPoint.getText().toString(), "stairs", stairs, available, crowd);
+                    path2 =  edificioObj.getGraph(end.charAt(0)).findShortestPath(end.substring(0, 1) + path.get(path.size() - 1).getId().substring(1),  endPoint.getText().toString(), stairs, available, crowd);
+                }
                 try {
                     path.get(0);
                     path.get(1);
@@ -279,6 +298,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 }
                 if (path != null) {
                     disegnaPercorso(path);
+                    navigationState = true;
                     showpath = true;
                     steppy = 0;
                     position[0] = path.get(0).getX() * mapBitmap.getWidth();
@@ -418,6 +438,16 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 if(floorCount  < controller.getNumberOfFloor(edificio)){
                     floorCount++;
                     Log.d("Piani", "" + floorCount);
+
+                    clearPath();
+                    disegnaPercorso(path2);
+
+                    /*if(navigationState && (path.get(0).getId().charAt(0) + "").equals(floorCount + "")){
+                        disegnaPercorso(path);
+                    }else if(navigationState && path2.get(0).getId().charAt(0) + "" == (char) floorCount + ""){
+                        disegnaPercorso(path2);
+                    }*/
+
                 }else{
                 }
             }
@@ -429,6 +459,10 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 if(floorCount > 0){
                     floorCount--;
                     Log.d("Piani", "" + floorCount);
+
+                    clearPath();
+                    disegnaPercorso(path);
+
                 }else{
                 }
             }
@@ -830,6 +864,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             @Override
             public void onChanged(Edificio edificio) {
                 Bitmap bit = null;
+
+                edificioObj = edificio;
 
                 String NameEdificio = NameEdificioDef;
 

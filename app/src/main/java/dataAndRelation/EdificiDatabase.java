@@ -12,9 +12,12 @@ import androidx.sqlite.db.SupportSQLiteDatabase;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.GraphTypeConverter;
+import com.example.osmdroidex2.MapTypeConverter;
 
 import org.osmdroid.util.GeoPoint;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -126,8 +129,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
             //////
             graph_u60.addEdge("T1", "T1.09", 1);
             graph_u60.addEdge("T1.09", "T1.13", 1);
-            graph_u60.addEdge("T1.13", "T1.18", 1);
-            graph_u60.addEdge("T1.18", "T1.4", 1);
+            graph_u60.addEdge("T1.13", "T1.4", 1);
             graph_u60.addEdge("T1.18", "T1.19", 1);
             graph_u60.addEdge("T1.18", "T1.17", 1);
             graph_u60.addEdge("T1.18", "T1.2", 1);
@@ -143,6 +145,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u60.addEdge("T1.27", "T1.28", 1);
             graph_u60.addEdge("T1.28", "T1.29", 1);
             graph_u60.addEdge("T1.16", "T1.43", 1);
+            graph_u60.addEdge("T1", "T1.4", 1);
 
 
             Graph graph_u61 = new Graph();
@@ -189,6 +192,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
             graph_u61.addEdge("11.44", "11.45", 1);
             graph_u61.addEdge("11.45", "11.46", 1);
             graph_u61.addEdge("11.46", "11.47", 1);
+            graph_u61.addEdge("11.4", "11", 1);
 
             graph_u61.addEdge("11.47", "11.48", 1);
             graph_u61.addEdge("11.48", "11.49", 1);

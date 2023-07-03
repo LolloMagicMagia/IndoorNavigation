@@ -7,11 +7,16 @@ import androidx.room.TypeConverters;
 
 import com.example.osmdroidex2.Graph;
 import com.example.osmdroidex2.GraphTypeConverter;
+import com.example.osmdroidex2.MapTypeConverter;
+import com.example.osmdroidex2.Node;
 
 import org.osmdroid.util.GeoPoint;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @Entity(tableName = "edificio_universita")
-@TypeConverters({GeoPointConverter.class, GraphTypeConverter.class, BitMapConverter.class})
+@TypeConverters({GeoPointConverter.class, GraphTypeConverter.class, BitMapConverter.class, MapTypeConverter.class})
 public class Edificio {
 
     //nome dell'edificio
@@ -34,6 +39,8 @@ public class Edificio {
     // Conversione di graph1 in formato stringa
     Graph graph1;
 
+    private Map<Character, Graph> piani;
+
     //Aule 1 e 2 con tutte le informazioni a riguardo
     /*@Relation(parentColumn = "nomeEdificio", entityColumn = "nomeEdificio")
     public List<Aula> aule;*/
@@ -49,6 +56,13 @@ public class Edificio {
 
         this.graph1 = graph1;
         this.graph0 = graph0;
+
+        if(graph0 != null && graph1 != null){
+            piani = new HashMap<>();
+            piani.put('T', graph0);
+            piani.put('1', graph1);
+        }
+
     }
 
 
@@ -112,4 +126,19 @@ public class Edificio {
         return graph0;
     }
 
+    public Graph getGraph1() {
+        return graph1;
+    }
+
+    public Map getPiani(){
+        return piani;
+    }
+
+    public void setPiani(Map<Character, Graph> piani) {
+        this.piani = piani;
+    }
+
+    public Graph getGraph(char piano){
+        return piani.get(piano);
+    }
 }
