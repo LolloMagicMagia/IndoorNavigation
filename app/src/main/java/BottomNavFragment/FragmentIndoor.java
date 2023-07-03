@@ -50,6 +50,7 @@ import dataAndRelation.ViewModel;
 
 public class FragmentIndoor extends Fragment implements SensorEventListener {
     private Handler handler;
+    private TextView txt_metri;
     private Runnable animationRunnable;
     private int stepCount = 0;
     String edificios;
@@ -308,6 +309,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     path = null;
                 }
                 if(path == null) {
+                    txt_metri.setVisibility(View.GONE);
                     clearPath(mapImage, indicatorImage);
                 }
                 if (path != null) {
@@ -443,6 +445,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         stepBtn = view.findViewById(R.id.stepBtn);
         compassImageView = view.findViewById(R.id.compass_image_view);
         degreeTextView = view.findViewById(R.id.degree_text_view);
+        txt_metri = view.findViewById(R.id.txt_metri);
     }
 
     public void next_back_Btn(String edificio){
@@ -660,8 +663,21 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
     private void disegnaPercorso(List<Node> nodes) {
-        mapDrawer.drawPath(nodes, mapImage, true, icon, edificioObj.getOneMeter());
-        mapImage.invalidate();
+        float metri = mapDrawer.drawPath(nodes, mapImage, true, icon, edificioObj.getOneMeter());
+        if (metri == 0f) {
+            txt_metri.setVisibility(View.GONE);
+            //return;
+        }
+        else {
+            if (txt_metri.length() > 5) {
+                txt_metri.setText(String.valueOf(metri).substring(0, 5) + " metri");
+            }
+            else {
+                txt_metri.setText(metri + " metri");
+            }
+            txt_metri.setVisibility(View.VISIBLE);
+            mapImage.invalidate();
+        }
     }
 
     public void clearPath(PhotoView mapImage, PhotoView indicatorImage){

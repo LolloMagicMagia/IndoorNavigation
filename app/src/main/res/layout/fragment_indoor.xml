@@ -88,6 +88,18 @@
                             android:textSize="16sp"
                             android:textStyle="bold" />
 
+                        <TextView
+                            android:id="@+id/txt_metri"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="10dp"
+                            android:layout_marginTop="10dp"
+                            android:text=""
+                            android:visibility="gone"
+                            android:textColor="@color/white"
+                            android:textSize="16sp"
+                            android:textStyle="bold" />
+
 
                     </LinearLayout>
                 </androidx.cardview.widget.CardView>

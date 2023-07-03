@@ -169,13 +169,13 @@ public class MapDrawer {
     } */
 
 
-    public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType, Bitmap icon, double oneMeter) {
+    public float drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType, Bitmap icon, double oneMeter) {
 
         int meters = 0;
 
 
         if (nodes == null || nodes.size() < 2) {
-            return;
+            return 0;
         }
 
         Path path = new Path();
@@ -232,7 +232,8 @@ public class MapDrawer {
 
         //Toast.makeText(getContext(), "metri: " + meters / oneMeter, Toast.LENGTH_SHORT).show();
 
-        Log.d("Meters", "metri: " + meters / (oneMeter * mapBitmap.getWidth()));
+        Log.d("Meters", "metri: " + (float)(10 + 2 * (meters / (oneMeter * mapBitmap.getWidth()))));
+        return (float)(10  + 2 * (meters / (oneMeter * mapBitmap.getWidth())));
 
     }
 
