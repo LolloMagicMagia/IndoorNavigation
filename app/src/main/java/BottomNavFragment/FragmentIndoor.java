@@ -277,7 +277,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                clearPath();
+                try {
+                    handler.removeCallbacks(animationRunnable);
+                } catch (Exception e) {
+
+                }
+                clearPath(mapImage, indicatorImage);
 
                 String start = startPoint.getText().toString();
                 String end = endPoint.getText().toString();
@@ -296,6 +301,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 } catch (Exception e) {
                     path = null;
                 }
+                if(path == null) {
+                    clearPath(mapImage, indicatorImage);
+                }
                 if (path != null) {
                     disegnaPercorso(path);
                     navigationState = true;
@@ -305,7 +313,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     position[1] = path.get(0).getY() * mapBitmap.getHeight();
                     disegnaIndicatore(position[0], position[1]);
                     int[] i = new int[1];
-                    animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i);
+                    animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i, path);
                 }
             }
         });
@@ -367,7 +375,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         return view;
     }
 
-    private void animazione(float xDestinazione, float yDestinazione, int[] i) {
+    private void animazione(float xDestinazione, float yDestinazione, int[] i, List<Node> path) {
         try {
             handler = new Handler();
             animationRunnable = new Runnable() {
@@ -383,12 +391,12 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                             handler.removeCallbacks(animationRunnable);
                             position[0] = path.get(0).getX() * mapBitmap.getWidth();
                             position[1] = path.get(0).getY() * mapBitmap.getHeight();
-                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
+                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i, path);
                         } else {
                             // vai al prossimo nodo
                             i[0]++;
                             handler.removeCallbacks(animationRunnable);
-                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i);
+                            animazione(path.get(i[0]).getX() * mapBitmap.getWidth(), path.get(i[0]).getY() * mapBitmap.getHeight(), i, path);
                         }
                         return;
                     }
@@ -435,12 +443,22 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                handler.removeCallbacks(animationRunnable);
                 if(floorCount  < controller.getNumberOfFloor(edificio)){
                     floorCount++;
                     Log.d("Piani", "" + floorCount);
 
-                    clearPath();
+                    clearPath(mapImage, indicatorImage);
                     disegnaPercorso(path2);
+                    int[] i = new int[1];
+                    position[0] = path2.get(0).getX() * mapBitmap.getWidth();
+                    position[1] = path2.get(0).getY() * mapBitmap.getHeight();
+                    try {
+                        handler.removeCallbacks(animationRunnable);
+                        animazione(path2.get(1).getX() * mapBitmap.getWidth(), path2.get(1).getY() * mapBitmap.getHeight(), i, path2);
+                    } catch (Exception e) {
+
+                    }
 
                     /*if(navigationState && (path.get(0).getId().charAt(0) + "").equals(floorCount + "")){
                         disegnaPercorso(path);
@@ -460,8 +478,17 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     floorCount--;
                     Log.d("Piani", "" + floorCount);
 
-                    clearPath();
+                    clearPath(mapImage, indicatorImage);
                     disegnaPercorso(path);
+                    int[] i = new int[1];
+                    position[0] = path.get(0).getX() * mapBitmap.getWidth();
+                    position[1] = path.get(0).getY() * mapBitmap.getHeight();
+                    try {
+                        handler.removeCallbacks(animationRunnable);
+                        animazione(path.get(1).getX() * mapBitmap.getWidth(), path.get(1).getY() * mapBitmap.getHeight(), i, path);
+                    } catch (Exception e) {
+
+                    }
 
                 }else{
                 }
@@ -570,15 +597,15 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 checkProblem(aSwitch,bSwitch,cSwitch);
 
                 ///////////////////////////
-                if (stairs == "stairs") {
+                if (stairs.equals("stairs")) {
                     aSwitch.setChecked(true);
                 }
                 else aSwitch.setChecked(false);
-                if (available == "unavailable") {
+                if (available.equals("unavailable")) {
                     bSwitch.setChecked(true);
                 }
                 else bSwitch.setChecked(false);
-                if (crowd == "crowded") {
+                if (crowd.equals("crowded")) {
                     cSwitch.setChecked(true);
                 }
                 else cSwitch.setChecked(false);
@@ -629,10 +656,10 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         mapImage.invalidate();
     }
 
-    public void clearPath(){
+    public void clearPath(PhotoView mapImage, PhotoView indicatorImage){
         mapDrawer.resetMap(); // Aggiungi questa riga per ripristinare la mappa nel MapDrawer
-        mapImage.setImageBitmap(mapDrawer.getMapBitmap()); // Imposta la nuova mappa ripristinata
-        mapImage.invalidate(); // Forza il ridisegno della PhotoView
+        this.mapImage.setImageBitmap(mapDrawer.getMapBitmap()); // Imposta la nuova mappa ripristinata
+        this.mapImage.invalidate(); // Forza il ridisegno della PhotoView
     }
 
     public void clearPath(boolean b){

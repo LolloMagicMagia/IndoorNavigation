@@ -63,6 +63,7 @@ public class IndoorNavigation {
     public Node stepNavigation(List<Node> path, PhotoView mapView, int count, PhotoView indicatorImage, boolean[] start, boolean stop, Bitmap icon, Handler handler, Runnable animationRunnable){
 
         if(stop) {
+            handler.removeCallbacks(animationRunnable);
             Toast.makeText(context  , "Trip Canceled", Toast.LENGTH_SHORT).show();
             start[0] = true;
             clearPath(mapView, indicatorImage);
@@ -70,8 +71,9 @@ public class IndoorNavigation {
         }
 
         if(path == null || path.size() == 0){
-
+            handler.removeCallbacks(animationRunnable);
             Toast.makeText(context  , "Warning: Select a possible path", Toast.LENGTH_SHORT).show();
+            clearPath(mapView, indicatorImage);
             return null;
 
         } else if(count + 1   >= path.size()){
