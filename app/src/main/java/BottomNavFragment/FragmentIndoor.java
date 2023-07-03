@@ -303,13 +303,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 try {
                     path.get(0);
                     path.get(1);
-                    path2.get(0);
-                    path2.get(1);
                 } catch (Exception e) {
-                    path2 = null;
+                    //path2 = null;
                     path = null;
                 }
-                if(path == null || path2 == null) {
+                if(path == null) {
                     clearPath(mapImage, indicatorImage);
                 }
                 if (path != null) {
@@ -451,22 +449,23 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         nextBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                handler.removeCallbacks(animationRunnable);
-                if(floorCount  < controller.getNumberOfFloor(edificio)){
-                    floorCount++;
-                    Log.d("Piani", "" + floorCount);
+                if (path2 != null) {
+                    handler.removeCallbacks(animationRunnable);
+                    if (floorCount < controller.getNumberOfFloor(edificio)) {
+                        floorCount++;
+                        Log.d("Piani", "" + floorCount);
 
-                    clearPath(mapImage, indicatorImage);
-                    disegnaPercorso(path2);
-                    int[] i = new int[1];
-                    position[0] = path2.get(0).getX() * mapBitmap.getWidth();
-                    position[1] = path2.get(0).getY() * mapBitmap.getHeight();
-                    try {
-                        handler.removeCallbacks(animationRunnable);
-                        animazione(path2.get(1).getX() * mapBitmap.getWidth(), path2.get(1).getY() * mapBitmap.getHeight(), i, path2);
-                    } catch (Exception e) {
+                        clearPath(mapImage, indicatorImage);
+                        disegnaPercorso(path2);
+                        int[] i = new int[1];
+                        position[0] = path2.get(0).getX() * mapBitmap.getWidth();
+                        position[1] = path2.get(0).getY() * mapBitmap.getHeight();
+                        try {
+                            handler.removeCallbacks(animationRunnable);
+                            animazione(path2.get(1).getX() * mapBitmap.getWidth(), path2.get(1).getY() * mapBitmap.getHeight(), i, path2);
+                        } catch (Exception e) {
 
-                    }
+                        }
 
                     /*if(navigationState && (path.get(0).getId().charAt(0) + "").equals(floorCount + "")){
                         disegnaPercorso(path);
@@ -474,7 +473,8 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                         disegnaPercorso(path2);
                     }*/
 
-                }else{
+                    } else {
+                    }
                 }
             }
         });
@@ -660,7 +660,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
      * @param nodes Lista di nodi che rappresentano il percorso da disegnare
      */
     private void disegnaPercorso(List<Node> nodes) {
-        mapDrawer.drawPath(nodes, mapImage, true, icon);
+        mapDrawer.drawPath(nodes, mapImage, true, icon, edificioObj.getOneMeter());
         mapImage.invalidate();
     }
 

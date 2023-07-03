@@ -101,7 +101,7 @@ public class MapDrawer {
 
         //zoomOnPath(mapView, nodes);
     }*/
-
+   /*
     public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType, Bitmap icon) {
 
         if (nodes == null || nodes.size() < 2) {
@@ -147,8 +147,8 @@ public class MapDrawer {
         mapCanvas.drawCircle(startX, startY, circleRadius - 5f, fillPaint);
 
         //zoomOnPath(mapView, nodes);
-    }
-
+    } */
+    /*
     public void drawStep(List<Node> nodes, PhotoView mapView, List<Node> step, Bitmap icon) {
         drawPath(nodes, mapView, false, icon);
         if (step == null || step.size() < 2) {
@@ -166,10 +166,94 @@ public class MapDrawer {
 
         mapCanvas.drawPath(path, linePaint);
         //zoomOnPath(mapView, nodes);
+    } */
+
+
+    public void drawPath(List<Node> nodes, PhotoView mapView, Boolean lineType, Bitmap icon, double oneMeter) {
+
+        int meters = 0;
+
+
+        if (nodes == null || nodes.size() < 2) {
+            return;
+        }
+
+        Path path = new Path();
+        Node firstNode = nodes.get(0);
+        path.moveTo(firstNode.getX() * mapBitmap.getWidth(), firstNode.getY() * mapBitmap.getHeight());
+
+        for (int i = 1; i < nodes.size(); i++) {
+            Node currentNode = nodes.get(i);
+            path.lineTo(currentNode.getX() * mapBitmap.getWidth(), currentNode.getY() * mapBitmap.getHeight());
+
+            if (i > 1) {
+                Node prevNode = nodes.get(i - 1);
+                double x1 = prevNode.getX() * mapBitmap.getWidth();
+                double y1 = prevNode.getY() * mapBitmap.getHeight();
+                double x2 = currentNode.getX() * mapBitmap.getWidth();
+                double y2 = currentNode.getY() * mapBitmap.getHeight();
+
+                double distancePixels = Math.sqrt(Math.pow(x2 - x1, 2) + Math.pow(y2 - y1, 2));
+                meters += distancePixels;
+            }
+
+        }
+
+        Paint fillPaint = new Paint();
+        fillPaint.setColor(Color.parseColor("#8C4444"));
+
+        // Disegna un cerchio vuoto alla fine del percorso
+        Node endNode = nodes.get(nodes.size() - 1);
+        float endX = endNode.getX() * mapBitmap.getWidth();
+        float endY = endNode.getY() * mapBitmap.getHeight();
+        float circleRadius = 40f; // Modifica il raggio del cerchio come desiderato
+
+        Paint fillPaintW = new Paint();
+        fillPaintW.setColor(Color.BLUE);
+
+        mapCanvas.drawCircle(endX, endY, circleRadius, linePaint);
+        mapCanvas.drawCircle(endX, endY, circleRadius - 10f, fillPaintW);
+
+        if (lineType) {
+            mapCanvas.drawPath(path, linePaint);
+        } else {
+            mapCanvas.drawPath(path, grayLinePaint);
+        }
+
+        // Disegna un cerchio pieno all'inizio del percorso
+        Node startNode = nodes.get(0);
+        float startX = startNode.getX() * mapBitmap.getWidth();
+        float startY = startNode.getY() * mapBitmap.getHeight();
+
+        mapCanvas.drawCircle(startX, startY, circleRadius, linePaint);
+        mapCanvas.drawCircle(startX, startY, circleRadius - 5f, fillPaint);
+
+        //zoomOnPath(mapView, nodes);
+
+        //Toast.makeText(getContext(), "metri: " + meters / oneMeter, Toast.LENGTH_SHORT).show();
+
+        Log.d("Meters", "metri: " + 2 * (meters / (oneMeter * mapBitmap.getWidth())));
+
     }
 
+    public void drawStep(List<Node> nodes, PhotoView mapView, List<Node> step, Bitmap icon) {
+        drawPath(nodes, mapView, false, icon, 7/1280f);
+        if (step == null || step.size() < 2) {
+            return;
+        }
 
+        Path path = new Path();
+        Node firstNode = step.get(0);
+        path.moveTo(firstNode.getX() * mapBitmap.getWidth(), firstNode.getY() * mapBitmap.getHeight());
 
+        for (int i = 1; i < step.size(); i++) {
+            Node currentNode = step.get(i);
+            path.lineTo(currentNode.getX() * mapBitmap.getWidth(), currentNode.getY() * mapBitmap.getHeight());
+        }
+
+        mapCanvas.drawPath(path, linePaint);
+        //zoomOnPath(mapView, nodes);
+    }
 
     public void resetMap() {
         // Crea una copia dell'immagine originale

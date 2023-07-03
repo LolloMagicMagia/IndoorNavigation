@@ -73,9 +73,9 @@ public abstract class EdificiDatabase extends RoomDatabase {
             GeoPoint right_down = new GeoPoint(45.52381, 9.21886);
 
             mEdificioDao.insertEdificio(new Edificio(left_down, left_top, right_top, right_down,
-                    "u14",new GeoPoint(45.52374,9.21971),2, null, null));
+                    "u14",new GeoPoint(45.52374,9.21971),2, null, null, 0));
 
-           Graph graph_u60 = new Graph();
+            Graph graph_u60 = new Graph();
 
 
             graph_u60.addNode("T1", (float) 0.5, (float) 0.149,  "atrium", "available", "notCrow");
@@ -223,13 +223,15 @@ public abstract class EdificiDatabase extends RoomDatabase {
             GeoPoint right_topU6 = new GeoPoint(45.51906, 9.21426);
             GeoPoint right_downU6 = new GeoPoint(45.51752, 9.21341);
 
+            double oneMeter = 7f/1280f;
+
 
             mEdificioDao.insertEdificio(new Edificio(left_downU6, left_topU6, right_topU6, right_downU6,
                     "u6",new GeoPoint(45.51847, 9.21297),6,
-                    graph_u60, graph_u61));
+                    graph_u60, graph_u61, oneMeter));
 
             mEdificioDao.insertEdificio(new Edificio(null,null,null,null,
-                    "u7", new GeoPoint(45.51731, 9.21291), 4,null,null));
+                    "u7", new GeoPoint(45.51731, 9.21291), 4,null,null, 0));
 
             mAulaDao.insertAula(new Aula(0,new GeoPoint(45.52361, 9.21971),"u14","u14AulaFirstFloor"));
             mAulaDao.insertAula(new Aula(1,new GeoPoint(45.52352, 9.21994),"u14","u14AulaSecondFloor"));

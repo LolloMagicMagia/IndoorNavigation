@@ -41,11 +41,13 @@ public class Edificio {
 
     private Map<Character, Graph> piani;
 
+    double oneMeter;
+
     //Aule 1 e 2 con tutte le informazioni a riguardo
     /*@Relation(parentColumn = "nomeEdificio", entityColumn = "nomeEdificio")
     public List<Aula> aule;*/
 
-    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor, Graph graph0, Graph graph1){
+    public Edificio(GeoPoint left_below, GeoPoint left_up,GeoPoint right_up , GeoPoint right_down, String nomeEdificio, GeoPoint posizione, int numeroFloor, Graph graph0, Graph graph1, double oneMeter){
         this.nomeEdificio=nomeEdificio;
         this.left_below=left_below;
         this.left_up=left_up;
@@ -62,6 +64,8 @@ public class Edificio {
             piani.put('T', graph0);
             piani.put('1', graph1);
         }
+
+        this.oneMeter = oneMeter;
 
     }
 
@@ -141,4 +145,9 @@ public class Edificio {
     public Graph getGraph(char piano){
         return piani.get(piano);
     }
+
+    public double getOneMeter() {
+        return oneMeter;
+    }
+
 }
