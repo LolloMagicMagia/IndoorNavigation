@@ -279,11 +279,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
             public void onClick(View view) {
                 try {
                     handler.removeCallbacks(animationRunnable);
+                    clearPath(mapImage, indicatorImage);
                 } catch (Exception e) {
 
                 }
                 clearPath(mapImage, indicatorImage);
-
                 String start = startPoint.getText().toString();
                 String end = endPoint.getText().toString();
 
@@ -293,15 +293,22 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     Log.d("awdad", "qui");
                 }else{
                     path = edificioObj.getGraph(start.charAt(0)).findShortestPath(startPoint.getText().toString(), "stairs", stairs, available, crowd);
-                    path2 =  edificioObj.getGraph(end.charAt(0)).findShortestPath(end.substring(0, 1) + path.get(path.size() - 1).getId().substring(1),  endPoint.getText().toString(), stairs, available, crowd);
+                    try {
+                        path2 = edificioObj.getGraph(end.charAt(0)).findShortestPath(end.substring(0, 1) + path.get(path.size() - 1).getId().substring(1), endPoint.getText().toString(), stairs, available, crowd);
+                    }catch (Exception e) {
+                        path2 = null;
+                    }
                 }
                 try {
                     path.get(0);
                     path.get(1);
+                    path2.get(0);
+                    path2.get(1);
                 } catch (Exception e) {
+                    path2 = null;
                     path = null;
                 }
-                if(path == null) {
+                if(path == null || path2 == null) {
                     clearPath(mapImage, indicatorImage);
                 }
                 if (path != null) {
@@ -597,15 +604,15 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                 checkProblem(aSwitch,bSwitch,cSwitch);
 
                 ///////////////////////////
-                if (stairs.equals("stairs")) {
+                if (stairs == "stairs") {
                     aSwitch.setChecked(true);
                 }
                 else aSwitch.setChecked(false);
-                if (available.equals("unavailable")) {
+                if (available == "unavailable") {
                     bSwitch.setChecked(true);
                 }
                 else bSwitch.setChecked(false);
-                if (crowd.equals("crowded")) {
+                if (crowd == "crowded") {
                     cSwitch.setChecked(true);
                 }
                 else cSwitch.setChecked(false);
@@ -660,6 +667,9 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         mapDrawer.resetMap(); // Aggiungi questa riga per ripristinare la mappa nel MapDrawer
         this.mapImage.setImageBitmap(mapDrawer.getMapBitmap()); // Imposta la nuova mappa ripristinata
         this.mapImage.invalidate(); // Forza il ridisegno della PhotoView
+        indicatorDrawer.resetMap();
+        this.indicatorImage.setImageBitmap(indicatorDrawer.getMapBitmap());
+        this.indicatorImage.invalidate();
     }
 
     public void clearPath(boolean b){
