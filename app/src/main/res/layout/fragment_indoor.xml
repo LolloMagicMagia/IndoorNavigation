@@ -16,13 +16,13 @@
         <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginTop="5dp"
-            android:layout_marginRight="5dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginEnd="20dp"
             android:layout_weight="0.001"
-            app:cardBackgroundColor="#DE8C4444"
+            app:cardBackgroundColor="#DE9B5D5D"
             app:cardCornerRadius="30dp"
-            app:cardElevation="1dp">
+            app:cardElevation="0dp">
 
 
             <LinearLayout
@@ -46,36 +46,59 @@
                         android:baselineAligned="false"
                         android:orientation="vertical">
 
-                        <com.google.android.material.textfield.TextInputLayout
-                            android:id="@+id/startPoint"
+
+                        <androidx.cardview.widget.CardView
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
-                            android:layout_marginBottom="10dp"
+                            android:layout_marginTop="5dp"
+                            android:layout_marginEnd="130dp"
+                            android:layout_marginBottom="5dp"
                             android:layout_weight="1"
                             android:outlineProvider="none"
-                            app:boxCornerRadiusBottomEnd="30dp"
-                            app:boxCornerRadiusBottomStart="30dp"
-                            app:boxCornerRadiusTopEnd="30dp"
-                            app:boxCornerRadiusTopStart="30dp">
+                            app:cardBackgroundColor="#FFFFFF"
+                            app:cardCornerRadius="30dp">
+
 
                             <com.google.android.material.textfield.TextInputEditText
-                                android:id="@+id/starPoint"
-                                android:layout_width="200dp"
-                                android:layout_height="50dp"
+                                android:id="@+id/startPoint"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginBottom="10dp"
+                                android:background="@android:color/transparent"
                                 android:hint="@string/StartingPoint"
                                 android:outlineProvider="none" />
 
-                        </com.google.android.material.textfield.TextInputLayout>
+                        </androidx.cardview.widget.CardView>
 
-
-                        <com.google.android.material.textfield.TextInputEditText
-                            android:id="@+id/endPoint"
-                            android:layout_width="200dp"
-                            android:layout_height="50dp"
+                        <androidx.cardview.widget.CardView
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
                             android:layout_marginTop="10dp"
+                            android:layout_marginEnd="130dp"
+                            android:layout_marginBottom="5dp"
                             android:layout_weight="1"
-                            android:hint="@string/ArrivalPoint"
-                            android:outlineProvider="none" />
+                            android:outlineProvider="none"
+                            app:cardBackgroundColor="#FFFFFF"
+                            app:cardCornerRadius="30dp">
+
+                            <com.google.android.material.textfield.TextInputEditText
+                                android:id="@+id/endPoint"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="30dp"
+                                android:layout_marginTop="10dp"
+                                android:layout_marginEnd="30dp"
+                                android:layout_marginBottom="10dp"
+                                android:layout_weight="1"
+                                android:background="@android:color/transparent"
+                                android:hint="@string/ArrivalPoint"
+                                android:outlineProvider="none" />
+
+                        </androidx.cardview.widget.CardView>
+
 
                         <TextView
                             android:id="@+id/btn_options"
@@ -95,10 +118,10 @@
                             android:layout_marginLeft="10dp"
                             android:layout_marginTop="10dp"
                             android:text=""
-                            android:visibility="gone"
                             android:textColor="@color/white"
                             android:textSize="16sp"
-                            android:textStyle="bold" />
+                            android:textStyle="bold"
+                            android:visibility="gone" />
 
 
                     </LinearLayout>
@@ -124,8 +147,10 @@
                 android:layout_marginTop="18dp"
                 android:layout_marginEnd="20dp"
                 android:layout_weight="1"
-                android:backgroundTint="#00000000"
+                android:background="@android:color/transparent"
+                android:outlineProvider="none"
                 android:text="@string/ShowPath"
+                android:textColor="@color/white"
                 app:cornerRadius="30dp" />
 
             <Button
@@ -137,8 +162,11 @@
                 android:layout_marginEnd="20dp"
                 android:layout_marginBottom="5dp"
                 android:layout_weight="1"
+                android:background="@android:color/transparent"
                 android:backgroundTint="#00000000"
+                android:outlineProvider="none"
                 android:text="@string/SHOWSTEPS"
+                android:textColor="@color/white"
                 app:cornerRadius="30dp" />
 
         </androidx.cardview.widget.CardView>
@@ -160,11 +188,44 @@
             android:layout_weight="1"
             android:clickable="false" />
 
+        <androidx.cardview.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_marginStart="90dp"
+            android:layout_marginEnd="90dp"
+            android:layout_marginBottom="70dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/backBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0.3"
+                    android:background="@drawable/baseline_keyboard_arrow_left_24" />
+
+                <Button
+                    android:id="@+id/nextBtn"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="0.3"
+                    android:background="@drawable/baseline_keyboard_arrow_right_24" />
+
+            </LinearLayout>
+        </androidx.cardview.widget.CardView>
+
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_marginLeft="300dp"
-            android:layout_marginTop="450dp"
             android:layout_width="100dp"
-            android:layout_height="140dp">
+            android:layout_height="140dp"
+            android:layout_gravity="bottom"
+            android:layout_marginLeft="5000dp"
+            android:layout_marginTop="5000dp">
 
             <ImageView
                 android:id="@+id/compass_image_view"
@@ -219,45 +280,6 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginBottom="80dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
-
-                <Button
-                    android:id="@+id/btn_avvia"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="1"
-                    android:backgroundTint="#8C4444"
-                    android:text="@string/Start" />
-
-                <Button
-                    android:id="@+id/backBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="0.3"
-                    android:background="@drawable/baseline_keyboard_arrow_left_24" />
-
-                <Button
-                    android:id="@+id/nextBtn"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="0.3"
-                    android:background="@drawable/baseline_keyboard_arrow_right_24" />
-
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
 
     </FrameLayout>
 

@@ -252,7 +252,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
 
         checkOptions();*/
 
-        btn_start.setOnClickListener(new View.OnClickListener() {
+        /*btn_start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (btn_start.getText() == "CANCEL") {
@@ -276,7 +276,7 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
                     }
                 }
             }
-        });
+        });*/
 
         drawBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -437,11 +437,11 @@ public class FragmentIndoor extends Fragment implements SensorEventListener {
         drawBtn = view.findViewById(R.id.drawBtn);
         endPoint = view.findViewById(R.id.endPoint);
         optTxt = view.findViewById(R.id.btn_options);
-        startPoint = view.findViewById(R.id.starPoint);
+        startPoint = view.findViewById(R.id.startPoint);
         nextBtn = view.findViewById(R.id.nextBtn);
         backBtn = view.findViewById(R.id.backBtn);
         txt_passi = view.findViewById(R.id.txt_passi);
-        btn_start = view.findViewById(R.id.btn_avvia);
+        //btn_start = view.findViewById(R.id.btn_avvia);
         mapImage = view.findViewById(R.id.map_image);
         indicatorImage = view.findViewById(R.id.indicator_image);
         stepBtn = view.findViewById(R.id.stepBtn);
