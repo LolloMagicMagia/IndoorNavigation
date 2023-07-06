@@ -235,7 +235,7 @@ public abstract class EdificiDatabase extends RoomDatabase {
 
             mAulaDao.insertAula(new Aula(0,new GeoPoint(45.52361, 9.21971),"u14","u14AulaFirstFloor"));
             mAulaDao.insertAula(new Aula(1,new GeoPoint(45.52352, 9.21994),"u14","u14AulaSecondFloor"));
-            mAulaDao.insertAula(new Aula(0,new GeoPoint(45.51847, 9.21313),"u6","u6AulaFirstFloor"));
+            mAulaDao.insertAula(new Aula(0,new GeoPoint(45.51847, 9.21313),"u6","u6.107"));
 
             return null;
         }

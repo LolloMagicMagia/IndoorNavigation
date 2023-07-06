@@ -19,7 +19,7 @@
     <string name="u7">u7</string>
     <string name="u14AulaFirstFloor">u14AulaFirstFloor</string>
     <string name="u14AulaSecondFloor">u14AulaSecondFloor</string>
-    <string name="u6AulaFirstFloor">u6AulaFirstFloor</string>
+    <string name="u6AulaFirstFloor">u6.107</string>
 
     <string name="ArrivalPoint">ArrivalPoint</string>
     <string name="PathOptions">PathOptions</string>
@@ -30,7 +30,7 @@
 
     <string name="Step">Steps:</string>
     <string name="AnsiaSociale">Ansia Sociale</string>
-    <string name="Carrozina">Carrozina</string>
+    <string name="Carrozina">Disabilità motoria</string>
     <string name="Claustrofobia">Claustrofobia</string>
     <string name="Bicicletta">Bicicletta</string>
     <string name="Macchina">Macchina</string>
