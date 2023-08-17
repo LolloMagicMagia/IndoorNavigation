@@ -53,7 +53,7 @@ I punti di interesse del grafo avranno degli attributi così che il percorso sia
 Come possiamo vedere in questo fragment oltre alle diverse informazioni che può darci, avrà anche il compito di andare a segnalare i parametri che l'utente vuole che si prendano in considerazione non solo per quanto riguarda l'indoor ma anche per quanto riguarda l'outdoor:
 <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/novit%C3%A0.png" width="320">
 
-##Conclusioni
+## Conclusioni
 
 Tutto ciò di cui abbiamo descritto in questi capitoli sono dei riassunti riguardante il lavoro intrapreso durante lo stage durato 3 mesi.
-Per coloro che vogliono effettivamente approfondire l'argomento consigliamo vivamente di leggere la tesi, per quanto riguarda tutte le tecnologie studiate e non implementate in questa applicazione.
+Per coloro che vogliono effettivamente approfondire l'argomento consigliamo vivamente di leggere la tesi, poichè essa andrà a mostreare tutte le tecnologie studiate e non implementate in questa applicazione.
