@@ -1,4 +1,5 @@
-(https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+![Logo GitHub](https://github.com/username/repository/blob/main/images/github-logo.png)
+
 
  # IndoorNavigation
 Durante il nostro periodo di stage abbiamo cercato diverse tecnologie utilizzabili in un contesto android, occupandoci di 4 principali obbiettivi:
