@@ -1,4 +1,4 @@
-![Logo GitHub](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+![Logo App](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 
  # IndoorNavigation
@@ -18,11 +18,17 @@ Per quanto riguarda lo studio delle diverse tecnologie e delle diverse soluzioni
 
 ### Outdoor navigation
 
-Per quanto riguarda l'outdoor andremo a utilizzare il servizio offerto da OpenStreetMap(Mappa mondiale gratuita dove sarà possibile modificarla), e grazie a Osmdroid (libreria) potremo mostrarla all'interno della nostra applicazione android. 
+Per quanto riguarda l'outdoor andremo a utilizzare il servizio offerto da OpenStreetMap(Mappa mondiale gratuita dove sarà possibile la modifica), e grazie a Osmdroid (libreria) potremo mostrarla all'interno della nostra applicazione android. 
 
-Tramite una barra di ricerca potremo andare a cercare il path tra edifici e aule, andando a mostrare il routing esterno e la posizione dell'aula all'interno dell'edificio.(con cambio di piano)
+Tramite una barra di ricerca potremo andare a cercare il path tra edifici e aule, andando a mostrare il routing esterno e la posizione dell'aula all'interno dell'edificio.(con la possibilità di cambiare piano)
 
+Per quanto riguarda il calcolo del percorso:
 
+![Percorso](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen-cartella/destinazione%20edificio.jpg)
+
+Per quanto riguarda il cambio piano:
+
+![Change Floor](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen-cartella/ChangePiano.jpg)
 
 ### Indoor navigation
 
