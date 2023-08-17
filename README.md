@@ -24,7 +24,7 @@ Tramite una barra di ricerca potremo andare a cercare il path tra edifici e aule
 
 Per quanto riguarda il calcolo del percorso:
 
-![Percorso](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/percorso.png = 250x)
+<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/percorso.png" width="120">
 
 Per quanto riguarda il cambio piano:
 
