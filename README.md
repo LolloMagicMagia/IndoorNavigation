@@ -1,9 +1,14 @@
 ﻿# IndoorNavigation
 Durante il nostro periodo di stage abbiamo cercato diverse tecnologie utilizzabili in un contesto android, occupandoci di 4 principali obbiettivi:
+
 -Orientamento: calcolo del percorso.
--Localizzaizone: posizionamento all'interno di un edificio
--Personalizzazione: per quanto riguarda il cambio di percorso dovute a delle specifiche per quanto riguarda l'utente
--Mappatura: la creazione/aggiornamento di mappe
+
+-Localizzaizone: posizionamento all'interno di un edificio.
+
+-Personalizzazione: per quanto riguarda il cambio di percorso dovute a delle specifiche per quanto riguarda l'utente.
+
+-Mappatura: la creazione/aggiornamento di mappe.
+
 
 ## Tesi
 Per quanto riguarda lo studio delle diverse tecnologie e delle diverse soluzioni invito a leggere la tesi nella cartella "Tesi"
