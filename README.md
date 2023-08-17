@@ -18,9 +18,11 @@ Per quanto riguarda lo studio delle diverse tecnologie e delle diverse soluzioni
 
 ### Outdoor navigation
 
-In questa applicazione abbiamo usato OpenStreetMap con l'aiuto di Josm per andare ad aggiungere le varie strade che google maps non andava a rappresentare.
-Abbiamo creato una nuova activity per poter creare la navigazione interna non essendo direttamente implementato in OpenStreetMap.
-Ho aggiunto molte funzionalità simili a google maps per quanto riguarda il routing esterno che avviene in automatico.
+Per quanto riguarda l'outdoor andremo a utilizzare il servizio offerto da OpenStreetMap(Mappa mondiale gratuita dove sarà possibile modificarla), e grazie a Osmdroid (libreria) potremo mostrarla all'interno della nostra applicazione android. 
+
+Tramite una barra di ricerca potremo andare a cercare il path tra edifici e aule, andando a mostrare il routing esterno e la posizione dell'aula all'interno dell'edificio.(con cambio di piano)
+
+
 
 ### Indoor navigation
 
