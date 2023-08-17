@@ -1,4 +1,6 @@
-﻿# IndoorNavigation
+https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+
+ # IndoorNavigation
 Durante il nostro periodo di stage abbiamo cercato diverse tecnologie utilizzabili in un contesto android, occupandoci di 4 principali obbiettivi:
 
 -Orientamento: calcolo del percorso.
