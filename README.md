@@ -51,6 +51,7 @@ Queste linee, che in realtà saranno poi rappresentate come un'unica polilinea, 
 I punti di interesse del grafo avranno degli attributi così che il percorso sia personalizzato per i diversi utenti, poichè esistono dei percorsi che possono non essere adatti alle diverse problematiche. 
 
 Come possiamo vedere in questo fragment oltre alle diverse informazioni che può darci, avrà anche il compito di andare a segnalare i parametri che l'utente vuole che si prendano in considerazione non solo per quanto riguarda l'indoor ma anche per quanto riguarda l'outdoor:
+
 <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/novit%C3%A0.png" width="320">
 
 ## Conclusioni
