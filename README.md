@@ -1,4 +1,4 @@
-![Logo GitHub](https://github.com/username/repository/blob/main/images/github-logo.png)
+![Logo GitHub](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
 
 
  # IndoorNavigation
