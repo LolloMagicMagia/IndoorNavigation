@@ -30,7 +30,7 @@ Per quanto riguarda il cambio piano:
 
 <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFlor1.png" width="320">
 
-Come possiamo vedere il cambio piano va a togliere il marker dove prima era segnata l'aula.
+Come possiamo vedere il cambio piano andrà a togliere il marker dove prima era segnata l'aula.
 
 <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFloor2.png" width="320">
 
