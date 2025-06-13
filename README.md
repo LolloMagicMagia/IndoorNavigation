@@ -1,60 +1,121 @@
-![Logo App](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png)
+# ![Logo App](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) Context-Aware Indoor Navigation for Android
+Design, metodologia e tecnologie utilizzate
 
+## 🎯 Obiettivo del progetto
+L’obiettivo principale era realizzare un’app mobile Android in grado di guidare l’utente all’interno di edifici universitari, con percorsi personalizzati e intelligenti, anche in assenza di GPS. L'app è context-aware, cioè capace di adattare i percorsi in base alle esigenze dell’utente (evitare scale, zone affollate o percorsi inagibili) e supportare persone con disabilità o disagi psicologici. Nel nostro caso abbiamo voluto aggiungere il contesto Outdoor insieme all'indoor.
 
- # IndoorNavigation
-Durante il nostro periodo di stage abbiamo cercato diverse tecnologie utilizzabili in un contesto android, occupandoci di 4 principali obbiettivi:
+## 🧱 Metodologia progettuale
+### 📐 Fasi principali
+Analisi dei requisiti: raccolti tramite sondaggi mirati agli studenti (es. difficoltà di orientamento, accettazione della condivisione della posizione).
 
--Orientamento: calcolo del percorso.
+Studio delle tecnologie: valutazione comparativa di soluzioni di indoor navigation esistenti.
 
--Localizzaizone: posizionamento all'interno di un edificio.
+Proposte progettuali: valutazione tra uso di SDK esterni e sviluppo di una soluzione indipendente.
 
--Personalizzazione: per quanto riguarda il cambio di percorso dovute a delle specifiche per quanto riguarda l'utente.
+Prototipazione e implementazione: sviluppo di una mappa interattiva con percorsi calcolati automaticamente.
 
--Mappatura: la creazione/aggiornamento di mappe.
+Testing e simulazione: valutazione della precisione e dell’affidabilità dell’applicazione in casi d’uso realistici.
 
+## 🛠️ Tecnologie analizzate e implementate
+### 🌐 Servizi di mapping valutati
+MapsPeople: SDK professionale basato su Google Maps con tagging semantico, ma a pagamento.
 
-## Tesi
-Per quanto riguarda lo studio delle diverse tecnologie e delle diverse soluzioni invito a leggere la Tesi(Tesi.pdf) nella pagina principale del progetto github.
+MapBox: molto completo, ma richiede licenze.
 
-### Outdoor navigation
+MazeMap: soluzione avanzata con indoor 3D, integrabile ma non completamente open.
 
-Per quanto riguarda l'outdoor andremo a utilizzare il servizio offerto da OpenStreetMap(Mappa mondiale gratuita dove sarà possibile la modifica), e grazie a Osmdroid (libreria) potremo mostrarla all'interno della nostra applicazione android. 
+Navigine: offre un SDK indoor gratuito, incluso supporto a beacon e RFID.
 
-Tramite una barra di ricerca potremo andare a cercare il path tra edifici e aule, andando a mostrare il routing esterno e la posizione dell'aula all'interno dell'edificio.(con la possibilità di cambiare piano)
+OpenStreetMap (OSM): scelto per la navigazione esterna grazie alla compatibilità con:
 
-Per quanto riguarda il calcolo del percorso:
+OsmDroid per rendering e interazione Android.
 
-<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/percorso.png" width="320">
+JOSM per editing dei piani.
 
-Per quanto riguarda il cambio piano:
+OpenLevelUp per visualizzazione indoor.
 
-<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFlor1.png" width="320">
+Maperitive e MOBAC per generare mappe offline.
 
-Come possiamo vedere il cambio piano andrà a togliere il marker dove prima era segnata l'aula.
+## 📌 Tecnologie indoor adottate
+Calcolo del percorso: 
 
-<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFloor2.png" width="320">
+<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/percorso.png" width="250">
+
+Mentre il cambio piano, andrà a togliere il marker dove precedentemente dove l'aula era segnata:
+
+<p align="left">
+  <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFlor1.png" alt="Prototype 1" width="250" style="margin-right: 10px;">
+  <img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/cambioFloor2.png" alt="Prototype 2" width="250" style="margin-right: 10px;">
+</p>
 
 Senza il wi-fi la nostra applicazione funzionerà ma andrà a mostrare una mappa non aggiornata.
 Questa mappa è stata scaricata tramite un sw esterno chiamato "Maperative", il quale, ci ha permesso di scaricare il tileset riguardante l'università Milano-Bicocca. La funzionalità di ricerca continuerà ad esistere ma il calcolo del percorso automatico esterno non funzionerà più poichè esso funzionava tramite delle call API a OSM stesso.
 
-### Indoor navigation
+### 🧭 Navigazione Indoor (No Tool)
+Utilizzo di immagini PNG dei piani e implementazione manuale dei percorsi.
 
-La soluzione adottata (lato indoor) non presenta l'utilizzo di tool di terze parti per la navigazione e il tracciamento del percorso.
+Gestione della navigazione tramite un grafo disegnato su mappa con:
 
-La mappa dell'edificio è stata importata come un png, successivamente sono stati selezionati i punti di interesse sulla mappa, come stanze e corridoi, rappresentandoli inizialmente sotto forma di coordinate.
+Nodi: punti significativi (aule, corridoi, scale).
 
-Questi punti saranno poi i nodi che, assieme alle relazioni tra questi (gli archi), andranno a comporre il grafo che sarà utile alla navigazione.
+Archi pesati: rappresentano la distanza o difficoltà.
 
-Ora sono dunque presenti: la mappa, i punti di interesse e un grafo che consente di organizzare questi punti in una struttura che siamo in grado di manipolare. L'ultima cosa essenziale che rimane è il sistema di tracciamento effettivo delle linee sulla mappa che andranno a comporre il percorso vero e proprio.
-Queste linee, che in realtà saranno poi rappresentate come un'unica polilinea, sono state tracciate principalmente tramite l'ausilio di Bitmap, Canvas e Paint.
+Calcolo dei percorsi con:
 
-I punti di interesse del grafo avranno degli attributi così che il percorso sia personalizzato per i diversi utenti, poichè esistono dei percorsi che possono non essere adatti alle diverse problematiche. 
+Dijkstra (modificato per terminare al nodo di destinazione).
 
-Come possiamo vedere in questo fragment oltre alle diverse informazioni che può darci, avrà anche il compito di andare a segnalare i parametri che l'utente vuole che si prendano in considerazione non solo per quanto riguarda l'indoor ma anche per quanto riguarda l'outdoor:
+In alternativa: A* (per la versione in Unity con ambienti 3D).
 
-<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/novit%C3%A0.png" width="320">
+## 📍 Posizionamento (Position No Tool)
+Analisi e simulazione dei principali sistemi di indoor positioning:
 
-## Conclusioni
+Tecnologia	Metodo	Precisione	Note
+UWB	Multi-Trilateration	altissima	costosa
+Wi-Fi	RSS, ToA, AoA	media	popolare
+Magnetometro	Fingerprinting geomagnetico	media	sensibile a disturbi
+Bluetooth (beacon)	Trilaterazione RSS	media	richiede hardware
+Vision-Based	SLAM, ARKit, Vuforia	variabile (1mm–1.5m)	utile per AR
 
-Tutto ciò di cui abbiamo descritto in questi capitoli sono dei riassunti riguardante il lavoro intrapreso durante lo stage durato 3 mesi.
-Per coloro che vogliono effettivamente approfondire l'argomento consigliamo vivamente di leggere la tesi, poichè essa andrà a mostreare tutte le tecnologie studiate e non implementate in questa applicazione.
+✨ Affluenza: l’app è in grado di calcolare percorsi alternativi evitando zone affollate, sfruttando simulazione di dati di occupazione ambientale.
+
+## 🧠 Algoritmi e soluzioni implementative
+### 📍 Routing no Tool
+
+<img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/screen/novit%C3%A0.png" width="250">
+
+Creazione di un grafo pesato (non orientato) direttamente su immagine.
+
+Uso di classi personalizzate per gestire nodi, archi e pesi.
+
+Gestione di percorsi personalizzati:
+
+Evita scale (per disabilità motorie).
+
+Evita ascensori (per fobie).
+
+Evita zone affollate.
+
+### 🧠 Algoritmi
+Dijkstra: usato per calcolare il percorso minimo, modificato per fermarsi al nodo di arrivo.
+
+A*: usato per la versione tridimensionale in Unity (navigazione AR).
+
+Algoritmi di affluenza: per gestire disattivazione dinamica dei nodi in base al carico delle zone.
+
+## 🧩 Architettura finale dell'app
+Interfaccia grafica in Android (PhotoView per zoom e interazioni).
+
+Gestione coordinate indipendente dalla risoluzione grazie all’uso di rapporti (x/imgWidth, y/imgHeight).
+
+Visualizzazione dei piani e mappa dinamica.
+
+Integrazione con GPS per mappa esterna tramite OpenStreetMap.
+
+## 🚀 Conclusioni
+L'applicazione sviluppata ha dimostrato che è possibile costruire una soluzione completa di navigazione indoor senza dipendere da servizi esterni.
+
+È stata progettata per essere accessibile, modulare e personalizzabile, adattandosi alle esigenze di utenti con diverse abilità.
+
+Lo studio approfondito delle tecnologie e l’implementazione manuale hanno fornito un’esperienza concreta nelle sfide reali della navigazione indoor, un tema ancora oggi in forte espansione.
+
+Un altra valida opzione sarebbe stato l'utilizzo di Navigine il quale permette un' implementazione piu' immediata di tutte quste componentistiche precedentemente descritte.
