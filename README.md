@@ -1,4 +1,10 @@
-# ![Logo App](https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png) Context-Aware Indoor Navigation for Android
+<table>
+  <tr>
+    <td><img src="https://github.com/LolloMagicMagia/IndoorNavigation/blob/main/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png" alt="Logo App" width="80"/></td>
+    <td><h1>Context-Aware Indoor Navigation for Android</h1></td>
+  </tr>
+</table>
+
 Design, metodologia e tecnologie utilizzate
 
 ## 🎯 Obiettivo del progetto
